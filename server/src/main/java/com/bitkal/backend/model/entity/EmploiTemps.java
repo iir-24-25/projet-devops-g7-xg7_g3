@@ -40,8 +40,8 @@ public class EmploiTemps {
     @Enumerated(EnumType.STRING)
     private Semestre __eSemestre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id")
     @JsonBackReference
-    private Module __module;
+    private Module module;
 }

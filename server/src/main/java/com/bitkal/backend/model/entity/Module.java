@@ -45,7 +45,7 @@ public class Module {
     @ManyToMany(mappedBy = "__modules")
     private List<Group> __groups;
 
-    @OneToMany(mappedBy = "__module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<EmploiTemps> __emploiTemps;
 

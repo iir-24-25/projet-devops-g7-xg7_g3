@@ -2,6 +2,8 @@ package com.bitkal.backend.model.entity;
 
 import com.bitkal.backend.constant.Filiere;
 import com.bitkal.backend.constant.Niveau;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -47,4 +49,5 @@ public class Group {
     @ManyToOne
     @JoinColumn(name = "etablissement_id")
     private Etablissement __etablissement;
+
 }

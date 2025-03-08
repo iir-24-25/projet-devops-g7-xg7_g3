@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class Professeur extends Personne {
 
+    @Column(name = "specialisation", length = 20, nullable = true)
+    private String __sSpecialisation;
+
     @OneToMany(mappedBy = "professeur")
     private List<Module> __modules;
 }
