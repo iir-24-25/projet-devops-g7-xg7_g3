@@ -1,16 +1,12 @@
 package com.bitkal.backend.model.entity;
 
-import java.sql.Blob;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.*;
 import lombok.*;
+import java.sql.Blob;
 import java.util.List;
 
-/**
- * Represents a student, inheriting from Personne entity.
- */
 @Entity
 @DiscriminatorValue("ETUD")
 @Getter

@@ -1,12 +1,9 @@
 package com.bitkal.backend.model.entity;
 
-import java.sql.Blob;
 import jakarta.persistence.*;
 import lombok.*;
+import java.sql.Blob;
 
-/**
- * Represents a person entity in the system, serving as a base class for inheritance.
- */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)

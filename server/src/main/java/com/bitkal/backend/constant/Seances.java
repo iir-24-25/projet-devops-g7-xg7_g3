@@ -10,11 +10,11 @@ public enum Seances {
 
     private final String seance;
 
-    Seances(String seance){
+    Seances(String seance) {
         this.seance = seance;
     }
 
-    public String getSeances(){
+    public String getSeances() {
         return this.seance;
     }
 }

@@ -6,5 +6,5 @@ public enum Jours {
     MERCREDI,
     JEUDI,
     VENDREDI,
-    SAMEDI,
+    SAMEDI
 }

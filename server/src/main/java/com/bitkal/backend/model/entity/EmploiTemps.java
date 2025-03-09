@@ -8,11 +8,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * Represents a timetable entry in the system.
- */
 @Entity
-@Table(name = "emploi_temps")
+@Table(name = "emploi_temps", 
+       uniqueConstraints = @UniqueConstraint(columnNames = {"jour", "salle", "seance", "semestre"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
