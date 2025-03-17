@@ -52,6 +52,8 @@ const FormModal = ({
       ? "bg-lamaYellow"
       : type === "update"
       ? "bg-lamaSky"
+      : type === "delete"
+      ? "bg-white"
       : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
@@ -79,7 +81,7 @@ const FormModal = ({
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        <Image src={`/${type}.png`} alt="" width={16} height={16} />
+        <Image src={`/${type === "delete" ? "dele(1)" : type}.png`} alt="" width={16} height={16} />
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
