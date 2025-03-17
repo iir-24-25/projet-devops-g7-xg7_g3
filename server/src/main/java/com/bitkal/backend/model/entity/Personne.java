@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Blob;
 
+import com.bitkal.backend.constant.Gender;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
@@ -30,6 +32,10 @@ public abstract class Personne {
     @Column(name = "password", length = 100, nullable = false)
     protected String _sPassword;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", length = 6, nullable = false)
+    protected Gender _eGender = Gender.MALE;
+
     @Column(name = "ville", length = 25, nullable = true)
     protected String _sVille;
 
@@ -38,4 +44,5 @@ public abstract class Personne {
 
     @Column(name = "image")
     protected Blob _blImage;
+
 }
