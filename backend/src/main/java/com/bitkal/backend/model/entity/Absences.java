@@ -32,7 +32,7 @@ public class Absences {
 
     @Builder.Default
     @Column(name = "is_justified")
-    private boolean __bIsJustif = false;
+    private Boolean __bIsJustif = false;
 
     @Column(name = "description", nullable = true)
     private String __sDesciption;

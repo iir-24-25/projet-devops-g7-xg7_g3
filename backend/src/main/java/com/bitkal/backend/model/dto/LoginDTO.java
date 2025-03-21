@@ -16,9 +16,9 @@ public class LoginDTO {
     @Email(message = "Email must be a valid email address")
     @NotBlank(message = "Email cannot be empty")
     @JsonProperty("email")
-    private String __sEmail;
+    private String email;
 
     @NotBlank(message = "Password cannot be empty")
     @JsonProperty("password")
-    private String __sPassword;
+    private String password;
 }

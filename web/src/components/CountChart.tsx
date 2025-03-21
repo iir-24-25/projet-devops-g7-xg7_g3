@@ -1,31 +1,51 @@
 "use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   RadialBarChart,
   RadialBar,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Total",
-    count: 106,
-    fill: "white",
-  },
-  {
-    name: "Girls",
-    count: 53,
-    fill: "#FAD3D4",
-  },
-  {
-    name: "Boys",
-    count: 53,
-    fill: "#D3F7FA",
-  },
-];
-
 const CountChart = () => {
+  const [data, setData] = useState([
+    { name: "Total", count: 0, fill: "white" },
+    { name: "Girls", count: 0, fill: "#FAD3D4" },
+    { name: "Boys", count: 0, fill: "#D3F7FA" },
+  ]);
+
+  const [percentages, setPercentages] = useState({ male: 0, female: 0 });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/numberGender?type=ETUD");
+        const result = await res.json();
+        const male = result.MALE || 0;
+        const female = result.FEMALE || 0;
+        const total = male + female;
+        const malePercent = total ? (male / total) * 100 : 0;
+        const femalePercent = total ? (female / total) * 100 : 0;
+
+        setData([
+          { name: "Total", count: total, fill: "white" },
+          { name: "Girls", count: female, fill: "#FAD3D4" },
+          { name: "Boys", count: male, fill: "#D3F7FA" },
+        ]);
+
+        // Convert the percentages to numbers, not strings
+        setPercentages({
+          male: Math.round(malePercent * 10) / 10, // Round to 1 decimal place
+          female: Math.round(femalePercent * 10) / 10, // Round to 1 decimal place
+        });
+      } catch (error) {
+        console.error("Erreur de chargement des données :", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="bg-white rounded-xl w-full h-full p-4">
       {/* TITLE */}
@@ -59,13 +79,13 @@ const CountChart = () => {
       <div className="flex justify-center gap-16">
         <div className="flex flex-col gap-1">
           <div className="w-5 h-5 bg-[#D3F7FA] rounded-full" />
-          <h1 className="font-bold">1,234</h1>
-          <h2 className="text-xs text-gray-300">Boys (55%)</h2>
+          <h1 className="font-bold">{data[2].count}</h1>
+          <h2 className="text-xs text-gray-300">Boys ({percentages.male}%)</h2>
         </div>
         <div className="flex flex-col gap-1">
           <div className="w-5 h-5 bg-[#FAD3D4] rounded-full" />
-          <h1 className="font-bold">1,234</h1>
-          <h2 className="text-xs text-gray-300">Girls (45%)</h2>
+          <h1 className="font-bold">{data[1].count}</h1>
+          <h2 className="text-xs text-gray-300">Girls ({percentages.female}%)</h2>
         </div>
       </div>
     </div>
