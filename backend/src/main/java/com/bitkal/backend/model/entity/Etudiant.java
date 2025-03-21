@@ -21,9 +21,6 @@ public class Etudiant extends Personne {
     @Column(name = "address_MAC", length = 50, nullable = true, unique = true)
     private String __sAddressMAC;
 
-    @Column(name = "is_login")
-    private boolean __isLogin;
-
     @Column(name = "emprunt", nullable = true)
     private Blob __blEmprunt;
 

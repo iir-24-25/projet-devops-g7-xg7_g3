@@ -45,4 +45,7 @@ public abstract class Personne {
     @Column(name = "image")
     protected Blob _blImage;
 
+    @Column(name = "is_login")
+    private boolean _isLogin;
+
 }
