@@ -2,6 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* React Calendar Styles */
 .react-calendar {
   width: 100% !important;
   border: none !important;
@@ -13,10 +56,11 @@
 }
 
 .react-calendar__tile--active {
-  background-color: #c3ebfa !important;
+  background-color: #C3EBFA !important; /* Matches lamaSky */
   color: black !important;
 }
 
+/* React Big Calendar Styles */
 .rbc-btn-group:first-child {
   display: none !important;
 }
@@ -32,12 +76,12 @@
 
 .rbc-btn-group:last-child button {
   border: none !important;
-  background-color: #f1f0ff !important;
+  background-color: #F1F0FF !important; /* Matches lamaPurpleLight */
   margin-left: 2px !important;
 }
 
 .rbc-toolbar button.rbc-active {
-  background-color: #dbdafe !important;
+  background-color: #CFCEFF !important; /* Matches lamaPurple */
   box-shadow: none !important;
 }
 
@@ -62,7 +106,7 @@
 }
 
 .rbc-timeslot-group {
-  background-color: #f7fdff !important;
+  background-color: #EDF9FD !important; /* Matches lamaSkyLight */
 }
 
 .rbc-day-slot {
@@ -78,39 +122,41 @@
 }
 
 .rbc-event:nth-child(1) {
-  background-color: #e2f8ff !important;
+  background-color: #EDF9FD !important; /* Matches lamaSkyLight */
 }
 .rbc-event:nth-child(2) {
-  background-color: #fefce8 !important;
+  background-color: #FEFCE8 !important; /* Matches lamaYellowLight */
 }
 .rbc-event:nth-child(3) {
-  background-color: #f2f1ff !important;
+  background-color: #F1F0FF !important; /* Matches lamaPurpleLight */
 }
 .rbc-event:nth-child(4) {
-  background-color: #fdf2fb !important;
+  background-color: #FDF2FB !important;
 }
 .rbc-event:nth-child(5) {
-  background-color: #e2f8ff !important;
+  background-color: #EDF9FD !important; /* Matches lamaSkyLight */
 }
 .rbc-event:nth-child(6) {
-  background-color: #fefce8 !important;
+  background-color: #FEFCE8 !important; /* Matches lamaYellowLight */
 }
 .rbc-event:nth-child(7) {
-  background-color: #f2f1ff !important;
+  background-color: #F1F0FF !important; /* Matches lamaPurpleLight */
 }
 .rbc-event:nth-child(8) {
-  background-color: #fdf2fb !important;
+  background-color: #FDF2FB !important;
 }
 
-.rbc-event-label{
+.rbc-event-label {
   color: gray !important;
   margin-bottom: 5px;
 }
+
+/* Third Card Styles */
 .third-card:nth-child(3) {
-  background-color: #fcfcd4;
+  background-color: #FAE27C; /* Matches lamaYellow */
 }
 
-
+/* MDS Header Filter Styles */
 .mds-header-filter-nav {
   width: 180px;
 }

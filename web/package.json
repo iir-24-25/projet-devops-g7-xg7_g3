@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@mobiscroll/react": "npm:@mobiscroll/react-next-trial@^5.33.1",
+    "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@types/react-big-calendar": "^1.8.9",
     "axios": "^1.8.3",
@@ -38,6 +39,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5"
   }
 }
