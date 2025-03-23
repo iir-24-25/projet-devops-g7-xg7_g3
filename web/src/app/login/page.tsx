@@ -1,12 +1,14 @@
-"use client"
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card } from "@/components/ui/card"
-import { GraduationCap, Fingerprint, User, Lock, ChevronLeft, ChevronRight } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card } from "@/components/ui/card";
+import { GraduationCap, Fingerprint, User, Lock, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // 3D school-themed images for the slideshow
 const slideImages = [
@@ -28,32 +30,80 @@ const slideImages = [
     title: "Academic Excellence",
     description: "Celebrating student achievements and success",
   },
-]
+];
 
 export default function LoginPage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [activeInput, setActiveInput] = useState<string | null>(null)
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeInput, setActiveInput] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Auto-advance slideshow
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideImages.length)
-    }, 5000)
+      setCurrentSlide((prev) => (prev + 1) % slideImages.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-  }
+    setCurrentSlide(index);
+  };
 
   const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slideImages.length) % slideImages.length)
-  }
+    setCurrentSlide((prev) => (prev - 1 + slideImages.length) % slideImages.length);
+  };
 
   const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slideImages.length)
-  }
+    setCurrentSlide((prev) => (prev + 1) % slideImages.length);
+  };
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Login failed");
+      }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+
+      const userType = data.type;
+      if (userType.includes("Professuer")) {
+        router.push("/prof");
+      } else if (userType.includes("Etudiant")) {
+        router.push("/admin");
+      } else if (userType.includes("Parents")) {
+        router.push("/parents");
+      } else {
+        setError("Unknown user type");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center p-4 overflow-hidden">
@@ -67,10 +117,8 @@ export default function LoginPage() {
           <div className="grid md:grid-cols-2 gap-0">
             {/* Left side - Slideshow */}
             <div className="relative h-[300px] md:h-auto overflow-hidden">
-              {/* Slideshow container */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/30 z-10" />
 
-              {/* Images */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
@@ -90,10 +138,9 @@ export default function LoginPage() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Slide content */}
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={`content-${currentSlide}`}
+                  key={`content-${currentSlide}`} // Fixed template literal syntax
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -105,7 +152,6 @@ export default function LoginPage() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Navigation arrows */}
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}
                 whileTap={{ scale: 0.95 }}
@@ -126,7 +172,6 @@ export default function LoginPage() {
                 <ChevronRight className="h-5 w-5" />
               </motion.button>
 
-              {/* Dots navigation */}
               <div className="absolute bottom-4 right-4 z-20 flex space-x-2">
                 {slideImages.map((_, index) => (
                   <motion.button
@@ -138,7 +183,7 @@ export default function LoginPage() {
                     className={`h-2 rounded-full transition-all cursor-pointer ${
                       index === currentSlide ? "bg-white" : "bg-white/50 hover:bg-white/80"
                     }`}
-                    aria-label={`Go to slide ${index + 1}`}
+                    aria-label={`Go to slide ${index + 1}`} // Fixed template literal syntax
                   />
                 ))}
               </div>
@@ -158,7 +203,7 @@ export default function LoginPage() {
               >
                 <motion.div
                   animate={{ rotate: [0, 10, 0] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <GraduationCap className="h-8 w-8 text-emerald-600" />
                 </motion.div>
@@ -209,6 +254,8 @@ export default function LoginPage() {
                         className="pl-10 border-gray-300 focus:border-transparent focus:outline-none focus:ring-0 transition-all duration-300"
                         onFocus={() => setActiveInput("email")}
                         onBlur={() => setActiveInput(null)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                       <motion.span
                         className="absolute bottom-0 left-0 h-0.5 bg-emerald-600 rounded"
@@ -241,6 +288,8 @@ export default function LoginPage() {
                         className="pl-10 border-gray-300 focus:border-transparent focus:outline-none focus:ring-0 transition-all duration-300"
                         onFocus={() => setActiveInput("password")}
                         onBlur={() => setActiveInput(null)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                       <motion.span
                         className="absolute bottom-0 left-0 h-0.5 bg-emerald-600 rounded"
@@ -270,7 +319,7 @@ export default function LoginPage() {
                       </label>
                     </div>
                     <motion.a
-                      href="#"
+                      href="/email-verifier"
                       className="text-sm text-emerald-600 hover:text-emerald-800 relative"
                       whileHover={{ scale: 1.05 }}
                     >
@@ -292,29 +341,45 @@ export default function LoginPage() {
                     <motion.button
                       whileHover={{ scale: 1.02, backgroundColor: "#047857" }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center justify-center transition-all duration-300 cursor-pointer"
+                      onClick={handleLogin}
+                      disabled={loading}
+                      className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                        loading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
-                      Sign In
-                      <motion.svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="ml-2 h-4 w-4"
-                        initial={{ x: 0 }}
-                        whileHover={{ x: 3 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                      >
-                        <path d="M5 12h14" />
-                        <path d="m12 5 7 7-7 7" />
-                      </motion.svg>
+                      {loading ? "Signing In..." : "Sign In"}
+                      {!loading && (
+                        <motion.svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="ml-2 h-4 w-4"
+                          initial={{ x: 0 }}
+                          whileHover={{ x: 3 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <path d="M5 12h14" />
+                          <path d="m12 5 7 7-7 7" />
+                        </motion.svg>
+                      )}
                     </motion.button>
                   </motion.div>
+
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-red-500 text-sm text-center"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="fingerprint" className="space-y-4">
@@ -334,7 +399,7 @@ export default function LoginPage() {
                           "0px 0px 0px rgba(5, 150, 105, 0)",
                         ],
                       }}
-                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                      transition={{ duration: 2, repeat: Infinity }}
                     >
                       <motion.div
                         className="absolute inset-0 bg-emerald-100 rounded-full"
@@ -342,7 +407,7 @@ export default function LoginPage() {
                           scale: [1, 1.1, 1],
                           opacity: [0, 0.3, 0],
                         }}
-                        transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                        transition={{ duration: 2, repeat: Infinity }}
                       />
                       <Fingerprint className="h-16 w-16 text-emerald-600 relative z-10" />
                     </motion.div>
@@ -365,7 +430,7 @@ export default function LoginPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <motion.a
                   href="#"
                   className="font-medium text-emerald-600 hover:text-emerald-800 relative inline-block"
@@ -385,6 +450,5 @@ export default function LoginPage() {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }
-

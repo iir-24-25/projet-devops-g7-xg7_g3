@@ -1,9 +1,18 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { ImageCarousel } from "@/components/image-carousel"
 import { BenefitCard } from "@/components/benefit-card"
 import { Download, LogIn, Wifi, Brain, Lock, BarChart3 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function WelcomePage() {
+  const router = useRouter() // Initialize the router
+
+  // Handler function for navigating to /login
+  const handleLoginClick = () => {
+    router.push("/login")
+  }
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-green-50 to-white">
       {/* Header avec couleurs améliorées */}
@@ -37,7 +46,7 @@ export default function WelcomePage() {
               <Download size={18} className="text-green-600" />
               <span className="hidden sm:inline">Download</span>
             </Button>
-            <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
+            <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700" onClick={handleLoginClick}>
               <LogIn size={18} />
               <span className="hidden sm:inline">Login</span>
             </Button>
@@ -56,7 +65,7 @@ export default function WelcomePage() {
               des présences en toute sécurité et fiabilité.
             </p>
             <div className="flex justify-center">
-              <Button size="lg" className="px-8 bg-green-600 hover:bg-green-700">
+              <Button size="lg" className="px-8 bg-green-600 hover:bg-green-700" onClick={handleLoginClick}>
                 Commencer
               </Button>
             </div>
