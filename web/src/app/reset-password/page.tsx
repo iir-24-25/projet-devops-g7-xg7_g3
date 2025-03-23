@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -17,6 +16,7 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -26,37 +26,84 @@ export default function ResetPasswordPage() {
     setShowConfirmPassword(!showConfirmPassword)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError("")
+    setIsLoading(true)
 
     // Password validation
     if (password.length < 8) {
       setError("Le mot de passe doit contenir au moins 8 caractères")
+      setIsLoading(false)
       return
     }
 
     if (!/[A-Z]/.test(password)) {
       setError("Le mot de passe doit contenir au moins une lettre majuscule")
+      setIsLoading(false)
       return
     }
 
     if (!/[0-9]/.test(password)) {
       setError("Le mot de passe doit contenir au moins un chiffre")
+      setIsLoading(false)
       return
     }
 
     if (!/[!@#$%^&*]/.test(password)) {
       setError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)")
+      setIsLoading(false)
       return
     }
 
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas")
+      setIsLoading(false)
       return
     }
 
-    // If all validations pass, proceed to success page
-    router.push("/reset-success")
+    // Récupérer l'email depuis localStorage
+    const email = localStorage.getItem("resetEmail")
+    console.log(email);
+    if (!email) {
+      setError("Aucun email trouvé. Veuillez recommencer le processus.")
+      setIsLoading(false)
+      return
+    }
+
+    // Envoyer la requête au backend
+    try {
+      const response = await fetch("http://localhost:8080/modifierPassword", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result === true) {
+          // Nettoyer localStorage après succès
+          localStorage.removeItem("resetCode")
+          localStorage.removeItem("resetEmail")
+          localStorage.removeItem("resetCodeTimestamp")
+          router.push("/reset-success")
+        } else {
+          setError("Échec de la mise à jour du mot de passe. Veuillez réessayer.")
+        }
+      } else {
+        const errorText = await response.text()
+        setError(errorText || "Une erreur s'est produite lors de la réinitialisation.")
+      }
+    } catch (err) {
+      setError("Une erreur s'est produite. Veuillez vérifier votre connexion.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -132,8 +179,12 @@ export default function ResetPasswordPage() {
               <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">{error}</div>
             )}
 
-            <Button type="submit" className="w-full bg-primary hover:bg-primary-hover text-white">
-              Réinitialiser le mot de passe
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary-hover text-white"
+              disabled={isLoading}
+            >
+              {isLoading ? "En cours..." : "Réinitialiser le mot de passe"}
             </Button>
           </form>
         </CardContent>
@@ -141,4 +192,3 @@ export default function ResetPasswordPage() {
     </div>
   )
 }
-

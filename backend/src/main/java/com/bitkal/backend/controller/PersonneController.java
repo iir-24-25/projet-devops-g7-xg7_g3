@@ -52,8 +52,8 @@ public class PersonneController {
 
     @PostMapping("/modifierPassword")
     public ResponseEntity<?> setPasswordByEmail(@RequestBody PasswordRequestDTO passwordRequestDTO) {
-        boolean response = personneService.setPasswordById(passwordRequestDTO.getId(), passwordRequestDTO.getPassword());
-        if (response) { // Inversion de la logique : succès si true
+        boolean response = personneService.setPasswordByEmail(passwordRequestDTO.getEmail(), passwordRequestDTO.getPassword());
+        if (response) {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body("Le mot de passe n'a pas été modifié");

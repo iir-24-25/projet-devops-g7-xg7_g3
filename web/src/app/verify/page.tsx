@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -11,15 +10,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function VerifyCodePage() {
   const router = useRouter()
   const [code, setCode] = useState(["", "", "", "", "", ""])
+  const [error, setError] = useState("")
+
+  // Vérifier l'email au chargement de la page
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("resetEmail")
+
+    if (!storedEmail) {
+      router.push("/email-verifier")
+    }
+  }, [router])
+
 
   const handleChange = (index: number, value: string) => {
-    if (value.length > 1) return
+    if (!/^[0-9]?$/.test(value)) return
 
     const newCode = [...code]
     newCode[index] = value
     setCode(newCode)
 
-    // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`code-${index + 1}`)
       if (nextInput) nextInput.focus()
@@ -27,27 +36,50 @@ export default function VerifyCodePage() {
   }
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Handle backspace to go to previous input
     if (e.key === "Backspace" && !code[index] && index > 0) {
       const prevInput = document.getElementById(`code-${index - 1}`)
       if (prevInput) prevInput.focus()
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // In a real app, you would validate the code here
-    router.push("/reset-password")
+    const enteredCode = code.join("")
+    const storedCode = localStorage.getItem("resetCode")
+    const storedTimestamp = localStorage.getItem("resetCodeTimestamp")
+
+    // Vérifier si le code a expiré (60 minutes = 3600000 millisecondes)
+    const currentTime = Date.now()
+    const expirationTime = 60 * 60 * 1000 // 60 minutes en millisecondes
+    if (storedTimestamp && currentTime - parseInt(storedTimestamp) > expirationTime) {
+      setError("Le code a expiré. Veuillez demander un nouveau code.")
+      localStorage.removeItem("resetCode")
+      localStorage.removeItem("resetEmail")
+      localStorage.removeItem("resetCodeTimestamp")
+      return
+    }
+
+    if (enteredCode === storedCode) {
+      localStorage.removeItem("resetCode")
+      localStorage.removeItem("resetCodeTimestamp")
+      router.push("/reset-password")
+    } else {
+      setError("Code incorrect. Veuillez réessayer.")
+    }
   }
+
+  const email = localStorage.getItem("resetEmail") || "votre email"
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary-light to-secondary-light px-4 py-12">
       <Card className="w-full max-w-md border-t-4 border-t-primary shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-primary">Reset Password</CardTitle>
-          <CardDescription>Please enter the password reset code below that was sent to aj@social.com.</CardDescription>
+          <CardDescription>
+            Please enter the password reset code below that was sent to {email}.
+          </CardDescription>
           <p className="text-sm text-primary hover:text-primary-hover">
-            Didn&apos;t receive instructions?{" "}
+            Didn't receive instructions?{" "}
             <Link href="#" className="underline hover:text-primary-hover">
               Try different method
             </Link>
@@ -77,6 +109,7 @@ export default function VerifyCodePage() {
                     />
                   ))}
                 </div>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
               </div>
               <Button type="submit" className="w-full bg-primary hover:bg-primary-hover text-white">
                 Reset Password
@@ -88,4 +121,3 @@ export default function VerifyCodePage() {
     </div>
   )
 }
-

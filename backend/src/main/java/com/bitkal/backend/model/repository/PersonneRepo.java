@@ -4,6 +4,7 @@ import com.bitkal.backend.model.dto.LoginResponseDTO;
 // import com.bitkal.backend.model.dto.LoginResult;
 import com.bitkal.backend.model.entity.Personne;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,8 +22,9 @@ public interface PersonneRepo extends JpaRepository<Personne, Long> {
     int findByEmail(@Param("email") String email);
 
     //
-    @Query("UPDATE Personne p set p._sPassword = :password where p.id = :id")
-    boolean setPasswordById(@Param("id") int id, @Param("password") String password);
+    @Modifying
+    @Query("UPDATE Personne p set p._sPassword = :password where p._sEmail = :email")
+    int setPasswordByEmail(@Param("email") String email, @Param("password") String password);
     
     // Compte le nombre d'étudiants par genre pour un type donné
     @Query("SELECT p._eGender, COUNT(p) FROM Personne p WHERE TYPE(p) IN :type GROUP BY p._eGender")

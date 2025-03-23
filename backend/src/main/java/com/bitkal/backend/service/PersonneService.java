@@ -6,6 +6,8 @@ import com.bitkal.backend.model.entity.Personne;
 import com.bitkal.backend.model.repository.PersonneRepo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -239,8 +241,10 @@ public class PersonneService {
         return resultFindByEmail != 0;
     }
 
-    public boolean setPasswordById(int id, String password) {
-        return personneRepo.setPasswordById(id, password);
+    @Transactional
+    public boolean setPasswordByEmail(String email, String password) {
+      int number = personneRepo.setPasswordByEmail(email, password);
+      return number > 0;
     }
 
     public Map<String, Integer> numberGenderByType(String type) {
