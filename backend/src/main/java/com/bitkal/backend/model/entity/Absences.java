@@ -22,30 +22,28 @@ public class Absences {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "date_absence")
+    private Date dateAbsences;
+
+    @Column(name = "is_justif") // Ajouté
+    private Boolean isJustif;
+
     @ManyToOne
     @JoinColumn(name = "etudiant_id")
     @JsonBackReference
-    private Etudiant __etudiant;
+    private Etudiant etudiant;
 
-    @Column(name = "date_absence")
-    private Date __dateAbsences;
+    @ManyToOne
+    @JoinColumn(name = "seance_id")
+    private Seance seance;
 
-    @Builder.Default
-    @Column(name = "is_justified")
-    private Boolean __bIsJustif = false;
+    @OneToOne(mappedBy = "absences")
+    private Notifications notification;
 
-    @Column(name = "description", nullable = true)
-    private String __sDesciption;
+    @OneToOne(mappedBy = "absence")
+private Justification justification;
 
     @Column(name = "salle")
     @Enumerated(EnumType.STRING)
-    private Salle __eSalle;
-
-    @ManyToOne
-    @JoinColumn(name = "module_id")
-    private Module __module;
-
-    @ManyToOne
-    @JoinColumn(name = "emploi_temps_id")
-    private EmploiTemps __emploiTemps;
+    private Salle salle;
 }

@@ -2,14 +2,10 @@ package com.bitkal.backend.model.entity;
 
 import com.bitkal.backend.constant.Filiere;
 import com.bitkal.backend.constant.Niveau;
-
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
-/**
- * Represents a student group in the system.
- */
 @Entity
 @Table(name = "groups")
 @Data
@@ -24,18 +20,25 @@ public class Group {
     private Long id;
 
     @Column(name = "name", length = 4, nullable = false)
-    private String __sName;
+    private String name;
 
     @Column(name = "filiere")
     @Enumerated(EnumType.STRING)
-    private Filiere __eFiliere;
+    private Filiere filiere;
 
     @Column(name = "niveau")
     @Enumerated(EnumType.STRING)
-    private Niveau __eNiveau;
+    private Niveau niveau;
+
+    @ManyToOne
+    @JoinColumn(name = "etablissement_id")
+    private Etablissement etablissement;
 
     @OneToMany(mappedBy = "group")
-    private List<Etudiant> __etudiants;
+    private List<Etudiant> etudiants;
+
+    @OneToMany(mappedBy = "groupe")
+    private List<EmploiTemps> emploisTemp;
 
     @ManyToMany
     @JoinTable(
@@ -43,10 +46,5 @@ public class Group {
         joinColumns = @JoinColumn(name = "group_id"),
         inverseJoinColumns = @JoinColumn(name = "module_id")
     )
-    private List<Module> __modules;
-
-    @ManyToOne
-    @JoinColumn(name = "etablissement_id")
-    private Etablissement __etablissement;
-
+    private List<Module> modules;
 }

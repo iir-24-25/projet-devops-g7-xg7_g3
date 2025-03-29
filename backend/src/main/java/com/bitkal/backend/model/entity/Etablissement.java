@@ -14,22 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Etablissement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name", length = 25, nullable = false)
-    private String __sName;
+    private String name;
 
     @Column(name = "ville")
     @Enumerated(EnumType.STRING)
     private Ville ville;
 
-    @OneToMany(mappedBy = "__etablissement")
-    private List<Group> __listGroups;
-
-    @OneToMany(mappedBy = "__etablissement")
-    private List<Module> __listModules;
+    @OneToMany(mappedBy = "etablissement")
+    private List<Group> groups;
 }

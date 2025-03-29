@@ -13,8 +13,8 @@ import java.util.List;
 public class Professeur extends Personne {
 
     @Column(name = "specialisation", length = 20, nullable = true)
-    private String __sSpecialisation;
+    private String specialisation;
 
     @OneToMany(mappedBy = "professeur")
-    private List<Module> __modules;
+    private List<Cours> cours;
 }

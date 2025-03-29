@@ -1,5 +1,6 @@
 package com.bitkal.backend.service;
 
+import com.bitkal.backend.constant.Filiere;
 import com.bitkal.backend.model.dto.LoginResponseDTO;
 import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.model.entity.Personne;
@@ -7,8 +8,10 @@ import com.bitkal.backend.model.repository.PersonneRepo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -281,4 +284,19 @@ public class PersonneService {
 
         return resultMap;
     }
+
+    public Map<String, Integer> findFilierePersonCount() {
+      Pageable pageable = PageRequest.of(0, 25);
+      List<Object[]> results = personneRepo.findFilierePersonCount(pageable);
+      Map<String, Integer> resultMap = new HashMap<>();
+  
+      for (Object[] row : results) {
+          String typeName = ((Filiere) row[0]).name();
+          Integer count = ((Number) row[1]).intValue();
+          resultMap.put(typeName, count);
+      }
+  
+      return resultMap;
+    }
+
 }

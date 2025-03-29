@@ -1,29 +1,36 @@
 package com.bitkal.backend.model.repository;
 
-import java.util.List;
+// import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bitkal.backend.constant.Jours;
-import com.bitkal.backend.constant.Salle;
-import com.bitkal.backend.constant.Seances;
-import com.bitkal.backend.constant.Semestre;
+// import com.bitkal.backend.constant.Salle;
+// import com.bitkal.backend.constant.Seances;
+// import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.entity.Etudiant;
 
 public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
 
-    @Query("SELECT e FROM Etudiant e JOIN e.group g JOIN Cours c ON g.id = c.__group.id " +
-           "JOIN EmploiTemps et ON c.__emploiTemps.id = et.id " +
-           "WHERE et.__eJour = :jour AND et.__eSalle = :salle " +
-           "AND et.__eSeance = :seance AND et.__eSemestre = :semestre")
-    List<Etudiant> findEtudiantsForTimetable(
-        @Param("jour") Jours jour,
-        @Param("salle") Salle salle,
-        @Param("seance") Seances seance,
-        @Param("semestre") Semestre semestre
-    );
+    // @Query("SELECT e FROM Etudiant e JOIN e.group g JOIN Cours c ON g.id = c.group.id " +
+    //        "JOIN EmploiTemps et ON c.emploiTemps.id = et.id " +
+    //        "WHERE et.jour = :jour AND et.salle = :salle " +
+    //        "AND et.seance = :seance AND et.semestre = :semestre")
+    // List<Etudiant> findEtudiantsForTimetable(
+    //     @Param("jour") Jours jour,
+    //     @Param("salle") Salle salle,
+    //     @Param("seance") Seances seance,
+    //     @Param("semestre") Semestre semestre
+    // );
 
     
+    @Query("SELECT COUNT(e) FROM Etudiant e " +
+        "JOIN e.group g " +
+        "JOIN g.emploisTemp et " +
+        "WHERE et.jour = :jours")
+    int numberTotalEtudiantsPresents(@Param("jours") Jours jours);
+
+
 
 }

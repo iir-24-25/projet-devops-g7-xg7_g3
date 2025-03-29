@@ -1,10 +1,13 @@
 package com.bitkal.backend.model.entity;
 
+import java.util.List;
+
 import com.bitkal.backend.constant.Jours;
 import com.bitkal.backend.constant.Salle;
 import com.bitkal.backend.constant.Seances;
 import com.bitkal.backend.constant.Semestre;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +19,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EmploiTemps {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,22 +26,25 @@ public class EmploiTemps {
 
     @Column(name = "jour")
     @Enumerated(EnumType.STRING)
-    private Jours __eJour;
+    private Jours jour;
 
     @Column(name = "salle")
     @Enumerated(EnumType.STRING)
-    private Salle __eSalle;
+    private Salle salle;
 
     @Column(name = "seance")
     @Enumerated(EnumType.STRING)
-    private Seances __eSeance;
+    private Seances seance;
 
     @Column(name = "semestre")
     @Enumerated(EnumType.STRING)
-    private Semestre __eSemestre;
+    private Semestre semestre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "module_id")
-    @JsonBackReference
-    private Module module;
+    @ManyToOne
+    @JoinColumn(name = "groupe_id")
+    private Group groupe;
+
+    @OneToMany(mappedBy = "emploiTemp")
+    @JsonManagedReference
+    private List<Seance> seances;
 }
