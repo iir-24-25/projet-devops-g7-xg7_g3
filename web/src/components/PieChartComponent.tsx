@@ -4,16 +4,14 @@ import React, { PureComponent } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 import Image from 'next/image';
 
-const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-  { name: 'Group E', value: 278 },
-  { name: 'Group F', value: 189 },
-];
+// Définition du type pour les données du PieChart
+interface DataType {
+  name: string;
+  value: number;
+}
 
-const renderActiveShape = (props) => {
+// Définition du type pour activeShape (PieSectorDataItem attendu par Recharts)
+const renderActiveShape: React.FC<any> = (props) => {
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
   const sin = Math.sin(-RADIAN * midAngle);
@@ -62,9 +60,29 @@ const renderActiveShape = (props) => {
 export default class PieChartComponent extends PureComponent {
   state = {
     activeIndex: 0,
+    data: [],
   };
 
-  onPieEnter = (_, index) => {
+  async componentDidMount() {
+    try {
+      // Récupérer les données depuis l'API
+      const response = await fetch("http://localhost:8080/numberPersonneByFiliere");
+      const data = await response.json();
+
+      // Transformer l'objet en tableau pour Recharts
+      const transformedData = Object.keys(data).map(filiere => ({
+        name: filiere,
+        value: data[filiere],
+      }));
+
+      // Mettre à jour l'état avec les données transformées
+      this.setState({ data: transformedData });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+    }
+  }
+
+  onPieEnter = (_: unknown, index: number) => {
     this.setState({
       activeIndex: index,
     });
@@ -75,15 +93,15 @@ export default class PieChartComponent extends PureComponent {
       <div className="bg-white rounded-xl w-full h-full p-4">
         {/* TITLE */}
         <div className="flex justify-between items-center">
-          <h1 className="text-lg font-semibold">Students</h1>
+          <h1 className="text-lg font-semibold">Students by Filiere</h1>
           <Image src="/moreDark.png" alt="" width={20} height={20} />
         </div>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart width={400} height={400}>
             <Pie
               activeIndex={this.state.activeIndex}
-              activeShape={renderActiveShape}
-              data={data}
+              activeShape={renderActiveShape} // ✅ Correctement typé
+              data={this.state.data}
               cx="50%"
               cy="50%"
               innerRadius={60}

@@ -15,7 +15,7 @@ interface PersonData {
   Etudiant: number;
   Professeur: number;
   Parents: number;
-  Surveillance: number;
+  Admin: number;
 }
 
 // Fonction pour récupérer les données depuis l'API
@@ -54,8 +54,8 @@ const AdminPage = () => {
           nbretudiant={personData?.Etudiant?.toString() ?? "0"} 
           imageSrc="/stud.gif" 
           alt="Student" 
-          width={100} 
-          height={50} 
+          width={90} 
+          height={120} 
         />
 
         <UserCard 
@@ -64,8 +64,8 @@ const AdminPage = () => {
           nbrprof={personData?.Professeur?.toString() ?? "0"} 
           imageSrc="/prof.gif" 
           alt="Teacher" 
-          width={70} 
-          height={50} 
+          width={90} 
+          height={120} 
         />
 
         <UserCard 
@@ -74,16 +74,16 @@ const AdminPage = () => {
           nbrparent={personData?.Parents?.toString() ?? "0"} 
           imageSrc="/paren.gif" 
           alt="Parent" 
-          width={80} 
-          height={60} 
+          width={90} 
+          height={120} 
         />
 
         <UserCard 
           type="staff" 
           style={{ backgroundColor: "#D3F7FA" }} 
-          nbrstaff={personData?.Surveillance?.toString() ?? "0"} 
+          nbrstaff={personData?.Admin?.toString() ?? "0"} 
           imageSrc="/staf.gif" 
-          alt="Staff" 
+          alt="Admin" 
           width={90} 
           height={120} 
         />

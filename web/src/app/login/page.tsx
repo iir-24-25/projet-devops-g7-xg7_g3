@@ -91,7 +91,7 @@ export default function LoginPage() {
       const userType = data.type;
       if (userType.includes("Professuer")) {
         router.push("/prof");
-      } else if (userType.includes("Etudiant")) {
+      } else if (userType.includes("Admin")) {
         router.push("/admin");
       } else if (userType.includes("Parents")) {
         router.push("/parents");

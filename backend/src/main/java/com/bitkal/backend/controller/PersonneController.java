@@ -74,4 +74,10 @@ public class PersonneController {
         Map<String, Integer> result = personneService.numberPersonneByType();
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/numberPersonneByFiliere")
+    public ResponseEntity<Map<String, Integer>> findFilierePersonCount() {
+        Map<String, Integer> result = personneService.findFilierePersonCount();
+        return ResponseEntity.ok(result);
+    }
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "cours")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,17 +18,9 @@ public class Cours {
 
     @ManyToOne
     @JoinColumn(name = "module_id")
-    private Module __module;
+    private Module module;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id")
-    private Professeur __professeur;
-
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group __group;
-
-    @OneToOne
-    @JoinColumn(name = "emploi_temps_id")
-    private EmploiTemps __emploiTemps;
+    private Professeur professeur;
 }

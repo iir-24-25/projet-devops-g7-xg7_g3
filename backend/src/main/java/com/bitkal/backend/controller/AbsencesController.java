@@ -1,6 +1,7 @@
 package com.bitkal.backend.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bitkal.backend.constant.Salle;
 import com.bitkal.backend.model.dto.ESPAbsencesDTO;
 import com.bitkal.backend.service.AbsencesService;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 @RestController
 public class AbsencesController {
@@ -35,4 +40,15 @@ public class AbsencesController {
 
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/weekly")
+    public List<Map<String, Object>> getWeeklyAbsences() {
+        return absencesService.getWeeklyAbsences();
+    }
+
+    @GetMapping("/Absences/month")
+    public Map<String, Integer> getYearAbsences() {
+        return absencesService.getYearAbsences();
+    }
+    
 }
