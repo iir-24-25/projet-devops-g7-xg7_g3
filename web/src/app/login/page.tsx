@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { GraduationCap, Fingerprint, User, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import api from '@/lib/api';
+import axios from "axios";
 
 // 3D school-themed images for the slideshow
 const slideImages = [
@@ -64,42 +66,54 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please enter both email and password");
+      setError("Veuillez saisir l'email et le mot de passe");
       return;
     }
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
-      const response = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await api.post('/login', { 
+        email, 
+        password 
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Login failed");
+  
+      const { token, userType, isLogin } = response.data;
+  
+      if (isLogin === false || isLogin === 0) {
+        localStorage.setItem('resetToken', token);
+        router.push("/reset-password");
+        return;
       }
-
-      const data = await response.json();
-      console.log("Login successful:", data);
-
-      const userType = data.type;
-      if (userType.includes("Professuer")) {
-        router.push("/prof");
-      } else if (userType.includes("Admin")) {
-        router.push("/admin");
-      } else if (userType.includes("Parents")) {
-        router.push("/parents");
+  
+      // Stockage du token
+      localStorage.setItem('authToken', token);
+  
+      // Redirection basée sur le type d'utilisateur
+      switch(true) {
+        case userType.includes("Professeur"):
+          router.push("/prof");
+          break;
+        case userType.includes("Admin"):
+          router.push("/admin");
+          break;
+        case userType.includes("Parents"):
+          router.push("/parents");
+          break;
+        default:
+          router.push("/dashboard");
+      }
+  
+    } catch (error) {
+      // Gestion type-safe de l'erreur
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || "Erreur de connexion");
+      } else if (error instanceof Error) {
+        setError(error.message);
       } else {
-        setError("Unknown user type");
+        setError("Une erreur inconnue est survenue");
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }

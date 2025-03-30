@@ -1,17 +1,21 @@
 package com.bitkal.backend.controller;
 
 import com.bitkal.backend.model.dto.LoginDTO;
-import com.bitkal.backend.model.dto.LoginResponseDTO;
 import com.bitkal.backend.model.dto.PasswordRequestDTO;
+import com.bitkal.backend.security.JwtUtils;
 import com.bitkal.backend.service.PersonneService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class PersonneController {
@@ -19,25 +23,54 @@ public class PersonneController {
     @Autowired
     private PersonneService personneService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
-        Optional<LoginResponseDTO> response = personneService.login(loginDTO.getEmail(), loginDTO.getPassword());
-        
-        if (response.isPresent()) {
-            return ResponseEntity.ok(response.get());
-        } else {
-            return ResponseEntity.status(401)
-                    .body("Email ou mot de passe incorrect");
+        try {
+            // Authentification de l'utilisateur
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+            
+            // Récupération des informations supplémentaires
+            Long userId = personneService.getUserIdByEmail(authentication.getName());
+            String userType = personneService.getUserTypeByEmail(authentication.getName());
+            Boolean isLogin = true; // On suppose que l'utilisateur est connecté si l'authentification réussit
+            
+            // Génération du token avec toutes les informations
+            String token = jwtUtils.generateToken(
+                authentication.getName(), 
+                userId, 
+                userType, 
+                isLogin
+            );
+            
+            // Construction de la réponse
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("userType", userType);
+            response.put("userId", userId);
+            response.put("isLogin", isLogin);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
         }
     }
 
+    // Les autres méthodes restent inchangées
     @GetMapping("/reset-password")
     public ResponseEntity<Integer> sendResetCode(@RequestParam String email) {
         try {
             int code = personneService.envoyerEmailAvecNumeroTemporaire(email);
             return ResponseEntity.ok(code);
         } catch (MessagingException e) {
-            return ResponseEntity.status(500).body(-1); // Retourne -1 en cas d'erreur d'envoi
+            return ResponseEntity.status(500).body(-1);
         }
     }
 

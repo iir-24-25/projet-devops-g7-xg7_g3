@@ -12,25 +12,12 @@ import com.bitkal.backend.constant.Jours;
 import com.bitkal.backend.model.entity.Etudiant;
 
 public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
-
-    // @Query("SELECT e FROM Etudiant e JOIN e.group g JOIN Cours c ON g.id = c.group.id " +
-    //        "JOIN EmploiTemps et ON c.emploiTemps.id = et.id " +
-    //        "WHERE et.jour = :jour AND et.salle = :salle " +
-    //        "AND et.seance = :seance AND et.semestre = :semestre")
-    // List<Etudiant> findEtudiantsForTimetable(
-    //     @Param("jour") Jours jour,
-    //     @Param("salle") Salle salle,
-    //     @Param("seance") Seances seance,
-    //     @Param("semestre") Semestre semestre
-    // );
-
     
     @Query("SELECT COUNT(e) FROM Etudiant e " +
         "JOIN e.group g " +
         "JOIN g.emploisTemp et " +
         "WHERE et.jour = :jours")
     int numberTotalEtudiantsPresents(@Param("jours") Jours jours);
-
 
 
 }
