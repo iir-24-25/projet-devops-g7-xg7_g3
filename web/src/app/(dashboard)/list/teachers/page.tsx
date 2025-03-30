@@ -1,3 +1,4 @@
+import Calendar from "@/components/Calendar";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -6,55 +7,27 @@ import { role, teachersData } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 
-type Teacher = {
-  id: number;
-  teacherId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
-};
-
-const columns = [
-  {
-    header: "Info",
-    accessor: "info",
-  },
-  {
-    header: "Teacher ID",
-    accessor: "teacherId",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Subjects",
-    accessor: "subjects",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Classes",
-    accessor: "classes",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-
 const TeacherListPage = () => {
+
+  <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+  {/* Calendar */}
+  <div className="mb-6" style={{ height: "600px" }}> {/* Ensure enough height */}
+    <Calendar />
+  </div>
+</div>
+  // Define the columns for the Table component
+  const columns = [
+    { header: "Photo", accessor: "photo" },
+    { header: "Name", accessor: "name" },
+    { header: "Email", accessor: "email" },
+    { header: "Teacher ID", accessor: "teacherId" },
+    { header: "Subjects", accessor: "subjects" },
+    { header: "Classes", accessor: "classes" },
+    { header: "Phone", accessor: "phone" },
+    { header: "Address", accessor: "address" },
+    { header: "Actions", accessor: "actions" },
+  ];
+
   const renderRow = (item: Teacher) => (
     <tr
       key={item.id}
@@ -86,10 +59,7 @@ const TeacherListPage = () => {
             </button>
           </Link>
           {role === "admin" && (
-            // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            //   <Image src="/delete.png" alt="" width={16} height={16} />
-            // </button>
-            <FormModal table="teacher" type="delete" id={item.id}/>
+            <FormModal table="teacher" type="delete" id={item.id} />
           )}
         </div>
       </td>
@@ -98,6 +68,11 @@ const TeacherListPage = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {/* Calendar */}
+      <div className="mb-6">
+        <Calendar />
+      </div>
+
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Teachers</h1>
@@ -110,17 +85,14 @@ const TeacherListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && (
-              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              //   <Image src="/plus.png" alt="" width={14} height={14} />
-              // </button>
-              <FormModal table="teacher" type="create"/>
-            )}
+            {role === "admin" && <FormModal table="teacher" type="create" />}
           </div>
         </div>
       </div>
+
       {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={teachersData} />
+
       {/* PAGINATION */}
       <Pagination />
     </div>
