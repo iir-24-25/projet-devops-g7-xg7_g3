@@ -1,5 +1,6 @@
 package com.bitkal.backend.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -9,9 +10,13 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class JwtUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${jwt.secret}")
     private String SECRET;
@@ -38,16 +43,26 @@ public class JwtUtils {
     }
 
     public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token);
-            return true;
-        } catch (Exception e) {
+    try {
+        Claims claims = Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
+            
+        // Additional validation
+        if (claims.getExpiration().before(new Date())) {
             return false;
         }
+        if (claims.get("type") == null || claims.get("id") == null) {
+            return false;
+        }
+        return true;
+    } catch (Exception e) {
+        logger.warn("Invalid JWT token: " + e.getMessage());
+        return false;
     }
+}
     
     public String getEmailFromToken(String token) {
         return Jwts.parser()
