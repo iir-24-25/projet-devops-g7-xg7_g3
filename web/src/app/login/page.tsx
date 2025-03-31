@@ -65,8 +65,19 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
+    // Input validation
     if (!email || !password) {
       setError("Veuillez saisir l'email et le mot de passe");
+      return;
+    }
+  
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError("Format d'email invalide");
+      return;
+    }
+  
+    if (password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères");
       return;
     }
   
@@ -87,10 +98,10 @@ export default function LoginPage() {
         return;
       }
   
-      // Stockage du token
+      // Store token
       localStorage.setItem('authToken', token);
   
-      // Redirection basée sur le type d'utilisateur
+      // Redirect based on user type
       switch(true) {
         case userType.includes("Professeur"):
           router.push("/prof");
@@ -106,9 +117,13 @@ export default function LoginPage() {
       }
   
     } catch (error) {
-      // Gestion type-safe de l'erreur
+      // Type-safe error handling
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || "Erreur de connexion");
+        const message = error.response?.data?.message || "Erreur de connexion";
+        setError(message);
+        if (error.response?.status === 401) {
+          setError("Email ou mot de passe incorrect");
+        }
       } else if (error instanceof Error) {
         setError(error.message);
       } else {
