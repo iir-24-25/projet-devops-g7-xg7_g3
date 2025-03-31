@@ -12,9 +12,24 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+interface AttendanceData {
+  name: string;
+  present: number;
+  absent: number;
+}
+
+interface PresenceData {
+  [key: string]: number;
+}
+
+interface WeeklyDataItem {
+  day: string;
+  count: number;
+}
+
 const AttendanceChart = () => {
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [presenceData, setPresenceData] = useState({});
+  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
+  const [presenceData, setPresenceData] = useState<PresenceData>({});
 
   useEffect(() => {
     // Récupérer les données des API
@@ -22,15 +37,15 @@ const AttendanceChart = () => {
       try {
         // Récupérer les données de présence par jour
         const responsePresence = await fetch("http://localhost:8080/presence-par-jour");
-        const presenceData = await responsePresence.json();
+        const presenceData: PresenceData = await responsePresence.json();
         setPresenceData(presenceData);
 
         // Récupérer les données de présence par semaine
         const responseWeekly = await fetch("http://localhost:8080/weekly");
-        const weeklyData = await responseWeekly.json();
+        const weeklyData: WeeklyDataItem[] = await responseWeekly.json();
 
         // Organiser les données dans le format requis par Recharts
-        const formattedData = weeklyData.map((item) => {
+        const formattedData = weeklyData.map((item: WeeklyDataItem) => {
           const day = item.day;
           const absent = item.count;  // Nombre d'absents pour ce jour (venant de weeklyData)
           const present = presenceData[day.toUpperCase()] - absent; // Présents = présence - absents
