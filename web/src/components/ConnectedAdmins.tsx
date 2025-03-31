@@ -1,178 +1,186 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import { role } from "@/lib/data";
+import Image from "next/image";
+import Link from "next/link";
 
-interface Admin {
-  id: number;
-  name: string;
-  role: string;
-  avatar: string;
-  status: 'online' | 'away' | 'offline';
-  lastActive: string;
+interface MenuProps {
+  isCollapsed: boolean;
+  onCollapse: (collapsed: boolean) => void;
 }
 
-const ConnectedAdmins = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const adminsPerPage = 2;
+const menuItems = [
+  {
+    title: "MENU",
+    items: [
+      {
+        icon: "/maison.png",
+        label: "Home",
+        href: "/",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/professeur.png",
+        label: "Teachers",
+        href: "/list/teachers",
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/eleves.png",
+        label: "Students",
+        href: "/list/students",
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/parent.png",
+        label: "Parents",
+        href: "/list/parents",
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/subject.png",
+        label: "Subjects",
+        href: "/list/subjects",
+        visible: ["admin"],
+      },
+      {
+        icon: "/classroom.png",
+        label: "Classes",
+        href: "/list/classes",
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/book.png",
+        label: "Lessons",
+        href: "/list/lessons",
+        visible: ["admin", "teacher"],
+      },
+      {
+        icon: "/exam.png",
+        label: "Exams",
+        href: "/list/exams",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/assignment.png",
+        label: "Assignments",
+        href: "/list/assignments",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/result.png",
+        label: "Results",
+        href: "/list/results",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/attendance.png",
+        label: "Attendance",
+        href: "/list/attendance",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/calendar.png",
+        label: "Events",
+        href: "/list/events",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/message.png",
+        label: "Messages",
+        href: "/list/messages",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/announcement.png",
+        label: "Announcements",
+        href: "/list/announcements",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+    ],
+  },
+  {
+    title: "OTHER",
+    items: [
+      {
+        icon: "/profile.png",
+        label: "Profile",
+        href: "/profile",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/setting.png",
+        label: "Settings",
+        href: "/settings",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/logout.png",
+        label: "Logout",
+        href: "/logout",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+    ],
+  },
+];
 
-  // Exemple de données - À remplacer par des données réelles
-  const connectedAdmins: Admin[] = [
-    {
-      id: 1,
-      name: "John Doe",
-      role: "Super Admin",
-      avatar: "/admin1.jpg",
-      status: "online",
-      lastActive: "Active now"
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      role: "Administrator",
-      avatar: "/admin2.jpg",
-      status: "away",
-      lastActive: "Away"
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      role: "Moderator",
-      avatar: "/admin3.jpg",
-      status: "offline",
-      lastActive: "Last seen 2h ago"
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      role: "Administrator",
-      avatar: "/admin4.jpg",
-      status: "online",
-      lastActive: "Active now"
-    }
-  ];
-
-  const getStatusColor = (status: Admin['status']) => {
-    switch (status) {
-      case 'online':
-        return 'bg-green-500';
-      case 'away':
-        return 'bg-yellow-500';
-      case 'offline':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getAdminColor = (role: string) => {
-    switch (role.toLowerCase()) {
-      case 'super admin':
-        return 'border-blue-400 bg-blue-50';
-      case 'administrator':
-        return 'border-green-400 bg-green-50';
-      case 'moderator':
-        return 'border-yellow-400 bg-yellow-50';
-      default:
-        return 'border-gray-400 bg-gray-50';
-    }
-  };
-
-  // Calculer les indices pour la pagination
-  const indexOfLastAdmin = currentPage * adminsPerPage;
-  const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
-  const currentAdmins = connectedAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin);
-  const totalPages = Math.ceil(connectedAdmins.length / adminsPerPage);
-
-  // Calculer le nombre d'admins en ligne
-  const onlineAdmins = connectedAdmins.filter(admin => admin.status === 'online').length;
-
+const Menu = ({ isCollapsed, onCollapse }: MenuProps) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Connected Administrators</h2>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">{onlineAdmins}/{connectedAdmins.length} connecting</span>
-          <div className="w-2 h-2 rounded-full bg-green-500"></div>
-        </div>
-      </div>
+    <div className={`mt-4 text-sm ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
+      {/* Collapse Button */}
+      <button
+        onClick={() => onCollapse(!isCollapsed)}
+        className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'px-4'} mb-4`}
+      >
+        <svg 
+          className={`w-6 h-6 text-gray-500 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d={isCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} 
+          />
+        </svg>
+      </button>
 
-      <div className="space-y-2">
-        {currentAdmins.map((admin) => (
-          <div
-            key={admin.id}
-            className={`flex items-center justify-between p-2 rounded-lg border-2 ${getAdminColor(admin.role)} transition-all duration-200`}
-          >
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                  <Image
-                    src={admin.avatar}
-                    alt={admin.name}
-                    width={32}
-                    height={32}
-                    className="object-cover"
+      {menuItems.map((i) => (
+        <div className={`flex flex-col gap-2 ${isCollapsed ? 'w-full items-center' : ''}`} key={i.title}>
+          <span className={`${isCollapsed ? 'hidden' : 'text-gray-400 font-light my-4'}`}>
+            {i.title}
+          </span>
+          {i.items.map((item) => {
+            if (item.visible.includes(role)) {
+              return (
+                <Link
+                  href={item.href}
+                  key={item.label}
+                  className={`flex items-center ${
+                    isCollapsed 
+                      ? 'justify-center w-12 h-12 rounded-full hover:bg-lamaSkyLight' 
+                      : 'justify-start gap-4 py-2 px-4 rounded-md hover:bg-lamaSkyLight w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-lamaSkyLight'
+                  } text-gray-500 transition-colors duration-200`}
+                >
+                  <Image 
+                    src={item.icon} 
+                    alt="" 
+                    width={20} 
+                    height={20} 
+                    className={`${isCollapsed ? 'w-6 h-6' : ''}`}
                   />
-                </div>
-                <div className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border-2 border-white ${getStatusColor(admin.status)}`}></div>
-              </div>
-              <div>
-                <h3 className="text-xs font-medium text-gray-800">{admin.name}</h3>
-                <p className="text-[10px] text-gray-500">{admin.role}</p>
-              </div>
-            </div>
-            <div className="text-[10px] text-gray-500">{admin.lastActive}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
-        <button 
-          onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}
-          className="p-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
-          disabled={currentPage === 1}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setCurrentPage(1)}
-            className={`w-8 h-8 flex items-center justify-center rounded-full text-sm ${
-              currentPage === 1 
-                ? 'bg-blue-600 text-white' 
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            1
-          </button>
-          <button 
-            onClick={() => setCurrentPage(2)}
-            className={`w-8 h-8 flex items-center justify-center rounded-full text-sm ${
-              currentPage === 2 
-                ? 'bg-blue-600 text-white' 
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            2
-          </button>
+                  <span className={`${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                </Link>
+              );
+            }
+            return null;
+          })}
         </div>
-
-        <button 
-          onClick={() => setCurrentPage(currentPage < totalPages ? currentPage + 1 : currentPage)}
-          className="p-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
-          disabled={currentPage === totalPages}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
+      ))}
     </div>
   );
 };
 
-export default ConnectedAdmins; 
+export default Menu;
