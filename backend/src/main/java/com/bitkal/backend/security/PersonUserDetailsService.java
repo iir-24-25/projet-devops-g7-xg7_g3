@@ -1,7 +1,8 @@
 package com.bitkal.backend.security;
 
 import com.bitkal.backend.model.entity.Personne;
-import com.bitkal.backend.model.repository.PersonneRepo;
+import com.bitkal.backend.repository.PersonneRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -14,12 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
-// import com.bitkal.backend.constant.Salle;
-// import com.bitkal.backend.constant.Seances;
-// import com.bitkal.backend.constant.Semestre;
-// import com.bitkal.backend.model.dto.ESPStudentDTO;
-// import com.bitkal.backend.model.entity.Etudiant;
-import com.bitkal.backend.model.repository.EtudiantRepo;
+import com.bitkal.backend.repository.EtudiantRepo;
 
 @Service
 public class EtudiantService {

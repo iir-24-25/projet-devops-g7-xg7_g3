@@ -37,4 +37,8 @@
   "exclude": [
     "node_modules"
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 629017f (feat(API) create elastic search)

@@ -1,4 +1,4 @@
-package com.bitkal.backend.model.repository;
+package com.bitkal.backend.repository;
 
 import java.sql.Date;
 import java.util.List;
@@ -19,4 +19,7 @@ public interface AbsencesRepo extends JpaRepository<Absences, Long> , AbsencesRe
 
     @Query("SELECT COUNT(a) FROM Absences a WHERE a.dateAbsences BETWEEN :startOfMonth AND :endOfMonth" )
     List<Object[]> countAbsencesPerMonth(@Param("startOfMonth") Date startMonth, @Param("endOfMonth") Date endOfMonth);
+
+    @Query("SELECT a FROM Absences a JOIN FETCH a.etudiant e WHERE TYPE(e) = Etudiant")
+    List<Absences> findAllValidAbsences();
 }

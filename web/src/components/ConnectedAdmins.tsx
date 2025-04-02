@@ -1,186 +1,175 @@
 "use client";
 
-import { role } from "@/lib/data";
-import Image from "next/image";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 
-interface MenuProps {
-  isCollapsed: boolean;
-  onCollapse: (collapsed: boolean) => void;
+interface Admin {
+  id: number;
+  name: string;
+  email: string;
+  status: "online" | "away" | "offline";
+  lastActive: string;
+  prenom: string;
+  nom: string;
 }
 
-const menuItems = [
-  {
-    title: "MENU",
-    items: [
-      {
-        icon: "/maison.png",
-        label: "Home",
-        href: "/",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/professeur.png",
-        label: "Teachers",
-        href: "/list/teachers",
-        visible: ["admin", "teacher"],
-      },
-      {
-        icon: "/eleves.png",
-        label: "Students",
-        href: "/list/students",
-        visible: ["admin", "teacher"],
-      },
-      {
-        icon: "/parent.png",
-        label: "Parents",
-        href: "/list/parents",
-        visible: ["admin", "teacher"],
-      },
-      {
-        icon: "/subject.png",
-        label: "Subjects",
-        href: "/list/subjects",
-        visible: ["admin"],
-      },
-      {
-        icon: "/classroom.png",
-        label: "Classes",
-        href: "/list/classes",
-        visible: ["admin", "teacher"],
-      },
-      {
-        icon: "/book.png",
-        label: "Lessons",
-        href: "/list/lessons",
-        visible: ["admin", "teacher"],
-      },
-      {
-        icon: "/exam.png",
-        label: "Exams",
-        href: "/list/exams",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/assignment.png",
-        label: "Assignments",
-        href: "/list/assignments",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/result.png",
-        label: "Results",
-        href: "/list/results",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/attendance.png",
-        label: "Attendance",
-        href: "/list/attendance",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/calendar.png",
-        label: "Events",
-        href: "/list/events",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/message.png",
-        label: "Messages",
-        href: "/list/messages",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/announcement.png",
-        label: "Announcements",
-        href: "/list/announcements",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-  },
-  {
-    title: "OTHER",
-    items: [
-      {
-        icon: "/profile.png",
-        label: "Profile",
-        href: "/profile",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/setting.png",
-        label: "Settings",
-        href: "/settings",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/logout.png",
-        label: "Logout",
-        href: "/logout",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-  },
-];
+interface ApiAdmin {
+  nom: string;
+  prenom: string;
+  email: string;
+}
 
-const Menu = ({ isCollapsed, onCollapse }: MenuProps) => {
+const getRandomColor = () => {
+  const colors = [
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-red-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+    "bg-pink-500",
+    "bg-indigo-500",
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+const ConnectedAdmins = () => {
+  const [connectedAdmins, setConnectedAdmins] = useState<Admin[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const adminsPerPage = 4;
+
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      const authToken = localStorage.getItem("authToken");
+      const adminId = localStorage.getItem("id");
+
+      try {
+        const response = await fetch(`http://localhost:8080/list/admin?id=${adminId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch admins");
+        }
+
+        const apiData: ApiAdmin[] = await response.json();
+        const transformedAdmins: Admin[] = apiData.map((admin, index) => {
+          return {
+            id: index + 1,
+            name: `${admin.prenom} ${admin.nom}`,
+            prenom: admin.prenom,
+            nom: admin.nom,
+            email: admin.email,
+            status: index % 3 === 0 ? "online" : index % 3 === 1 ? "away" : "offline",
+            lastActive: index % 3 === 0 ? "Active now" : index % 3 === 1 ? "Away" : `Last seen ${Math.floor(Math.random() * 5) + 1}h ago`,
+          };
+        });
+
+        setConnectedAdmins(transformedAdmins);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching admins:", error);
+        setError("Failed to load administrators. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchAdmins();
+  }, []);
+
+  const totalPages = Math.ceil(connectedAdmins.length / adminsPerPage);
+  const indexOfLastAdmin = currentPage * adminsPerPage;
+  const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
+  const currentAdmins = connectedAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin);
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, startPage + 2);
+
+    if (endPage - startPage < 2) {
+      startPage = Math.max(1, endPage - 2);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (connectedAdmins.length === 0) return <div className="text-gray-500">No administrators found</div>;
+
   return (
-    <div className={`mt-4 text-sm ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
-      {/* Collapse Button */}
-      <button
-        onClick={() => onCollapse(!isCollapsed)}
-        className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'px-4'} mb-4`}
-      >
-        <svg 
-          className={`w-6 h-6 text-gray-500 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d={isCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} 
-          />
-        </svg>
-      </button>
+    <div className="bg-white rounded-xl shadow-sm p-4">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Connected Administrators</h2>
+      <ul className="space-y-2">
+        {currentAdmins.map((admin) => (
+          <li key={admin.id} className="flex items-center gap-4 p-3 border rounded-lg hover:shadow-lg transition">
+            <div className={`w-10 h-10 flex items-center justify-center rounded-full text-white font-bold ${getRandomColor()}`}>
+              {admin.prenom.charAt(0)}{admin.nom.charAt(0)}
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-800">{admin.name}</span>
+              <p className="text-xs text-gray-500">{admin.email} - {admin.lastActive}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
 
-      {menuItems.map((i) => (
-        <div className={`flex flex-col gap-2 ${isCollapsed ? 'w-full items-center' : ''}`} key={i.title}>
-          <span className={`${isCollapsed ? 'hidden' : 'text-gray-400 font-light my-4'}`}>
-            {i.title}
-          </span>
-          {i.items.map((item) => {
-            if (item.visible.includes(role)) {
-              return (
-                <Link
-                  href={item.href}
-                  key={item.label}
-                  className={`flex items-center ${
-                    isCollapsed 
-                      ? 'justify-center w-12 h-12 rounded-full hover:bg-lamaSkyLight' 
-                      : 'justify-start gap-4 py-2 px-4 rounded-md hover:bg-lamaSkyLight w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-lamaSkyLight'
-                  } text-gray-500 transition-colors duration-200`}
-                >
-                  <Image 
-                    src={item.icon} 
-                    alt="" 
-                    width={20} 
-                    height={20} 
-                    className={`${isCollapsed ? 'w-6 h-6' : ''}`}
-                  />
-                  <span className={`${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
-                </Link>
-              );
-            }
-            return null;
-          })}
+      {/* Pagination */}
+      <div className="mt-4 flex items-center justify-center gap-2">
+        <button
+          onClick={handlePrevious}
+          disabled={currentPage === 1}
+          className="px-3 py-1 text-gray-600 disabled:text-gray-400 hover:bg-gray-100 rounded"
+        >
+          Previous
+        </button>
+
+        <div className="flex gap-1">
+          {getPageNumbers().map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-8 h-8 flex items-center justify-center rounded ${
+                currentPage === page
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
         </div>
-      ))}
+
+        <button
+          onClick={handleNext}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 text-gray-600 disabled:text-gray-400 hover:bg-gray-100 rounded"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
 
-export default Menu;
+export default ConnectedAdmins;
