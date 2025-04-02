@@ -1,18 +1,23 @@
 package com.bitkal.backend.service;
 
-import com.bitkal.backend.model.dto.LoginResponseDTO;
+import com.bitkal.backend.constant.Filiere;
+import com.bitkal.backend.model.dto.InfoAdminDTO;
 import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.model.entity.Personne;
-import com.bitkal.backend.model.repository.PersonneRepo;
+import com.bitkal.backend.repository.PersonneRepo;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,26 +33,39 @@ public class PersonneService {
     @Autowired
     private PersonneRepo personneRepo;
 
-    public Optional<LoginResponseDTO> login(String email, String password) {
-        return personneRepo.findByEmailAndPassword(email, password);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // public Optional<LoginResponseDTO> login(String email, String password) {
+    //     String hashedPassword = passwordEncoder.encode(password);
+    //     return personneRepo.findByEmailAndPassword(email, hashedPassword);
+    // }
+
+    public Optional<Personne> findPersonByEmail(String email) {
+        return personneRepo.findPersonByEmail(email);
+    }
+
+    // Nouvelle méthode pour récupérer le type d'utilisateur
+    public String getUserTypeByEmail(String email) {
+        Optional<Personne> personneOptional = personneRepo.findPersonByEmail(email);
+        if (personneOptional.isPresent()) {
+            return personneOptional.get().getClass().getSimpleName(); // Retourne "Etudiant", "Professuer", etc.
+        }
+        throw new IllegalArgumentException("Utilisateur non trouvé pour l'email : " + email);
     }
 
     public int envoyerEmailAvecNumeroTemporaire(String emailDestinataire) throws MessagingException {
-        // Vérifier si l'email existe dans la base
         if (!findByEmail(emailDestinataire)) {
             System.out.println("Email non trouvé dans la base de données : " + emailDestinataire);
-            return -1; // Retourne -1 si l'email n'existe pas
+            return -1;
         }
 
-        // Générer un numéro temporaire de 6 chiffres
         Random random = new Random();
         int numeroTemporaire = 100000 + random.nextInt(900000);
         String code = String.valueOf(numeroTemporaire);
 
-        // Construire le contenu HTML avec le code inséré
         String htmlContent = buildEmailTemplate(code);
 
-        // Créer un MimeMessage pour le contenu HTML
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -59,7 +77,7 @@ public class PersonneService {
 
             mailSender.send(message);
             System.out.println("Email envoyé avec succès à " + emailDestinataire);
-            return numeroTemporaire; // Retourne le code en cas de succès
+            return numeroTemporaire;
         } catch (MessagingException e) {
             System.err.println("Erreur lors de l'envoi de l'email : " + e.getMessage());
             throw e;
@@ -67,7 +85,6 @@ public class PersonneService {
     }
 
     private String buildEmailTemplate(String code) {
-        // Séparer les chiffres du code
         String[] digits = code.split("");
         String codeHtml = "<div class=\"code-digits\">";
         for (String digit : digits) {
@@ -75,7 +92,6 @@ public class PersonneService {
         }
         codeHtml += "</div>";
 
-        // Construire le HTML en insérant les chiffres dynamiquement
         return """
                 <!DOCTYPE html>
                 <html>
@@ -84,118 +100,21 @@ public class PersonneService {
                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
                   <title>Code de Vérification BitKal</title>
                   <style>
-                    body {
-                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                      line-height: 1.6;
-                      color: #333333;
-                      margin: 0;
-                      padding: 0;
-                      background-color: #f5f5f5;
-                    }
-                    .container {
-                      max-width: 600px;
-                      margin: 0 auto;
-                      background-color: #ffffff;
-                      border-radius: 8px;
-                      overflow: hidden;
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-                    }
-                    .header {
-                      text-align: center;
-                      padding: 30px 0;
-                      background: linear-gradient(135deg, #c7fceb 0%, #a0e0c9 100%);
-                      color: #333333;
-                    }
-                    .logo {
-                      margin-bottom: 15px;
-                      font-size: 28px;
-                      font-weight: bold;
-                    }
-                    .content {
-                      padding: 40px 30px;
-                    }
-                    .code-box {
-                      margin: 30px auto;
-                      text-align: center;
-                      max-width: 320px;
-                    }
-                    .code-digits {
-                      display: flex;
-                      justify-content: center;
-                      gap: 8px;
-                    }
-                    .digit {
-                      width: 40px;
-                      height: 50px;
-                      background-color: #fcfcd4;
-                      border: 1px solid #e5e7c0;
-                      border-radius: 6px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      font-size: 24px;
-                      font-weight: bold;
-                      color: #333333;
-                    }
-                    .instructions {
-                      margin: 30px 0;
-                      padding: 20px;
-                      background-color: #f9fafb;
-                      border-radius: 6px;
-                      border-left: 4px solid #c7fceb;
-                    }
-                    .button-container {
-                      text-align: center;
-                      margin: 30px 0;
-                    }
-                    .button {
-                      display: inline-block;
-                      padding: 12px 28px;
-                      background-color: #c7fceb;
-                      color: #333333;
-                      text-decoration: none;
-                      border-radius: 6px;
-                      font-weight: 600;
-                      transition: background-color 0.2s;
-                      border: 1px solid #a0e0c9;
-                    }
-                    .button:hover {
-                      background-color: #a0e0c9;
-                    }
-                    .expiry {
-                      font-size: 14px;
-                      color: #666666;
-                      text-align: center;
-                      margin-top: 20px;
-                      padding: 10px;
-                      background-color: #fcfcd4;
-                      border-radius: 4px;
-                    }
-                    .footer {
-                      text-align: center;
-                      padding: 20px;
-                      font-size: 12px;
-                      color: #666666;
-                      background-color: #f9fafb;
-                      border-top: 1px solid #e5e7eb;
-                    }
-                    @media only screen and (max-width: 600px) {
-                      .container {
-                        width: 100%;
-                        border-radius: 0;
-                      }
-                      .content {
-                        padding: 30px 20px;
-                      }
-                      .code-digits {
-                        gap: 6px;
-                      }
-                      .digit {
-                        width: 36px;
-                        height: 45px;
-                        font-size: 20px;
-                      }
-                    }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+                    .header { text-align: center; padding: 30px 0; background: linear-gradient(135deg, #c7fceb 0%, #a0e0c9 100%); color: #333333; }
+                    .logo { margin-bottom: 15px; font-size: 28px; font-weight: bold; }
+                    .content { padding: 40px 30px; }
+                    .code-box { margin: 30px auto; text-align: center; max-width: 320px; }
+                    .code-digits { display: flex; justify-content: center; gap: 8px; }
+                    .digit { width: 40px; height: 50px; background-color: #fcfcd4; border: 1px solid #e5e7c0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #333333; }
+                    .instructions { margin: 30px 0; padding: 20px; background-color: #f9fafb; border-radius: 6px; border-left: 4px solid #c7fceb; }
+                    .button-container { text-align: center; margin: 30px 0; }
+                    .button { display: inline-block; padding: 12px 28px; background-color: #c7fceb; color: #333333; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.2s; border: 1px solid #a0e0c9; }
+                    .button:hover { background-color: #a0e0c9; }
+                    .expiry { font-size: 14px; color: #666666; text-align: center; margin-top: 20px; padding: 10px; background-color: #fcfcd4; border-radius: 4px; }
+                    .footer { text-align: center; padding: 20px; font-size: 12px; color: #666666; background-color: #f9fafb; border-top: 1px solid #e5e7eb; }
+                    @media only screen and (max-width: 600px) { .container { width: 100%; border-radius: 0; } .content { padding: 30px 20px; } .code-digits { gap: 6px; } .digit { width: 36px; height: 45px; font-size: 20px; } }
                   </style>
                 </head>
                 <body>
@@ -243,8 +162,9 @@ public class PersonneService {
 
     @Transactional
     public boolean setPasswordByEmail(String email, String password) {
-      int number = personneRepo.setPasswordByEmail(email, password);
-      return number > 0;
+        String hashedPassword = passwordEncoder.encode(password);
+        int number = personneRepo.setPasswordByEmail(email, hashedPassword);
+        return number > 0;
     }
 
     public Map<String, Integer> numberGenderByType(String type) {
@@ -274,11 +194,48 @@ public class PersonneService {
         Map<String, Integer> resultMap = new HashMap<>();
 
         for (Object[] row : results) {
-            String typeName = ((Class<?>) row[0]).getSimpleName(); // TYPE(p)
-            Integer count = ((Number) row[1]).intValue(); // COUNT(p)
+            String typeName = ((Class<?>) row[0]).getSimpleName();
+            Integer count = ((Number) row[1]).intValue();
             resultMap.put(typeName, count);
         }
 
         return resultMap;
+    }
+
+    public Map<String, Integer> findFilierePersonCount() {
+        Pageable pageable = PageRequest.of(0, 25);
+        List<Object[]> results = personneRepo.findFilierePersonCount(pageable);
+        Map<String, Integer> resultMap = new HashMap<>();
+
+        for (Object[] row : results) {
+            String typeName = ((Filiere) row[0]).name();
+            Integer count = ((Number) row[1]).intValue();
+            resultMap.put(typeName, count);
+        }
+
+        return resultMap;
+    }
+
+    // Dans PersonneService.java
+    public Long getUserIdByEmail(String email) {
+        return personneRepo.findPersonByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"))
+                .getId();
+    }
+
+    public InfoAdminDTO getFullNameAndEmailById(Long id){
+      Personne admin = personneRepo.getFullNameAndEmailById(id);
+      InfoAdminDTO infoAdminDTO = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+      return infoAdminDTO;
+    }
+
+    public List<InfoAdminDTO> getListAdmin(Long id){
+      List<Personne> listAdmin = personneRepo.getListAdmin(id);
+      List<InfoAdminDTO> listInfoAdmin = new ArrayList<>();
+      for(Personne admin : listAdmin){
+        InfoAdminDTO infoAdmin = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+        listInfoAdmin.add(infoAdmin);
+      }
+      return listInfoAdmin;
     }
 }

@@ -1,5 +1,6 @@
 package com.bitkal.backend.model.entity;
 
+import com.bitkal.backend.constant.Filiere;
 import com.bitkal.backend.constant.Niveau;
 import com.bitkal.backend.constant.Semestre;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -20,39 +21,38 @@ public class Module {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long __lIdModule;
-
-    @Column(name = "niveau_string", length = 50, nullable = false)
-    private String __sNiveau;
+    private Long id;
 
     @Column(name = "titre", length = 50, nullable = false)
-    private String __sTitre;
+    private String titre;
+
+    @Column(name = "filiere", length = 50, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Filiere filiere;
+
+    @Column(name = "niveau", length = 50, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Niveau niveau;
 
     @Column(name = "semestre")
     @Enumerated(EnumType.STRING)
-    private Semestre __eSemestre;
-
-    @Column(name = "niveau_enum")
-    @Enumerated(EnumType.STRING)
-    private Niveau __eNiveau;
+    private Semestre semestre;
 
     @Column(name = "weekly_hours", nullable = false)
-    private int __iWeeklyHours;
+    private int WeeklyHours;
 
     @Column(name = "is_pratique")
-    private boolean __bIsPratique;
+    private Boolean isPratique;
 
-    @ManyToMany(mappedBy = "__modules")
-    private List<Group> __groups;
-
-    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "module")
     @JsonManagedReference
-    private List<EmploiTemps> __emploiTemps;
+    private List<Cours> cours;
 
-    @ManyToOne
-    @JoinColumn(name = "etablissement_id")
-    private Etablissement __etablissement;
+    @OneToMany(mappedBy = "module")
+    @JsonManagedReference
+    private List<Seance> seances;
 
-    @ManyToOne
-    private Professeur professeur;
+    @ManyToMany(mappedBy = "modules")
+    private List<Group> groups;
+
 }

@@ -1,4 +1,4 @@
-package com.bitkal.backend.model.repository;
+package com.bitkal.backend.repository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -48,7 +48,6 @@ public class AbsencesRepoImpl implements AbsencesRepoCustom {
             LOGGER.severe("Erreur lors de l'insertion de l'absence : " + e.getMessage());
             throw new RuntimeException("Erreur lors de l'insertion de l'absence", e); // Capture et relance une exception
         }
-}
-
+    }
 
 }

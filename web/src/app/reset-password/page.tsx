@@ -1,194 +1,164 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Lock, CheckCircle, XCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ResetPasswordPage() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword)
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
-
-    // Password validation
-    if (password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caractères")
-      setIsLoading(false)
-      return
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
 
-    if (!/[A-Z]/.test(password)) {
-      setError("Le mot de passe doit contenir au moins une lettre majuscule")
-      setIsLoading(false)
-      return
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
     }
 
-    if (!/[0-9]/.test(password)) {
-      setError("Le mot de passe doit contenir au moins un chiffre")
-      setIsLoading(false)
-      return
-    }
+    setLoading(true);
 
-    if (!/[!@#$%^&*]/.test(password)) {
-      setError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)")
-      setIsLoading(false)
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas")
-      setIsLoading(false)
-      return
-    }
-
-    // Récupérer l'email depuis localStorage
-    const email = localStorage.getItem("resetEmail")
-    console.log(email);
-    if (!email) {
-      setError("Aucun email trouvé. Veuillez recommencer le processus.")
-      setIsLoading(false)
-      return
-    }
-
-    // Envoyer la requête au backend
     try {
+      const token = localStorage.getItem('resetToken');
+      if (!token) {
+        throw new Error("No reset token found");
+      }
+
       const response = await fetch("http://localhost:8080/modifierPassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          email,
-          password,
+          email: "", // Le serveur peut récupérer l'email depuis le token
+          password: newPassword
         }),
-      })
+      });
 
-      if (response.ok) {
-        const result = await response.json()
-        if (result === true) {
-          // Nettoyer localStorage après succès
-          localStorage.removeItem("resetCode")
-          localStorage.removeItem("resetEmail")
-          localStorage.removeItem("resetCodeTimestamp")
-          router.push("/reset-success")
-        } else {
-          setError("Échec de la mise à jour du mot de passe. Veuillez réessayer.")
-        }
-      } else {
-        const errorText = await response.text()
-        setError(errorText || "Une erreur s'est produite lors de la réinitialisation.")
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Password reset failed");
       }
+
+      setSuccess("Password updated successfully!");
+      localStorage.removeItem('resetToken');
+      
+      // Rediriger vers la page de login après 2 secondes
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     } catch (err) {
-      setError("Une erreur s'est produite. Veuillez vérifier votre connexion.")
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary-light to-secondary-light px-4 py-12">
-      <Card className="w-full max-w-md border-t-4 border-t-primary shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-primary">Définir un nouveau mot de passe</CardTitle>
-          <CardDescription>Veuillez créer un nouveau mot de passe sécurisé pour votre compte</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700">
-                Nouveau mot de passe
-              </Label>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-xl"
+      >
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Reset Your Password
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Please enter your new password
+          </p>
+        </div>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 bg-red-50 text-red-600 p-3 rounded-md"
+            >
+              <XCircle className="h-5 w-5" />
+              <span>{error}</span>
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 bg-green-50 text-green-600 p-3 rounded-md"
+            >
+              <CheckCircle className="h-5 w-5" />
+              <span>{success}</span>
+            </motion.div>
+          )}
+
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
+                New Password
+              </label>
               <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border-gray-300 focus:border-primary focus:ring-primary"
+                  id="new-password"
+                  name="new-password"
+                  type="password"
                   required
+                  className="pl-10"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-primary hover:text-primary-hover"
-                  onClick={togglePasswordVisibility}
-                >
-                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                  <span className="sr-only">
-                    {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                  </span>
-                </Button>
               </div>
-              <p className="text-xs text-gray-500">
-                Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, un chiffre et un caractère
-                spécial.
-              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password" className="text-gray-700">
-                Confirmer le mot de passe
-              </Label>
+            <div>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password
+              </label>
               <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirm-password"
+                  type="password"
+                  required
+                  className="pl-10"
+                  placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-gray-300 focus:border-primary focus:ring-primary"
-                  required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-primary hover:text-primary-hover"
-                  onClick={toggleConfirmPasswordVisibility}
-                >
-                  {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                  <span className="sr-only">
-                    {showConfirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                  </span>
-                </Button>
               </div>
             </div>
+          </div>
 
-            {error && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">{error}</div>
-            )}
-
+          <div>
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-hover text-white"
-              disabled={isLoading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={loading}
             >
-              {isLoading ? "En cours..." : "Réinitialiser le mot de passe"}
+              {loading ? "Updating..." : "Update Password"}
             </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        </form>
+      </motion.div>
     </div>
-  )
+  );
 }

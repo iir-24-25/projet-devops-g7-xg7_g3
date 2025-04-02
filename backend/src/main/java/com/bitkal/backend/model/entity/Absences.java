@@ -1,14 +1,12 @@
 package com.bitkal.backend.model.entity;
 
-import java.util.Date;
 import com.bitkal.backend.constant.Salle;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * Represents an absence record for a student in the system.
- */
+import java.util.Date;
+
 @Entity
 @Table(name = "absences")
 @Data
@@ -22,30 +20,36 @@ public class Absences {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "etudiant_id")
-    @JsonBackReference
-    private Etudiant __etudiant;
-
     @Column(name = "date_absence")
-    private Date __dateAbsences;
+    private Date dateAbsences;
 
-    @Builder.Default
-    @Column(name = "is_justified")
-    private Boolean __bIsJustif = false;
+    @Column(name = "is_justif")
+    private Boolean isJustif;
 
-    @Column(name = "description", nullable = true)
-    private String __sDesciption;
+    @ManyToOne
+    @JoinColumn(name = "etudiant_id", referencedColumnName = "id")
+    @JsonBackReference
+    private Etudiant etudiant;
+
+    @ManyToOne
+    @JoinColumn(name = "seance_id")
+    private Seance seance;
+
+    @OneToOne(mappedBy = "absences")
+    private Notifications notification;
+
+    @OneToOne(mappedBy = "absence")
+    private Justification justification;
 
     @Column(name = "salle")
     @Enumerated(EnumType.STRING)
-    private Salle __eSalle;
+    private Salle salle;
 
-    @ManyToOne
-    @JoinColumn(name = "module_id")
-    private Module __module;
-
-    @ManyToOne
-    @JoinColumn(name = "emploi_temps_id")
-    private EmploiTemps __emploiTemps;
+    // Ajout de la validation dans le setter
+    public void setEtudiant(Etudiant etudiant) {
+        if (etudiant != null && !(etudiant instanceof Etudiant)) {
+            throw new IllegalArgumentException("etudiant must be an instance of Etudiant, got: " + etudiant.getClass().getName());
+        }
+        this.etudiant = etudiant;
+    }
 }

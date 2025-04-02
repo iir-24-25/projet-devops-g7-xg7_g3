@@ -2,9 +2,10 @@ package com.bitkal.backend.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.sql.Blob;
+import java.util.List;
 
 import com.bitkal.backend.constant.Gender;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -21,31 +22,40 @@ public abstract class Personne {
     protected Long id;
 
     @Column(name = "nom", length = 50, nullable = false)
-    protected String _sNom;
+    protected String som;
 
     @Column(name = "prenom", length = 50, nullable = false)
-    protected String _sPrenom;
+    protected String prenom;
 
     @Column(name = "email", length = 100, nullable = false, unique = true)
-    protected String _sEmail;
+    protected String email;
 
     @Column(name = "password", length = 100, nullable = false)
-    protected String _sPassword;
+    protected String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 6, nullable = false)
-    protected Gender _eGender = Gender.MALE;
+    protected Gender gender = Gender.MALE;
 
     @Column(name = "ville", length = 25, nullable = true)
-    protected String _sVille;
+    protected String ville;
 
     @Column(name = "tel", length = 12, nullable = true)
-    protected String _sTel;
+    protected String tel;
 
+    @Lob
     @Column(name = "image")
-    protected Blob _blImage;
+    protected byte[] image;
+
+    @Lob
+    @Column(name = "emprunt", nullable = true)
+    protected byte[] emprunt;
 
     @Column(name = "is_login")
-    private boolean _isLogin;
+    protected boolean isLogin;
+
+    @OneToMany(mappedBy = "personne")
+    @JsonManagedReference
+    protected List<Notifications> notifications;
 
 }

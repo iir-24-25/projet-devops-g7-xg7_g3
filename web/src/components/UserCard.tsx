@@ -4,18 +4,28 @@ const UserCard = ({ type, style, imageSrc, alt, width, height, nbretudiant, nbrp
   const number = nbretudiant || nbrprof || nbrparent || nbrstaff;
 
   return (
-    <div className="rounded-2xl p-4 flex-1 min-w-[130px]" style={style}>
-      <div className="flex justify-between items-center">
-        <span className="text-[10px] bg-white px-2 py-1 rounded-full text-green-600">
-          2024/25
+    <div
+      className="flex items-center justify-between p-4 rounded-xl shadow-sm"
+      style={style}
+    >
+      <div className="flex flex-col">
+        <span className="text-sm text-gray-500">{type}</span>
+        <span className="text-2xl font-semibold">
+          {type === "student" && nbretudiant}
+          {type === "teacher" && nbrprof}
+          {type === "parent" && nbrparent}
+          {type === "staff" && nbrstaff}
         </span>
-        <Image src="/more.png" alt="more options" width={20} height={20} />
       </div>
-      <div className="flex items-center justify-between my-4">
-        <h1 className="text-2xl font-semibold">{number}</h1>
-        <Image src={imageSrc} alt={alt} width={width} height={height} className="ml-2" />
+      <div className="w-16 h-16 flex items-center justify-center">
+        <Image
+          src={imageSrc}
+          alt={alt}
+          width={width}
+          height={height}
+          className="object-contain"
+        />
       </div>
-      <h2 className="capitalize text-sm font-medium text-gray-500">{type}s</h2>
     </div>
   );
 };

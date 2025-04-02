@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { GraduationCap, Fingerprint, User, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import api from '@/lib/api';
+import axios from "axios";
 
 // 3D school-themed images for the slideshow
 const slideImages = [
@@ -63,43 +65,71 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
+    // Input validation
     if (!email || !password) {
-      setError("Please enter both email and password");
+      setError("Veuillez saisir l'email et le mot de passe");
       return;
     }
-
+  
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError("Format d'email invalide");
+      return;
+    }
+  
+    if (password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+  
     setLoading(true);
     setError(null);
-
+  
     try {
-      const response = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await api.post('/login', { 
+        email, 
+        password 
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Login failed");
+  
+      const { token, userType, isLogin, userId } = response.data;
+  
+      if (isLogin === false || isLogin === 0) {
+        localStorage.setItem('resetToken', token);
+        router.push("/reset-password");
+        return;
       }
+  
+      // Store token
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('id', userId);
 
-      const data = await response.json();
-      console.log("Login successful:", data);
-
-      const userType = data.type;
-      if (userType.includes("Professuer")) {
-        router.push("/prof");
-      } else if (userType.includes("Etudiant")) {
-        router.push("/admin");
-      } else if (userType.includes("Parents")) {
-        router.push("/parents");
+      // Redirect based on user type
+      switch(true) {
+        case userType.includes("Professeur"):
+          router.push("/prof");
+          break;
+        case userType.includes("Admin"):
+          router.push("/admin");
+          break;
+        case userType.includes("Parents"):
+          router.push("/parents");
+          break;
+        default:
+          router.push("/");
+      }
+  
+    } catch (error) {
+      // Type-safe error handling
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || "Erreur de connexion";
+        setError(message);
+        if (error.response?.status === 401) {
+          setError("Email ou mot de passe incorrect");
+        }
+      } else if (error instanceof Error) {
+        setError(error.message);
       } else {
-        setError("Unknown user type");
+        setError("Une erreur inconnue est survenue");
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }

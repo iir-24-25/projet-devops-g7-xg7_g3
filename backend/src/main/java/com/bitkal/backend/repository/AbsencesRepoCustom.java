@@ -1,4 +1,4 @@
-package com.bitkal.backend.model.repository;
+package com.bitkal.backend.repository;
 
 import com.bitkal.backend.constant.Salle;
 
