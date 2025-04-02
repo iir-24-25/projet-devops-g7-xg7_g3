@@ -4,8 +4,9 @@ import RNBluetoothClassic from 'react-native-bluetooth-classic';
 export const requestBluetoothPermission = async () => {
   if (Platform.OS === 'android') {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      const permissionGranted = await requestBluetoothPermission();
+      console.log('Permission Bluetooth accordée :', permissionGranted);
+              PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
         {
           title: 'Permission Bluetooth',
           message: 'Cette application a besoin d\'accéder au Bluetooth pour récupérer l\'adresse MAC.',
@@ -13,7 +14,7 @@ export const requestBluetoothPermission = async () => {
           buttonNegative: 'Annuler',
           buttonPositive: 'OK',
         }
-      );
+      
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (err) {
       console.warn(err);
