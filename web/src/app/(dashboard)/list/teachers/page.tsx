@@ -1,4 +1,5 @@
 "use client";
+
 import Calendar from "@/components/Calendar";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
@@ -8,13 +9,21 @@ import { role, teachersData } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 
-const TeacherListPage = () => {
+// ✅ Déclaration du type Teacher
+type Teacher = {
+  id: string;
+  photo: string;
+  name: string;
+  email: string;
+  teacherId: string;
+  subjects: string[];
+  classes: string[];
+  phone: string;
+  address: string;
+};
 
-  <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-  {/* Calendar */}
-  
-</div>
-  // Define the columns for the Table component
+const TeacherListPage = () => {
+  // ✅ Colonnes du tableau
   const columns = [
     { header: "Photo", accessor: "photo" },
     { header: "Name", accessor: "name" },
@@ -27,6 +36,7 @@ const TeacherListPage = () => {
     { header: "Actions", accessor: "actions" },
   ];
 
+  // ✅ Fonction de rendu des lignes
   const renderRow = (item: Teacher) => (
     <tr
       key={item.id}
@@ -46,8 +56,8 @@ const TeacherListPage = () => {
         </div>
       </td>
       <td className="hidden md:table-cell">{item.teacherId}</td>
-      <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell">{item.classes.join(",")}</td>
+      <td className="hidden md:table-cell">{item.subjects.join(", ")}</td>
+      <td className="hidden md:table-cell">{item.classes.join(", ")}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
@@ -58,7 +68,8 @@ const TeacherListPage = () => {
             </button>
           </Link>
           {role === "admin" && (
-            <FormModal table="teacher" type="delete" id={item.id} />
+            // ✅ Conversion de item.id en number
+            <FormModal table="teacher" type="delete" id={Number(item.id)} />
           )}
         </div>
       </td>
