@@ -75,13 +75,6 @@ const AdminPage = () => {
 
   return (
     <div className="flex h-screen">
-<<<<<<< HEAD
-      {/* Sidebar */}
-      
-
-      {/* Main Content */}
-=======
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
       <div className="flex-1 flex flex-col">
         <Navbar />
         <div className="flex-1 p-4 flex gap-4 flex-col md:flex-row overflow-auto">
@@ -143,87 +136,12 @@ const AdminPage = () => {
                 <FinanceChart />
               </div>
             </div>
-<<<<<<< HEAD
-          ) : (
-            <>
-              {/* LEFT */}
-              <div className="w-full lg:w-2/3 flex flex-col gap-8">
-                {/* USER CARDS */}
-                <div className="flex gap-4 justify-between flex-wrap">
-                  <UserCard 
-                    type="student" 
-                    style={{ backgroundColor: '#c7fceb' }} 
-                    nbretudiant={(studentData?.count ?? 0).toString()} // Convert number to string
-                    imageSrc="/stud.gif" 
-                    alt="Students" 
-                    width={100} 
-                    height={50} 
-                  />
-                  <UserCard 
-                    type="teacher" 
-                    style={{ backgroundColor: '#FAD3D4' }} 
-                    nbrprof={(teacherData?.count ?? 0).toString()} // Convert number to string
-                    imageSrc="/prof.gif" 
-                    alt="Teachers" 
-                    width={70} 
-                    height={50} 
-                  />
-                  <UserCard 
-                    type="parent" 
-                    style={{ backgroundColor: '#fcfcd4' }} 
-                    nbrparent={(parentData?.count ?? 0).toString()} // Convert number to string
-                    imageSrc="/paren.gif" 
-                    alt="Parents" 
-                    width={80} 
-                    height={60} 
-                  />
-                  <UserCard 
-                    type="staff" 
-                    style={{ backgroundColor: '#D3F7FA' }} 
-                    nbrstaff={(staffData?.count ?? 0).toString()} // Convert number to string
-                    imageSrc="/staf.gif" 
-                    alt="Staff" 
-                    width={90} 
-                    height={120} 
-                  />
-                </div>
-                {/* MIDDLE CHARTS */}
-                <div className="flex gap-4 flex-col lg:flex-row">
-                  <div className="w-full lg:w-1/3 h-[450px]">
-                    <CountChart />
-                  </div>
-                  <div className="w-full lg:w-2/3 h-[450px]">
-                    <AttendanceChart />
-                  </div>
-                </div>
-                {/* BOTTOM CHART */}
-                <div className="w-full">
-                  <DailyAssignments />
-                </div>
-                <div className="w-full h-[450px]">
-                  <PieChartComponent />
-                </div>
-                <div className="w-full h-[500px]">
-                  <FinanceChart />
-                </div>
-              </div>
-              {/* RIGHT */}
-              <div className="w-full lg:w-1/3 flex flex-col gap-8">
-                {/* <ConnectedAdmins /> */} 
-                <EventCalendar />
-                <Announcements />
-                
-              </div>
-            </>
-          )}
-=======
             <div className="w-full lg:w-1/3 flex flex-col gap-8">
               <ConnectedAdmins />
               <EventCalendar />
               <Announcements />
             </div>
           </>
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
         </div>
       </div>
     </div>
