@@ -16,6 +16,7 @@ import {
   MbscDatepickerChangeEvent,
   MbscResource,
   localeFr,
+  MbscPopupButton,
 } from "@mobiscroll/react";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css"; // Import Mobiscroll styles
 import "./Calendar.css"; // Import the custom CSS
@@ -89,7 +90,7 @@ const myResources: MbscResource[] = [
 
 const viewSettings = {
   timeline: {
-    type: "week",
+    type: "week" as "week",
     startDay: 1,
     endDay: 5,
   },
@@ -157,6 +158,23 @@ const Calendar = () => {
     setPopupOpen(false);
   }, []);
 
+  const popupButtons: (string | MbscPopupButton)[] = [
+    "cancel",
+    {
+      text: isEdit ? "Save" : "Add",
+      handler: saveEvent,
+    },
+  ];
+  
+  if (isEdit) {
+    popupButtons.push({
+      text: "Delete",
+      handler: () => deleteEvent(tempEvent!),
+      color: "danger",
+    });
+  }
+  
+
   return (
     <div className="calendar-container">
       <Eventcalendar
@@ -172,23 +190,11 @@ const Calendar = () => {
       />
       <Popup
         isOpen={isPopupOpen}
-        buttons={[
-          "cancel",
-          {
-            text: isEdit ? "Save" : "Add",
-            handler: saveEvent,
-          },
-          isEdit
-            ? {
-                text: "Delete",
-                handler: () => deleteEvent(tempEvent!),
-                color: "danger",
-              }
-            : null,
-        ].filter(Boolean)} // Filter out null or false values
+        buttons={popupButtons}
         responsive={responsivePopup}
         onClose={handlePopupClose}
       >
+
         <div>
           <Input
             label="Title"
