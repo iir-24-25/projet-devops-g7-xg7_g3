@@ -88,12 +88,7 @@ const AdminPage = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className={`hidden lg:block ${isCollapsed ? 'w-20' : 'w-64'} bg-gray-800 transition-all duration-300`}>
-        <Menu 
-          isCollapsed={isCollapsed} 
-          onCollapse={(collapsed: boolean) => setIsCollapsed(collapsed)} 
-        />
-      </div>
+      
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -171,9 +166,10 @@ const AdminPage = () => {
               </div>
               {/* RIGHT */}
               <div className="w-full lg:w-1/3 flex flex-col gap-8">
-                <ConnectedAdmins />
+                {/* <ConnectedAdmins /> */} 
                 <EventCalendar />
                 <Announcements />
+                
               </div>
             </>
           )}

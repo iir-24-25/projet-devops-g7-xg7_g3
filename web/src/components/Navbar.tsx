@@ -73,26 +73,7 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
   return (
     <div className="flex items-center justify-between px-6 py-3 bg-white border-b">
       {/* Left Side - Menu Icon */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => onCollapse?.(!isCollapsed)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
-        >
-          <svg 
-            className={`w-6 h-6 text-gray-500 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d={isCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} 
-            />
-          </svg>
-        </button>
-      </div>
+     
 
       {/* Center - Search Bar */}
       <div className="flex-1 max-w-xl mx-8">
@@ -110,9 +91,7 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
 
       {/* Right Side - Support, Notifications, Theme, and Profile */}
       <div className="flex items-center gap-4">
-        <button className="px-4 py-2 text-sm font-medium hover:bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          Get Support
-        </button>
+        
 
         {/* Notifications */}
         <div className="relative">

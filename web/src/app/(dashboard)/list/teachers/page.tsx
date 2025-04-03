@@ -11,9 +11,7 @@ const TeacherListPage = () => {
 
   <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
   {/* Calendar */}
-  <div className="mb-6" style={{ height: "600px" }}> {/* Ensure enough height */}
-    <Calendar />
-  </div>
+  
 </div>
   // Define the columns for the Table component
   const columns = [

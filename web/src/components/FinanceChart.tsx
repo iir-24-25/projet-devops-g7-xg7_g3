@@ -52,28 +52,45 @@ const calculatePresence = (presenceData: Record<string, number>, absenceData: Re
 const FinanceChart = () => {
   const [data, setData] = useState<ChartData[]>([]);
 
+  // Utiliser useEffect avec un tableau de dépendances vide pour éviter les boucles infinies
   useEffect(() => {
-    // Fetch les données de présence et d'absences
-    const fetchData = async () => {
-      try {
-        const presenceResponse = await fetch("http://localhost:8080/presence-par-mois");
-        const presenceData = await presenceResponse.json();
-
-        const absenceResponse = await fetch("http://localhost:8080/Absences/month");
-        const absenceData = await absenceResponse.json();
-
-        // Calculer la présence
-        const formattedData = calculatePresence(presenceData, absenceData);
-
-        // Mettre à jour l'état avec les données calculées
-        setData(formattedData);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-      }
+    // Données statiques pour la présence et l'absence
+    const presenceData = {
+      JANVIER: 1000,
+      FÉVRIER: 1100,
+      MARS: 900,
+      AVRIL: 950,
+      MAI: 1050,
+      JUIN: 1150,
+      JUILLET: 1200,
+      AOÛT: 950,
+      SEPTEMBRE: 980,
+      OCTOBRE: 1000,
+      NOVEMBRE: 1020,
+      DÉCEMBRE: 1100,
     };
 
-    fetchData();
-  }, []);
+    const absenceData = {
+      JANVIER: 100,
+      FÉVRIER: 150,
+      MARS: 100,
+      AVRIL: 120,
+      MAI: 130,
+      JUIN: 140,
+      JUILLET: 130,
+      AOÛT: 100,
+      SEPTEMBRE: 120,
+      OCTOBRE: 110,
+      NOVEMBRE: 115,
+      DÉCEMBRE: 140,
+    };
+
+    // Calculer la présence à partir des données statiques
+    const formattedData = calculatePresence(presenceData, absenceData);
+
+    // Mettre à jour l'état avec les données calculées
+    setData(formattedData);
+  }, []); // tableau de dépendances vide, s'exécute uniquement au montage du composant
 
   return (
     <div className="bg-white rounded-xl w-full h-full p-4">
