@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter for redirection
+import axios from "axios"; // Import axios
 import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
 import CountChart from "@/components/CountChart";
@@ -15,16 +16,7 @@ import ConnectedAdmins from "@/components/ConnectedAdmins";
 
 const AdminPage = () => {
   const router = useRouter(); // Initialize router for navigation
-  const authToken = localStorage.getItem("authToken");
-
-  // Redirect to login if no authToken (uncommented and fixed)
-  useEffect(() => {
-    if (!authToken) {
-      router.push("/login");
-    }
-  }, [authToken, router]); // Added dependencies for this effect
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [authToken, setAuthToken] = useState<string | null>(null); // Store token state
   const [counts, setCounts] = useState({
     studentCount: 0,
     teacherCount: 0,
@@ -33,34 +25,40 @@ const AdminPage = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // Fetch authToken from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    setAuthToken(token); // Set authToken if present
+  }, []);
+
+  // Redirect to login if no authToken
+  useEffect(() => {
+    if (!authToken) {
+      router.push("/login");
+    }
+  }, [authToken, router]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/numberPersonneByType", {
-          method: "GET",
+        const response = await axios.get("http://localhost:8080/numberPersonneByType", {
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
-        const data = await response.json();
-
-        // Map API response to our state
+        // Set the counts based on the API response
         setCounts({
-          studentCount: data.Etudiant || 0,
-          teacherCount: data.Professeur || 0,
-          parentCount: data.Parents || 0,
-          staffCount: data.Admin || 0,
+          studentCount: response.data.Etudiant || 0,
+          teacherCount: response.data.Professeur || 0,
+          parentCount: response.data.Parents || 0,
+          staffCount: response.data.Admin || 0,
         });
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Fallback to default values if API fails
+        // Fallback to default values if the API request fails
         setCounts({
           studentCount: 1200,
           teacherCount: 150,
@@ -76,7 +74,7 @@ const AdminPage = () => {
     } else {
       setLoading(false); // Stop loading if no token
     }
-  }, [authToken]); // Added authToken as a dependency
+  }, [authToken]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -144,7 +142,7 @@ const AdminPage = () => {
               <FinanceChart />
             </div>
           </div>
-          <div className="w-full lg:w-1/3 flex flex= flex-col gap-8">
+          <div className="w-full lg:w-1/3 flex flex-col gap-8">
             <ConnectedAdmins />
             <EventCalendar />
             <Announcements />
