@@ -37,7 +37,7 @@ public class Seance {
     @OneToMany(mappedBy = "seance")
     private List<Absences> absences;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "module_id")
     @JsonBackReference
     private Module module;

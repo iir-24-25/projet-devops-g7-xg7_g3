@@ -90,7 +90,7 @@ export default function LoginPage() {
         password 
       });
   
-      const { token, userType, isLogin } = response.data;
+      const { token, userType, isLogin, userId } = response.data;
   
       if (isLogin === false || isLogin === 0) {
         localStorage.setItem('resetToken', token);
@@ -100,7 +100,8 @@ export default function LoginPage() {
   
       // Store token
       localStorage.setItem('authToken', token);
-  
+      localStorage.setItem('id', userId);
+
       // Redirect based on user type
       switch(true) {
         case userType.includes("Professeur"):
@@ -113,7 +114,7 @@ export default function LoginPage() {
           router.push("/parents");
           break;
         default:
-          router.push("/dashboard");
+          router.push("/");
       }
   
     } catch (error) {

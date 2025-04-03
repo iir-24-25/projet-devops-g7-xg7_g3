@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Salle;
-import com.bitkal.backend.model.repository.AbsencesRepo;
+import com.bitkal.backend.repository.AbsencesRepo;
 
 import jakarta.transaction.Transactional;
 

@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 
 interface NavbarProps {
   isCollapsed?: boolean;
   onCollapse?: (collapsed: boolean) => void;
 }
 
+interface AdminInfo {
+  nom: string;
+  prenom: string;
+  email: string;
+}
+
 const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [adminInfo, setAdminInfo] = useState<AdminInfo>({
+    nom: "User",
+    prenom: "",
+    email: "user@example.com"
+  });
+  const [loading, setLoading] = useState(true);
 
   const notifications = [
+    // ... (keeping the same notifications array as before)
     {
       id: 1,
       type: 'warning',
@@ -41,7 +56,40 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
     }
   ];
 
+  useEffect(() => {
+    const fetchAdminInfo = async () => {
+      const authToken = localStorage.getItem("authToken");
+      // Replace '1' with actual admin ID from your auth system
+      const adminId = localStorage.getItem("id");
+
+      try {
+        const response = await fetch(`http://localhost:8080/info/admin?id=${adminId}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch admin info");
+        }
+
+        const data: AdminInfo = await response.json();
+        setAdminInfo(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching admin info:", error);
+        setLoading(false);
+        // Keep default values if fetch fails
+      }
+    };
+
+    fetchAdminInfo();
+  }, []);
+
   const getNotificationIcon = (type: string) => {
+    // ... (keeping the same getNotificationIcon function as before)
     switch (type) {
       case 'warning':
         return (
@@ -70,12 +118,38 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex items-center justify-between px-6 py-3 bg-white border-b">
+<<<<<<< HEAD
       {/* Left Side - Menu Icon */}
      
+=======
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onCollapse?.(!isCollapsed)}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
+        >
+          <svg 
+            className={`w-6 h-6 text-gray-500 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d={isCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} 
+            />
+          </svg>
+        </button>
+      </div>
+>>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
 
-      {/* Center - Search Bar */}
       <div className="flex-1 max-w-xl mx-8">
         <div className="relative">
           <input
@@ -89,11 +163,9 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
         </div>
       </div>
 
-      {/* Right Side - Support, Notifications, Theme, and Profile */}
       <div className="flex items-center gap-4">
         
 
-        {/* Notifications */}
         <div className="relative">
           <button 
             className="relative p-2 hover:bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -107,7 +179,6 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
             </div>
           </button>
 
-          {/* Notifications Dropdown */}
           {isNotificationsOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border py-2 z-50">
               <div className="flex items-center justify-between px-4 pb-2 border-b">
@@ -142,32 +213,30 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
             </div>
           )}
         </div>
-        
-        {/* Profile Menu */}
+
         <div className="relative">
           <button 
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className="cursor-pointer"
           >
             <img
-              src="https://ui-avatars.com/api/?name=Mithun+Ray&background=random"
+              src={`https://ui-avatars.com/api/?name=${adminInfo.prenom}+${adminInfo.nom}&background=random`}
               alt="Profile"
               className="w-8 h-8 rounded-full"
             />
           </button>
 
-          {/* Dropdown Menu */}
           {isProfileMenuOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border py-1 z-50">
               <div className="flex items-center gap-3 p-3 border-b">
                 <img
-                  src="https://ui-avatars.com/api/?name=Mithun+Ray&background=random"
+                  src={`https://ui-avatars.com/api/?name=${adminInfo.prenom}+${adminInfo.nom}&background=random`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full"
                 />
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">Mithun Ray</span>
-                  <span className="text-xs text-gray-500">mithun.ray@example.com</span>
+                  <span className="text-sm font-medium">{`${adminInfo.prenom} ${adminInfo.nom}`}</span>
+                  <span className="text-xs text-gray-500">{adminInfo.email}</span>
                 </div>
               </div>
               
@@ -198,7 +267,6 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
                   Settings
                 </button>
 
-                {/* Theme Toggle */}
                 <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <div className="flex items-center gap-3">
                     <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

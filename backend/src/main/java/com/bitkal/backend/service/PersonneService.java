@@ -1,9 +1,11 @@
 package com.bitkal.backend.service;
 
 import com.bitkal.backend.constant.Filiere;
+import com.bitkal.backend.model.dto.InfoAdminDTO;
 import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.model.entity.Personne;
-import com.bitkal.backend.model.repository.PersonneRepo;
+import com.bitkal.backend.repository.PersonneRepo;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +36,6 @@ public class PersonneService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // public Optional<LoginResponseDTO> login(String email, String password) {
-    //     String hashedPassword = passwordEncoder.encode(password);
-    //     return personneRepo.findByEmailAndPassword(email, hashedPassword);
-    // }
 
     public Optional<Personne> findPersonByEmail(String email) {
         return personneRepo.findPersonByEmail(email);
@@ -218,5 +217,21 @@ public class PersonneService {
         return personneRepo.findPersonByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"))
                 .getId();
+    }
+
+    public InfoAdminDTO getFullNameAndEmailById(Long id){
+      Personne admin = personneRepo.getFullNameAndEmailById(id);
+      InfoAdminDTO infoAdminDTO = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+      return infoAdminDTO;
+    }
+
+    public List<InfoAdminDTO> getListAdmin(Long id){
+      List<Personne> listAdmin = personneRepo.getListAdmin(id);
+      List<InfoAdminDTO> listInfoAdmin = new ArrayList<>();
+      for(Personne admin : listAdmin){
+        InfoAdminDTO infoAdmin = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+        listInfoAdmin.add(infoAdmin);
+      }
+      return listInfoAdmin;
     }
 }

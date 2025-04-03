@@ -1,5 +1,6 @@
 package com.bitkal.backend.controller;
 
+import com.bitkal.backend.model.dto.InfoAdminDTO;
 import com.bitkal.backend.model.dto.LoginDTO;
 import com.bitkal.backend.model.dto.PasswordRequestDTO;
 import com.bitkal.backend.security.JwtUtils;
@@ -15,7 +16,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @RestController
 public class PersonneController {
@@ -112,5 +118,15 @@ public class PersonneController {
     public ResponseEntity<Map<String, Integer>> findFilierePersonCount() {
         Map<String, Integer> result = personneService.findFilierePersonCount();
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/info/admin")
+    public InfoAdminDTO getFullNameAndEmailById(@RequestParam Long id) {
+        return personneService.getFullNameAndEmailById(id);
+    }
+    
+    @GetMapping("/list/admin")
+    public List<InfoAdminDTO> getListAdmin(@RequestParam long id ){
+        return personneService.getListAdmin(id);
     }
 }

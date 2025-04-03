@@ -1,3 +1,144 @@
-.{
-    color: #39f198;
-}
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Platform, Dimensions, Image } from 'react-native';
+import { Icon } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+import { requestBluetoothPermission, getMacAddress } from '../services/BluetoothService';
+import { storeMacAddressInFile, checkMacAddressFile } from '../services/FileService';
+import LinearGradient from 'react-native-linear-gradient';
+
+const { width, height } = Dimensions.get('window');
+
+// Tester email et mot de passe
+const TEST_EMAIL = 'ouiam@etudiant.com';
+const TEST_PASSWORD = '123456789';
+
+const LoginScreen = () => {
+  const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [secureEntry, setSecureEntry] = useState(true);
+  const [macAddress, setMacAddress] = useState(null);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  useEffect(() => {
+    requestBluetoothPermission(); // Demander la permission Bluetooth dès l'entrée de l'écran
+  }, []);
+
+  const handleLogin = async () => {
+    // Vérification de l'email et mot de passe
+    if (email !== TEST_EMAIL || password !== TEST_PASSWORD) {
+      Alert.alert('Erreur', 'Email ou mot de passe incorrect');
+      return;
+    }
+
+    // Récupérer l'adresse MAC via Bluetooth
+    const mac = await getMacAddress();
+    if (!mac) {
+      Alert.alert('Erreur', 'Impossible de récupérer l\'adresse MAC');
+      return;
+    }
+
+    setMacAddress(mac); // Sauvegarde de l'adresse MAC dans l'état
+
+    // Vérification si l'adresse MAC est déjà enregistrée
+    const fileExists = await checkMacAddressFile(mac);
+    if (fileExists) {
+      Alert.alert('Succès', 'Adresse MAC déjà enregistrée, redirection...');
+      navigation.replace('InterfacePrincipale'); // Si l'adresse MAC existe déjà, on redirige
+    } else {
+      await storeMacAddressInFile(mac); // Si l'adresse MAC n'existe pas, on la stocke
+      Alert.alert('Succès', `Nouvelle adresse MAC ${mac} enregistrée.`);
+      navigation.replace('InterfacePrincipale'); // Redirige après avoir enregistré
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Image source={require('../Images/dd.png')} style={styles.logo} />
+      </View>
+
+      <Text style={styles.welcomeText}>Welcome back</Text>
+      <Text style={styles.subtitle}>Manage your school attendance efficiently</Text>
+
+      <View style={styles.inputContainer}>
+        <Icon name="email" type="material" size={28} color="gray" />
+        <TextInput
+          style={[styles.textInput, isEmailFocused && styles.focusedInput]}
+          placeholder="Enter your email"
+          placeholderTextColor="gray"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          onFocus={() => setIsEmailFocused(true)}
+          onBlur={() => setIsEmailFocused(false)}
+        />
+        <View style={[styles.inputUnderline, isEmailFocused && styles.focusedUnderline]} />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Icon name="lock" type="material" size={28} color="gray" />
+        <TextInput
+          style={[styles.textInput, isPasswordFocused && styles.focusedInput]}
+          placeholder="Enter your password"
+          placeholderTextColor="gray"
+          secureTextEntry={secureEntry}
+          value={password}
+          onChangeText={setPassword}
+          onFocus={() => setIsPasswordFocused(true)}
+          onBlur={() => setIsPasswordFocused(false)}
+        />
+        <TouchableOpacity onPress={() => setSecureEntry((prev) => !prev)}>
+          <Icon name={secureEntry ? 'visibility-off' : 'visibility'} type="material" size={20} color="gray" />
+        </TouchableOpacity>
+        <View style={[styles.inputUnderline, isPasswordFocused && styles.focusedUnderline]} />
+      </View>
+
+      <TouchableOpacity onPress={handleLogin}>
+        <LinearGradient
+          colors={['#f9fb7f', '#78ffc9']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.loginButtonWrapper}
+        >
+          <Text style={styles.loginText}>Login</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      {/* Images en zigzag sous le bouton Login */}
+      <View style={styles.imageRow}>
+        <View style={styles.imageWrapper}>
+          <Image source={require('../Images/dd.png')} style={styles.smallImage} />
+        </View>
+        <View style={styles.imageWrapperr}>
+          <Image source={require('../Images/dd.png')} style={styles.smallImage} />
+        </View>
+        <View style={styles.imageWrapper}>
+          <Image source={require('../Images/dd.png')} style={styles.smallImage} />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: 'white', paddingHorizontal: width * 0.05, paddingTop: height * 0.08 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: height * 0.0 },
+  logo: { width: width * 0.30, height: height * 0.15, marginTop: height * -0.05, marginBottom: height * 0.02 },
+  welcomeText: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: height * 0.01 },
+  subtitle: { fontSize: 16, textAlign: 'center', color: 'gray', marginBottom: height * 0.03 },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: height * 0.01, marginTop: height * 0.04 },
+  textInput: { flex: 1, paddingHorizontal: width * 0.03, height: height * 0.06 },
+  focusedInput: { transform: [{ scale: 1.05 }] },
+  inputUnderline: { height: 2, backgroundColor: 'gray', marginTop: 5 },
+  focusedUnderline: { backgroundColor: '#78ffc9' },
+  loginButtonWrapper: { backgroundColor: '#c7fceb', borderRadius: height * 0.03, marginTop: height * 0.1 },
+  loginText: { color: 'white', fontSize: height * 0.03, textAlign: 'center', paddingVertical: height * 0.015, fontWeight: 'bold' },
+  imageRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: height * 0.05 },
+  imageWrapper: { marginHorizontal: width * 0.08 },
+  smallImage: { width: width * 0.2, height: height * 0.1, resizeMode: 'contain' },
+  imageWrapperr: { marginTop: width * 0.1 },
+});
+
+export default LoginScreen;

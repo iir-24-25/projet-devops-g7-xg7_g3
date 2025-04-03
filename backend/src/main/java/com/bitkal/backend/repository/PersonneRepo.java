@@ -1,4 +1,4 @@
-package com.bitkal.backend.model.repository;
+package com.bitkal.backend.repository;
 
 import com.bitkal.backend.model.dto.LoginResponseDTO;
 import com.bitkal.backend.model.entity.Personne;
@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+// import java.util.List;
 import java.util.Optional;
 
 public interface PersonneRepo extends JpaRepository<Personne, Long> {
@@ -35,4 +36,10 @@ public interface PersonneRepo extends JpaRepository<Personne, Long> {
 
     @Query("SELECT g.filiere, COUNT(p.id) FROM Personne p INNER JOIN p.group g GROUP BY g.filiere")
     List<Object[]> findFilierePersonCount(Pageable pageable);
+
+    @Query("SELECT p FROM Personne p WHERE p.id = :id")
+    Personne getFullNameAndEmailById(@Param("id") Long id);
+
+    @Query("SELECT p FROM Personne p WHERE TYPE(p) = Admin AND p.id <> :id")
+    List<Personne> getListAdmin(@Param("id") Long id);
 }
