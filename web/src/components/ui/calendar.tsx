@@ -2,11 +2,12 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, DayPickerProps } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
+// Définir un type pour les composants personnalisés en utilisant Partial sur le type `components` de `DayPickerProps`
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 function Calendar({
@@ -56,11 +57,12 @@ function Calendar({
       components={{
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-      }}
+      } as Partial<DayPickerProps["components"]>}  // Utilisation de Partial pour les composants personnalisés
       {...props}
     />
   )
 }
+
 Calendar.displayName = "Calendar"
 
 export { Calendar }
