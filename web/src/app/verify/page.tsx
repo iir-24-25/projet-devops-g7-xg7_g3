@@ -88,7 +88,7 @@ export default function VerifyCodePage() {
             Please enter the password reset code below that was sent to {storedEmail}.
           </CardDescription>
           <p className="text-sm text-primary hover:text-primary-hover">
-            Didn't receive instructions?{" "}
+            Didn&apos;t receive instructions?{" "}
             <Link href="#" className="underline hover:text-primary-hover">
               Try a different method
             </Link>

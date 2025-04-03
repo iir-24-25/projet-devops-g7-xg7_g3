@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, CalendarPlus2Icon as CalendarIcon2, BookOpen, Users, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { format, addMonths, subMonths, isSameDay, isSameMonth, isToday } from "date-fns"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useMediaQuery } from "@/hooks/use-mobile-prof"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight, CalendarPlus2Icon as CalendarIcon2, BookOpen, Users, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { format, addMonths, subMonths, isSameDay, isSameMonth, isToday } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMediaQuery } from "@/hooks/use-mobile-prof";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 // Schedule data - expanded with more entries
 const scheduleData = [
@@ -132,48 +132,48 @@ const scheduleData = [
     status: "pending",
     color: "bg-red-500",
   },
-]
+];
 
 // Course time slots
 const courseTimeSlots = [
   { id: "morning", label: "Morning", time: "8:00 - 12:00", icon: "☀️" },
   { id: "afternoon", label: "Afternoon", time: "13:00 - 17:00", icon: "🌤️" },
-]
+];
 
 export function CalendarSection() {
-  const today = new Date()
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 2, 28)) // March 28, 2025
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 2, 28))
-  const [previousDate, setPreviousDate] = useState<Date | null>(null)
-  const [activeTab, setActiveTab] = useState("days")
-  const [activeTimeSlot, setActiveTimeSlot] = useState("morning")
-  const [scheduleItems, setScheduleItems] = useState(scheduleData)
-  const [animateItems, setAnimateItems] = useState(false)
+  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 2, 28)); // March 28, 2025
+  const [selectedDate, setSelectedDate] = useState(new Date(2025, 2, 28));
+  const [previousDate, setPreviousDate] = useState<Date | null>(null);
+  const [activeTab, setActiveTab] = useState("days");
+  const [activeTimeSlot, setActiveTimeSlot] = useState("morning");
+  const [scheduleItems, setScheduleItems] = useState(scheduleData);
+  const [animateItems, setAnimateItems] = useState(false);
 
   // Check if we're on mobile
-  const isMobile = useMediaQuery("(max-width: 640px)")
-  const isTablet = useMediaQuery("(max-width: 1024px)")
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
   // Animation effect when changing dates
   useEffect(() => {
-    setAnimateItems(false)
+    setAnimateItems(false);
     const timer = setTimeout(() => {
-      setAnimateItems(true)
-    }, 50)
-    return () => clearTimeout(timer)
-  }, [selectedDate, activeTab])
+      setAnimateItems(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [selectedDate, activeTab]);
 
   // Generate dates for the current view
   const getDatesForView = (date: Date) => {
-    const month = date.getMonth()
-    const year = date.getFullYear()
-    const startDay = 22 // Start from 22nd of the month
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const startDay = 22; // Start from 22nd of the month
 
     return Array.from({ length: 10 }).map((_, i) => {
-      const day = startDay + i
-      const actualMonth = day > 30 ? month + 1 : month
-      const actualDay = day > 30 ? day - 30 : day
-      const dateObj = new Date(year, actualMonth, actualDay)
+      const day = startDay + i;
+      const actualMonth = day > 30 ? month + 1 : month;
+      const actualDay = day > 30 ? day - 30 : day;
+      const dateObj = new Date(year, actualMonth, actualDay);
 
       return {
         day: actualDay < 10 ? `0${actualDay}` : actualDay.toString(),
@@ -182,61 +182,61 @@ export function CalendarSection() {
         active: isSameDay(dateObj, selectedDate),
         isToday: isToday(dateObj),
         events: scheduleItems.filter((item) => isSameDay(item.date, dateObj)),
-      }
-    })
-  }
+      };
+    });
+  };
 
-  const calendarDates = getDatesForView(currentDate)
+  const calendarDates = getDatesForView(currentDate);
 
   // Filter schedule for selected date
   const filteredSchedule = scheduleItems.filter((item) =>
     activeTab === "days" ? isSameDay(item.date, selectedDate) : isSameMonth(item.date, selectedDate),
-  )
+  );
 
   // Navigate to previous period
   const prevPeriod = () => {
     setCurrentDate((prev) => {
-      const newDate = subMonths(prev, 1)
-      return newDate
-    })
-  }
+      const newDate = subMonths(prev, 1);
+      return newDate;
+    });
+  };
 
   // Navigate to next period
   const nextPeriod = () => {
     setCurrentDate((prev) => {
-      const newDate = addMonths(prev, 1)
-      return newDate
-    })
-  }
+      const newDate = addMonths(prev, 1);
+      return newDate;
+    });
+  };
 
   // Go to today
   const goToToday = () => {
-    setPreviousDate(selectedDate)
-    setCurrentDate(today)
-    setSelectedDate(today)
-  }
+    setPreviousDate(selectedDate);
+    setCurrentDate(today);
+    setSelectedDate(today);
+  };
 
   // Go to previous date
   const goToPreviousDate = () => {
     if (previousDate) {
-      const temp = selectedDate
-      setSelectedDate(previousDate)
-      setCurrentDate(previousDate)
-      setPreviousDate(temp)
+      const temp = selectedDate;
+      setSelectedDate(previousDate);
+      setCurrentDate(previousDate);
+      setPreviousDate(temp);
     }
-  }
+  };
 
   // Handle date selection
   const handleDateSelect = (date: Date) => {
-    setPreviousDate(selectedDate)
-    setSelectedDate(date)
-    setCurrentDate(date)
-  }
+    setPreviousDate(selectedDate);
+    setSelectedDate(date);
+    setCurrentDate(date);
+  };
 
   // Handle time slot change
   const handleTimeSlotChange = (slotId: string) => {
-    setActiveTimeSlot(slotId)
-  }
+    setActiveTimeSlot(slotId);
+  };
 
   // Available courses
   const courses = [
@@ -246,7 +246,7 @@ export function CalendarSection() {
     "Project Management",
     "Digital Marketing",
     "Mobile App Development",
-  ]
+  ];
 
   return (
     <Card className="shadow-sm overflow-hidden bg-blue-50 dark:bg-blue-950/20 border-0">
@@ -272,7 +272,7 @@ export function CalendarSection() {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mt-1">Here's your schedule activity for today</p>
+        <p className="text-sm text-muted-foreground mt-1">Here\'s your schedule activity for today</p> {/* Escaped ' */}
 
         <div className="mt-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -328,8 +328,8 @@ export function CalendarSection() {
                         : "bg-white dark:bg-gray-800",
                   )}
                   onClick={() => {
-                    setPreviousDate(selectedDate)
-                    setSelectedDate(date.date)
+                    setPreviousDate(selectedDate);
+                    setSelectedDate(date.date);
                   }}
                 >
                   <span className="text-lg font-semibold">{date.day}</span>
@@ -360,8 +360,8 @@ export function CalendarSection() {
                         : "bg-white dark:bg-gray-800",
                   )}
                   onClick={() => {
-                    setPreviousDate(selectedDate)
-                    setSelectedDate(date.date)
+                    setPreviousDate(selectedDate);
+                    setSelectedDate(date.date);
                   }}
                 >
                   <span className="text-lg font-semibold">{date.day}</span>
@@ -475,6 +475,5 @@ export function CalendarSection() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
-
