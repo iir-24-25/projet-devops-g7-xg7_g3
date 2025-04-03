@@ -1,9 +1,4 @@
 "use client";
-<<<<<<< HEAD
-
-import { useState, useEffect } from "react";
-=======
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
@@ -12,15 +7,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-<<<<<<< HEAD
-// Type definition for the data structure
-interface GenderData {
-  MALE: number;
-  FEMALE: number;
-}
-
-=======
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
 interface ChartData {
   name: string;
   count: number;
@@ -28,10 +14,6 @@ interface ChartData {
 }
 
 const CountChart = () => {
-<<<<<<< HEAD
-  // Initial chart data
-=======
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
   const [data, setData] = useState<ChartData[]>([
     { name: "Total", count: 0, fill: "white" },
     { name: "Girls", count: 0, fill: "#FAD3D4" },
@@ -45,33 +27,7 @@ const CountChart = () => {
 
   const authToken = localStorage.getItem("authToken");
 
-  // Static gender data
-  const genderData: GenderData = {
-    MALE: 700,
-    FEMALE: 545,
-  };
-
-  // Update chart data when genderData changes
   useEffect(() => {
-<<<<<<< HEAD
-    const male = genderData.MALE || 0;
-    const female = genderData.FEMALE || 0;
-    const total = male + female;
-    const malePercent = total ? (male / total) * 100 : 0;
-    const femalePercent = total ? (female / total) * 100 : 0;
-
-    setData([
-      { name: "Total", count: total, fill: "white" },
-      { name: "Girls", count: female, fill: "#FAD3D4" },
-      { name: "Boys", count: male, fill: "#D3F7FA" },
-    ]);
-
-    setPercentages({
-      male: Math.round(malePercent * 10) / 10,
-      female: Math.round(femalePercent * 10) / 10,
-    });
-  }, [genderData]);
-=======
     const fetchGenderData = async () => {
       try {
         const response = await fetch("http://localhost:8080/numberGender?type=ETUD", {
@@ -123,7 +79,6 @@ const CountChart = () => {
 
     fetchGenderData();
   }, []);
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
 
   if (loading) {
     return <div>Loading...</div>;
