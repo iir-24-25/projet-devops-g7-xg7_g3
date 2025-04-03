@@ -1,18 +1,20 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { ImageCarousel } from "@/components/image-carousel"
-import { BenefitCard } from "@/components/benefit-card"
-import { Download, LogIn, Wifi, Brain, Lock, BarChart3 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import { ImageCarousel } from "@/components/image-carousel";
+import { BenefitCard } from "@/components/benefit-card";
+import { Download, LogIn, Wifi, Brain, Lock, BarChart3 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Image from "next/image"; // Added import for Next.js Image component
 
 export default function WelcomePage() {
-  const router = useRouter() // Initialize the router
+  const router = useRouter(); // Initialize the router
 
   // Handler function for navigating to /login
   const handleLoginClick = () => {
-    router.push("/login")
-  }
+    router.push("/login");
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-green-50 to-white">
       {/* Header avec couleurs améliorées */}
@@ -70,10 +72,12 @@ export default function WelcomePage() {
               </Button>
             </div>
             <div className="mt-12">
-              <img
+              <Image // Replaced <img> with <Image>
                 src="/images/hero-image.jpg"
                 alt="Validation des absences"
                 className="rounded-xl shadow-xl max-w-3xl mx-auto w-full"
+                width={768} // Example width, adjust based on your image
+                height={432} // Example height, adjust based on your image
               />
             </div>
           </div>
@@ -90,10 +94,12 @@ export default function WelcomePage() {
             <div className="max-w-3xl mx-auto">
               <div className="relative aspect-video bg-white rounded-xl overflow-hidden shadow-xl">
                 {/* Image de présentation de la vidéo */}
-                <img
+                <Image // Replaced <img> with <Image>
                   src="/images/video-preview.jpg"
                   alt="Vidéo de présentation"
                   className="w-full h-full object-cover"
+                  width={768} // Example width, adjust based on your image
+                  height={432} // Example height, adjust based on your image
                 />
                 <div className="absolute inset-0 bg-green-900/30 flex items-center justify-center">
                   <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
@@ -133,7 +139,7 @@ export default function WelcomePage() {
                     </div>
                     <h3 className="font-semibold text-yellow-800">Analyse</h3>
                   </div>
-                  <p className="text-gray-600 text-sm">Traitement des données par notre algorithme d'IA avancé</p>
+                  <p className="text-gray-600 text-sm">Traitement des données par notre algorithme d\'IA avancé</p> {/* Escaped ' */}
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-md border border-green-100">
                   <div className="flex items-center gap-3 mb-2">
@@ -257,7 +263,7 @@ export default function WelcomePage() {
             <div>
               <h3 className="font-bold text-lg mb-4 text-green-300">Mentions légales</h3>
               <ul className="space-y-2">
-                <li className="text-gray-300">Conditions d'utilisation</li>
+                <li className="text-gray-300">Conditions d\'utilisation</li> {/* Escaped ' */}
                 <li className="text-gray-300">Politique de confidentialité</li>
                 <li className="text-gray-300">Conformité RGPD</li>
               </ul>
@@ -269,6 +275,5 @@ export default function WelcomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
-

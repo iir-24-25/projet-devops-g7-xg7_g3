@@ -1,74 +1,83 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import type React from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function VerifyCodePage() {
-  const router = useRouter()
-  const [code, setCode] = useState(["", "", "", "", "", ""])
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
+  const [error, setError] = useState<string>("");
 
-  // Vérifier l'email au chargement de la page
+  const [storedEmail, setStoredEmail] = useState<string | null>(null);
+  const [storedCode, setStoredCode] = useState<string | null>(null);
+  const [storedTimestamp, setStoredTimestamp] = useState<string | null>(null);
+
   useEffect(() => {
-    const storedEmail = localStorage.getItem("resetEmail")
+    // Chargement des données depuis localStorage
+    const email = localStorage.getItem("resetEmail");
+    const code = localStorage.getItem("resetCode");
+    const timestamp = localStorage.getItem("resetCodeTimestamp");
 
-    if (!storedEmail) {
-      router.push("/email-verifier")
+    if (!email || !code || !timestamp) {
+      router.push("/email-verifier");
+    } else {
+      setStoredEmail(email);
+      setStoredCode(code);
+      setStoredTimestamp(timestamp);
     }
-  }, [router])
-
+  }, [router]);
 
   const handleChange = (index: number, value: string) => {
-    if (!/^[0-9]?$/.test(value)) return
+    if (!/^[0-9]?$/.test(value)) return;
 
-    const newCode = [...code]
-    newCode[index] = value
-    setCode(newCode)
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
 
+    // Focus sur l'input suivant
     if (value && index < 5) {
-      const nextInput = document.getElementById(`code-${index + 1}`)
-      if (nextInput) nextInput.focus()
+      const nextInput = document.getElementById(`code-${index + 1}`);
+      if (nextInput) nextInput.focus();
     }
-  }
+  };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
-      const prevInput = document.getElementById(`code-${index - 1}`)
-      if (prevInput) prevInput.focus()
+      const prevInput = document.getElementById(`code-${index - 1}`);
+      if (prevInput) prevInput.focus();
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const enteredCode = code.join("")
-    const storedCode = localStorage.getItem("resetCode")
-    const storedTimestamp = localStorage.getItem("resetCodeTimestamp")
+    e.preventDefault();
+    const enteredCode = code.join("");
+    const currentTime = Date.now();
+    const expirationTime = 60 * 60 * 1000; // 60 minutes in milliseconds
 
-    // Vérifier si le code a expiré (60 minutes = 3600000 millisecondes)
-    const currentTime = Date.now()
-    const expirationTime = 60 * 60 * 1000 // 60 minutes en millisecondes
     if (storedTimestamp && currentTime - parseInt(storedTimestamp) > expirationTime) {
-      setError("Le code a expiré. Veuillez demander un nouveau code.")
-      localStorage.removeItem("resetCode")
-      localStorage.removeItem("resetEmail")
-      localStorage.removeItem("resetCodeTimestamp")
-      return
+      setError("Le code a expiré. Veuillez demander un nouveau code.");
+      localStorage.removeItem("resetCode");
+      localStorage.removeItem("resetEmail");
+      localStorage.removeItem("resetCodeTimestamp");
+      return;
     }
 
     if (enteredCode === storedCode) {
-      localStorage.removeItem("resetCode")
-      localStorage.removeItem("resetCodeTimestamp")
-      router.push("/reset-password")
+      localStorage.removeItem("resetCode");
+      localStorage.removeItem("resetCodeTimestamp");
+      router.push("/reset-password");
     } else {
-      setError("Code incorrect. Veuillez réessayer.")
+      setError("Code incorrect. Veuillez réessayer.");
     }
-  }
+  };
 
-  const email = localStorage.getItem("resetEmail") || "votre email"
+  if (!storedEmail) {
+    return <div>Loading...</div>; // Affichage pendant le chargement des données
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary-light to-secondary-light px-4 py-12">
@@ -76,12 +85,12 @@ export default function VerifyCodePage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-primary">Reset Password</CardTitle>
           <CardDescription>
-            Please enter the password reset code below that was sent to {email}.
+            Please enter the password reset code below that was sent to {storedEmail}.
           </CardDescription>
           <p className="text-sm text-primary hover:text-primary-hover">
-            Didn't receive instructions?{" "}
+            Didn&apos;t receive instructions?{" "}
             <Link href="#" className="underline hover:text-primary-hover">
-              Try different method
+              Try a different method
             </Link>
           </p>
         </CardHeader>
@@ -119,5 +128,5 @@ export default function VerifyCodePage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

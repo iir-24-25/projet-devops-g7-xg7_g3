@@ -1,3 +1,4 @@
+"use client";
 import Calendar from "@/components/Calendar";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
