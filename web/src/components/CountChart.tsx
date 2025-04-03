@@ -25,10 +25,15 @@ const CountChart = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  const authToken = localStorage.getItem("authToken");
-
   useEffect(() => {
+    const authToken = localStorage.getItem("authToken"); // Récupération du token à l'intérieur du useEffect
+
     const fetchGenderData = async () => {
+      if (!authToken) {
+        console.error("Authorization token is missing.");
+        return;
+      }
+
       try {
         const response = await fetch("http://localhost:8080/numberGender?type=ETUD", {
           method: "GET",
@@ -45,11 +50,11 @@ const CountChart = () => {
         const apiData = await response.json();
         const total = apiData.MALE + apiData.FEMALE;
 
-        // Calculate percentages as numbers
+        // Calcul des pourcentages
         const malePercent = total > 0 ? Number((apiData.MALE / total * 100).toFixed(1)) : 0;
         const femalePercent = total > 0 ? Number((apiData.FEMALE / total * 100).toFixed(1)) : 0;
 
-        // Update data for chart
+        // Mise à jour des données du graphique
         setData([
           { name: "Total", count: total, fill: "white" },
           { name: "Girls", count: apiData.FEMALE, fill: "#FAD3D4" },
@@ -78,7 +83,7 @@ const CountChart = () => {
     };
 
     fetchGenderData();
-  }, []);
+  }, []); // Tableau des dépendances vide : ce useEffect se lance une seule fois au chargement du composant
 
   if (loading) {
     return <div>Loading...</div>;
