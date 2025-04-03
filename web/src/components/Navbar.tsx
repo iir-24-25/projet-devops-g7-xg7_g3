@@ -124,10 +124,6 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
 
   return (
     <div className="flex items-center justify-between px-6 py-3 bg-white border-b">
-<<<<<<< HEAD
-      {/* Left Side - Menu Icon */}
-     
-=======
       <div className="flex items-center gap-2">
         <button
           onClick={() => onCollapse?.(!isCollapsed)}
@@ -148,7 +144,6 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
           </svg>
         </button>
       </div>
->>>>>>> 1b05f7f0d0e20372b07a7f6e534b2b07c9e450d8
 
       <div className="flex-1 max-w-xl mx-8">
         <div className="relative">
@@ -164,7 +159,9 @@ const Navbar = ({ isCollapsed, onCollapse }: NavbarProps = {}) => {
       </div>
 
       <div className="flex items-center gap-4">
-        
+        <button className="px-4 py-2 text-sm font-medium hover:bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Get Support
+        </button>
 
         <div className="relative">
           <button 
