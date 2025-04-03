@@ -5,6 +5,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/Screens/HomeScreen';
 import LoginScreen from './src/Screens/LoginScreen';
 import Interface from './src/Screens/Interface';
+import ForgetPassword from './src/Screens/ForgetPassword';
+import CodeVerif from './src/Screens/CodeVerif';
+import ChangePass from './src/Screens/ChangePass';
+
 const Stack = createNativeStackNavigator();
 
 
@@ -13,9 +17,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} /> 
-        <Stack.Screen name="InterfacePrincipale" component={Interface} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}  />
+        <Stack.Screen name="LoginScreen" component={LoginScreen}   options={{ headerShown: false }} 
+        /> 
+        <Stack.Screen name="InterfacePrincipale" component={Interface} options={{ headerShown: false }}  />
+        <Stack.Screen name="ForgetPass" component={ForgetPassword} options={{ headerShown: false }}  />
+        <Stack.Screen name="CodeVerif" component={CodeVerif} options={{ headerShown: false }}  />
+        <Stack.Screen name="ChangePass" component={ChangePass} options={{ headerShown: false }}  />
 
       </Stack.Navigator>
     </NavigationContainer>
