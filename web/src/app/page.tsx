@@ -63,7 +63,7 @@ export default function WelcomePage() {
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-green-700">Solution de Validation des Absences</h1>
             <p className="text-lg max-w-2xl mx-auto text-gray-600 mb-8">
-              Notre solution de validation des absences utilise la triangulation WiFi et l'IA pour automatiser le suivi
+              Notre solution de validation des absences utilise la triangulation WiFi et l&apos;IA pour automatiser le suivi
               des présences en toute sécurité et fiabilité.
             </p>
             <div className="flex justify-center">
