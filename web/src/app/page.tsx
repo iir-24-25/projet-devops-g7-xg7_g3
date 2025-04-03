@@ -139,7 +139,7 @@ export default function WelcomePage() {
                     </div>
                     <h3 className="font-semibold text-yellow-800">Analyse</h3>
                   </div>
-                  <p className="text-gray-600 text-sm">Traitement des données par notre algorithme d\'IA avancé</p> {/* Escaped ' */}
+                  <p className="text-gray-600 text-sm">Traitement des données par notre algorithme d&apos;IA avancé</p> {/* Escaped ' */}
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-md border border-green-100">
                   <div className="flex items-center gap-3 mb-2">
@@ -238,39 +238,48 @@ export default function WelcomePage() {
                     <path d="m9 16 2 2 4-4" />
                   </svg>
                 </div>
-                <span className="text-lg font-bold text-green-300">AbsenceValidator</span>
+                <span className="text-xl font-semibold text-green-300">AbsenceValidator</span>
               </div>
-              <p className="text-gray-300">
-                Solution innovante de validation des absences par triangulation WiFi et IA.
-              </p>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4 text-green-300">Contact & Support</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-300">+33 1 23 45 67 89</li>
-                <li className="text-gray-300">support@absencevalidator.com</li>
-                <li className="text-gray-300">FAQ & Aide</li>
+              <h4 className="text-lg font-semibold text-white mb-4">Liens</h4>
+              <ul>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">À propos</a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">Contact</a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">Support</a>
+                </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4 text-green-300">Réseaux sociaux</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-300">LinkedIn</li>
-                <li className="text-gray-300">Twitter</li>
-                <li className="text-gray-300">Facebook</li>
+              <h4 className="text-lg font-semibold text-white mb-4">Suivez-nous</h4>
+              <ul>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">Facebook</a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">Twitter</a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">Instagram</a>
+                </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4 text-green-300">Mentions légales</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-300">Conditions d\'utilisation</li> {/* Escaped ' */}
-                <li className="text-gray-300">Politique de confidentialité</li>
-                <li className="text-gray-300">Conformité RGPD</li>
+              <h4 className="text-lg font-semibold text-white mb-4">Contact</h4>
+              <ul>
+                <li>
+                  <p className="text-gray-300">Email : support@absencevalidator.com</p>
+                </li>
+                <li>
+                  <p className="text-gray-300">Téléphone : +1 800 123 4567</p>
+                </li>
               </ul>
             </div>
-          </div>
-          <div className="mt-10 pt-6 border-t border-green-800 text-center text-gray-400">
-            <p>© {new Date().getFullYear()} AbsenceValidator. Tous droits réservés.</p>
           </div>
         </div>
       </footer>

@@ -272,7 +272,7 @@ export function CalendarSection() {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mt-1">Here\'s your schedule activity for today</p> {/* Escaped ' */}
+        <p className="text-sm text-muted-foreground mt-1">Here&apos;s your schedule activity for today</p> {/* Escaped ' */}
 
         <div className="mt-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
