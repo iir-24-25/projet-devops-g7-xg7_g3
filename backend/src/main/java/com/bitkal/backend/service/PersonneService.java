@@ -36,10 +36,6 @@ public class PersonneService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // public Optional<LoginResponseDTO> login(String email, String password) {
-    //     String hashedPassword = passwordEncoder.encode(password);
-    //     return personneRepo.findByEmailAndPassword(email, hashedPassword);
-    // }
 
     public Optional<Personne> findPersonByEmail(String email) {
         return personneRepo.findPersonByEmail(email);

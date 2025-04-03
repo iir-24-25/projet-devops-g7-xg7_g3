@@ -3,11 +3,14 @@ package com.bitkal.backend.repository;
 import java.sql.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bitkal.backend.model.entity.Absences;
+
 
 public interface AbsencesRepo extends JpaRepository<Absences, Long> , AbsencesRepoCustom {
     @Query("SELECT FUNCTION('DAY', a.dateAbsences) AS jour, COUNT(a) " +
@@ -22,4 +25,11 @@ public interface AbsencesRepo extends JpaRepository<Absences, Long> , AbsencesRe
 
     @Query("SELECT a FROM Absences a JOIN FETCH a.etudiant e WHERE TYPE(e) = Etudiant")
     List<Absences> findAllValidAbsences();
+
+    @Query("SELECT a FROM Absences a " +
+           "LEFT JOIN FETCH a.etudiant " +
+           "LEFT JOIN FETCH a.seance " +
+           "LEFT JOIN FETCH a.notification " +
+           "LEFT JOIN FETCH a.justification")
+    Page<Absences> findAllWithRelations(Pageable pageable);
 }

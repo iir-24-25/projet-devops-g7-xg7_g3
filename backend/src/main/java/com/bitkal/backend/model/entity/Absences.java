@@ -45,7 +45,6 @@ public class Absences {
     @Enumerated(EnumType.STRING)
     private Salle salle;
 
-    // Ajout de la validation dans le setter
     public void setEtudiant(Etudiant etudiant) {
         if (etudiant != null && !(etudiant instanceof Etudiant)) {
             throw new IllegalArgumentException("etudiant must be an instance of Etudiant, got: " + etudiant.getClass().getName());

@@ -1,6 +1,9 @@
 package com.bitkal.backend.repository;
 
-// import java.util.List;
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +21,12 @@ public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
         "JOIN g.emploisTemp et " +
         "WHERE et.jour = :jours")
     int numberTotalEtudiantsPresents(@Param("jours") Jours jours);
+
+    @Query("SELECT e FROM Etudiant e " +
+           "LEFT JOIN FETCH e.group " +
+           "LEFT JOIN FETCH e.absences " +
+           "LEFT JOIN FETCH e.parents")
+    Page<Etudiant> findAllWithRelations(Pageable pageable);
 
 
 }
