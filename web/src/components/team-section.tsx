@@ -75,7 +75,7 @@ export function TeamSection() {
               <p className="text-blue-600 font-medium">Chef du projet</p>
               <p className="text-center text-gray-600">
                 Je crée des expériences numériques exceptionnelles avec des technologies modernes. Concentré sur la
-                création d\'applications réactives et conviviales avec un code propre.
+                création d&apos;applications réactives et conviviales avec un code propre.
               </p>
 
               {/* Hover content */}
@@ -151,7 +151,7 @@ export function TeamSection() {
                 <p className="text-blue-600 font-medium mb-2">Ingénieur IoT</p>
                 <p className="text-center text-gray-600 mb-4">
                   Spécialiste des systèmes embarqués et de la triangulation ESP32 pour la détection de présence. Expert
-                  en développement de solutions IoT avec 8 ans d\'expérience dans le secteur.
+                  en développement de solutions IoT avec 8 ans d&apos;expérience dans le secteur.
                 </p>
                 <div className="flex justify-center space-x-3">
                   <Link href="#" className="text-gray-500 hover:text-blue-600">
@@ -178,7 +178,7 @@ export function TeamSection() {
               <h3 className="text-xl font-bold text-gray-800">Léa Nguyen</h3>
               <p className="text-blue-600 font-medium">Développeuse Full-Stack</p>
               <p className="text-center text-gray-600">
-                Experte en développement d\'interfaces utilisateur intuitives et de systèmes backend robustes.
+                Experte en développement d&apos;interfaces utilisateur intuitives et de systèmes backend robustes.
               </p>
 
               {/* Hover content */}
@@ -186,7 +186,7 @@ export function TeamSection() {
                 <h3 className="text-xl font-bold text-gray-800 mt-4">Léa Nguyen</h3>
                 <p className="text-blue-600 font-medium mb-2">Développeuse Full-Stack</p>
                 <p className="text-center text-gray-600 mb-4">
-                  Experte en développement d\'interfaces utilisateur intuitives et de systèmes backend robustes.
+                  Experte en développement d&apos;interfaces utilisateur intuitives et de systèmes backend robustes.
                   Contributrice active à plusieurs projets open-source et passionnée par les technologies web modernes.
                 </p>
                 <div className="flex justify-center space-x-3">
@@ -219,7 +219,7 @@ export function TeamSection() {
               <h3 className="text-xl font-bold text-gray-800">Alexandre Moreau</h3>
               <p className="text-blue-600 font-medium">Data Scientist</p>
               <p className="text-center text-gray-600">
-                Spécialiste en machine learning et analyse de données pour l\'optimisation des algorithmes de détection.
+                Spécialiste en machine learning et analyse de données pour l&apos;optimisation des algorithmes de détection.
               </p>
 
               {/* Hover content */}
@@ -227,8 +227,8 @@ export function TeamSection() {
                 <h3 className="text-xl font-bold text-gray-800 mt-4">Alexandre Moreau</h3>
                 <p className="text-blue-600 font-medium mb-2">Data Scientist</p>
                 <p className="text-center text-gray-600 mb-4">
-                  Spécialiste en machine learning et analyse de données pour l\'optimisation des algorithmes de
-                  détection. Titulaire d\'un doctorat en intelligence artificielle et auteur de plusieurs publications
+                  Spécialiste en machine learning et analyse de données pour l&apos;optimisation des algorithmes de
+                  détection. Titulaire d&apos;un doctorat en intelligence artificielle et auteur de plusieurs publications
                   scientifiques.
                 </p>
                 <div className="flex justify-center space-x-3">
@@ -256,7 +256,7 @@ export function TeamSection() {
               <h3 className="text-xl font-bold text-gray-800">Julie Lambert</h3>
               <p className="text-blue-600 font-medium">UX/UI Designer</p>
               <p className="text-center text-gray-600">
-                Créatrice d\'expériences utilisateur fluides et intuitives pour maximiser l\'adoption du système.
+                Créatrice d&apos;expériences utilisateur fluides et intuitives pour maximiser l&apos;adoption du système.
               </p>
 
               {/* Hover content */}
@@ -264,8 +264,8 @@ export function TeamSection() {
                 <h3 className="text-xl font-bold text-gray-800 mt-4">Julie Lambert</h3>
                 <p className="text-blue-600 font-medium mb-2">UX/UI Designer</p>
                 <p className="text-center text-gray-600 mb-4">
-                  Créatrice d\'expériences utilisateur fluides et intuitives pour maximiser l\'adoption du système. Formée
-                  aux méthodes de design thinking et spécialiste de l\'accessibilité numérique.
+                  Créatrice d&apos;expériences utilisateur fluides et intuitives pour maximiser l&apos;adoption du système. Formée
+                  aux méthodes de design thinking et spécialiste de l&apos;accessibilité numérique.
                 </p>
                 <div className="flex justify-center space-x-3">
                   <Link href="#" className="text-gray-500 hover:text-blue-600">

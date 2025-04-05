@@ -20,7 +20,7 @@ export function Footer() {
               <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-blue-700"></div>
             </div>
             <p className="text-gray-600 text-sm">
-              SIGAP révolutionne la gestion des présences grâce à l\'intelligence artificielle et la technologie ESP32,
+              SIGAP révolutionne la gestion des présences grâce à l&apos;intelligence artificielle et la technologie ESP32,
               offrant une solution complète pour les entreprises et établissements scolaires.
             </p>
             <div className="flex space-x-3">
@@ -80,7 +80,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-gray-600 hover:text-blue-600 transition-colors text-sm">
-                  Conditions d\'utilisation
+                  Conditions d&apos;utilisation
                 </Link>
               </li>
               <li>
@@ -112,7 +112,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
-                <span className="text-gray-600 text-sm">123 Avenue de l\'Innovation, 75000 Paris, France</span>
+                <span className="text-gray-600 text-sm">123 Avenue de l&apos;Innovation, 75000 Paris, France</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-blue-600" />
