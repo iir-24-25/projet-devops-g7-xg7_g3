@@ -221,7 +221,7 @@ public class PersonneService {
 
     public InfoAdminDTO getFullNameAndEmailById(Long id){
       Personne admin = personneRepo.getFullNameAndEmailById(id);
-      InfoAdminDTO infoAdminDTO = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+      InfoAdminDTO infoAdminDTO = new InfoAdminDTO(admin.getNom(), admin.getPrenom(), admin.getEmail());
       return infoAdminDTO;
     }
 
@@ -229,7 +229,7 @@ public class PersonneService {
       List<Personne> listAdmin = personneRepo.getListAdmin(id);
       List<InfoAdminDTO> listInfoAdmin = new ArrayList<>();
       for(Personne admin : listAdmin){
-        InfoAdminDTO infoAdmin = new InfoAdminDTO(admin.getSom(), admin.getPrenom(), admin.getEmail());
+        InfoAdminDTO infoAdmin = new InfoAdminDTO(admin.getNom(), admin.getPrenom(), admin.getEmail());
         listInfoAdmin.add(infoAdmin);
       }
       return listInfoAdmin;

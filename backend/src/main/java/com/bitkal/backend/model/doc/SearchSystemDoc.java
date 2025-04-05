@@ -1,38 +1,30 @@
 package com.bitkal.backend.model.doc;
 
-import java.sql.Date;
-
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "system_search")
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(indexName = "global_search")
 public class SearchSystemDoc {
+
     @Id
     private String id;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String type;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "standard")
     private String content;
 
-    @Field(type = FieldType.Date)
-    private Date date;
-
-    @Field(type = FieldType.Keyword)
-    private String relationId;
-
-    @Field(type = FieldType.Text)
-    private String relationName;
+    @Field(type = FieldType.Long)
+    private Long entityId;
 }

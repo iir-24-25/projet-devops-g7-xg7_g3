@@ -22,7 +22,7 @@ public abstract class Personne {
     protected Long id;
 
     @Column(name = "nom", length = 50, nullable = false)
-    protected String som;
+    protected String nom;
 
     @Column(name = "prenom", length = 50, nullable = false)
     protected String prenom;
