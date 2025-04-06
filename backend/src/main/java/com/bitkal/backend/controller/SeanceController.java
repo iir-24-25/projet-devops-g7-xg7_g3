@@ -28,4 +28,21 @@ public class SeanceController {
     public List<ModuelProfDTO> findAllModuelProfesseurByID(@RequestParam("id") Long id) {
         return seanceService.findAllModuelProfesseurByID(id);
     }
+
+    @GetMapping("/seances/count/professeur")
+    public int findCountSeance(@RequestParam("id") Long id) {
+        return seanceService.findCountSeance(id);
+    }
+
+    @GetMapping("/module/count/professeur")
+    public int findCountModuelProfesseurByID(@RequestParam("id") Long id) {
+        return seanceService.findCountModuelProfesseurByID(id);
+    }
+    
+    @GetMapping("/count/groups")
+    public Long getMethodName(@RequestParam Long professorId) {
+        return seanceService.countDistinctGroupsByProfessorId(professorId);
+    }
+    
+    
 }

@@ -42,4 +42,8 @@ public interface PersonneRepo extends JpaRepository<Personne, Long> {
 
     @Query("SELECT p FROM Personne p WHERE TYPE(p) = Admin AND p.id <> :id")
     List<Personne> getListAdmin(@Param("id") Long id);
+
+    @Query("SELECT COUNT(p) FROM Personne p JOIN p.group g WHERE TYPE(p) = 'Etud' AND g.id IN :groupIds")
+    int findCountEtudDansProf(@Param("groupIds") List<Long> groupIds);
+
 }

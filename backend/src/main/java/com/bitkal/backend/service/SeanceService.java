@@ -37,15 +37,32 @@ public class SeanceService {
         return rawResults.stream()
                 .map(result -> new ModuelProfDTO(
                     result[0] != null ? (String) result[0] : "", // p.nom
-                    result[0] != null ? (String) result[1] : "", // p.prenom
-                    result[0] != null ? (String) result[2] : "", // m.titre
-                    result[0] != null ? result[3].toString() : "", // e.salle
-                    result[0] != null ? result[4].toString() : "", // m.filiere
-                    result[0] != null ? result[5].toString() : "",
-                    result[0] != null ? result[6].toString() : "",
-                    result[0] != null ? result[7].toString() : "",
-                    result[0] != null ? result[8].toString() : ""
-                )) // Make sure this parenthesis is properly closed
+                    result[1] != null ? (String) result[1] : "", // p.prenom
+                    result[2] != null ? (String) result[2] : "", // m.titre
+                    result[3] != null ? result[3].toString() : "", // e.salle
+                    result[4] != null ? result[4].toString() : "", // m.filiere
+                    result[5] != null ? result[5].toString() : "", // m.niveau
+                    result[6] != null ? result[6].toString() : "", // e.seance
+                    result[7] != null ? result[7].toString() : "", // e.jour
+                    result[8] != null ? result[8].toString() : ""  // e.semestre
+                ))
                 .collect(Collectors.toList());
+    }
+
+    public int findCountSeance(Long id){
+        return seanceRepo.findCountSeance(id);
+    }
+
+    public int findCountModuelProfesseurByID(Long id){
+        List<String> modeuls = seanceRepo.findCountModuleProfesseurByID(id);
+        return modeuls.size();
+    }
+
+    public long countDistinctGroupsByProfessorId(Long professorId) {
+        List<String> groupNames = seanceRepo.findGroupNamesByProfessorId(professorId);
+        for(String group : groupNames){
+            System.out.println(group);
+        }
+        return groupNames.size(); // Conversion implicite de int à long
     }
 }
