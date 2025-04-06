@@ -28,12 +28,13 @@ export function Header() {
           <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
             Télécharger
           </Button>
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900">
-            Connexion
-          </Button>
+          <Link href="/login" passHref>
+            <Button className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900">
+              Connexion
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
   )
 }
-

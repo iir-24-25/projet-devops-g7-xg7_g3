@@ -12,22 +12,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from '@/lib/api';
 import axios from "axios";
 
-// 3D school-themed images for the slideshow
 const slideImages = [
   {
-    src: "/images/3d-campus.png",
+    src: "/images/modernCampusExperience.jpeg",
     alt: "3D Campus Building",
     title: "Modern Campus",
     description: "Experience our state-of-the-art facilities",
   },
   {
-    src: "/images/3d-classroom.png",
+    src: "/images/VirtualLearning.jpg",
     alt: "3D Virtual Classroom",
     title: "Virtual Learning",
     description: "Interactive digital classrooms for remote education",
   },
   {
-    src: "/images/3d-graduation.png",
+    src: "/images/academicExcellence.webp",
     alt: "3D Graduation Scene",
     title: "Academic Excellence",
     description: "Celebrating student achievements and success",
@@ -43,7 +42,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Auto-advance slideshow
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slideImages.length);
@@ -65,7 +63,6 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
-    // Input validation
     if (!email || !password) {
       setError("Veuillez saisir l'email et le mot de passe");
       return;
@@ -98,11 +95,9 @@ export default function LoginPage() {
         return;
       }
   
-      // Store token
       localStorage.setItem('authToken', token);
       localStorage.setItem('id', userId);
 
-      // Redirect based on user type
       switch(true) {
         case userType.includes("Professeur"):
           router.push("/prof");
@@ -118,7 +113,6 @@ export default function LoginPage() {
       }
   
     } catch (error) {
-      // Type-safe error handling
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || "Erreur de connexion";
         setError(message);
@@ -136,7 +130,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,7 +164,7 @@ export default function LoginPage() {
 
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={`content-${currentSlide}`} // Fixed template literal syntax
+                  key={`content-${currentSlide}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -213,7 +207,7 @@ export default function LoginPage() {
                     className={`h-2 rounded-full transition-all cursor-pointer ${
                       index === currentSlide ? "bg-white" : "bg-white/50 hover:bg-white/80"
                     }`}
-                    aria-label={`Go to slide ${index + 1}`} // Fixed template literal syntax
+                    aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
               </div>
@@ -235,7 +229,7 @@ export default function LoginPage() {
                   animate={{ rotate: [0, 10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <GraduationCap className="h-8 w-8 text-emerald-600" />
+                  <GraduationCap className="h-8 w-8 text-blue-600" />
                 </motion.div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
@@ -247,14 +241,14 @@ export default function LoginPage() {
                 <TabsList className="grid w-full grid-cols-2 mb-6">
                   <TabsTrigger
                     value="credentials"
-                    className="data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-800 transition-all duration-300 hover:bg-gray-100"
+                    className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800 transition-all duration-300 hover:bg-gray-100"
                   >
                     <User className="h-4 w-4 mr-2" />
                     Credentials
                   </TabsTrigger>
                   <TabsTrigger
                     value="fingerprint"
-                    className="data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-800 transition-all duration-300 hover:bg-gray-100"
+                    className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800 transition-all duration-300 hover:bg-gray-100"
                   >
                     <Fingerprint className="h-4 w-4 mr-2" />
                     Fingerprint
@@ -274,7 +268,7 @@ export default function LoginPage() {
                     <div className="relative">
                       <User
                         className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                          activeInput === "email" ? "text-emerald-600" : "text-gray-500"
+                          activeInput === "email" ? "text-blue-600" : "text-gray-500"
                         }`}
                       />
                       <Input
@@ -288,7 +282,7 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                       />
                       <motion.span
-                        className="absolute bottom-0 left-0 h-0.5 bg-emerald-600 rounded"
+                        className="absolute bottom-0 left-0 h-0.5 bg-blue-600 rounded"
                         initial={{ width: 0 }}
                         animate={{ width: activeInput === "email" ? "100%" : 0 }}
                         transition={{ duration: 0.3 }}
@@ -308,7 +302,7 @@ export default function LoginPage() {
                     <div className="relative">
                       <Lock
                         className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                          activeInput === "password" ? "text-emerald-600" : "text-gray-500"
+                          activeInput === "password" ? "text-blue-600" : "text-gray-500"
                         }`}
                       />
                       <Input
@@ -322,7 +316,7 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <motion.span
-                        className="absolute bottom-0 left-0 h-0.5 bg-emerald-600 rounded"
+                        className="absolute bottom-0 left-0 h-0.5 bg-blue-600 rounded"
                         initial={{ width: 0 }}
                         animate={{ width: activeInput === "password" ? "100%" : 0 }}
                         transition={{ duration: 0.3 }}
@@ -339,23 +333,23 @@ export default function LoginPage() {
                     <div className="flex items-center space-x-2 group cursor-pointer">
                       <Checkbox
                         id="remember"
-                        className="border-gray-300 text-emerald-600 focus:ring-0 focus:outline-none transition-all duration-300"
+                        className="border-gray-300 text-blue-600 focus:ring-0 focus:outline-none transition-all duration-300"
                       />
                       <label
                         htmlFor="remember"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 group-hover:text-emerald-700 transition-colors duration-200"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 group-hover:text-blue-700 transition-colors duration-200"
                       >
                         Remember me
                       </label>
                     </div>
                     <motion.a
-                      href="/email-verifier"
-                      className="text-sm text-emerald-600 hover:text-emerald-800 relative"
+                      href="/reset-password"
+                      className="text-sm text-blue-600 hover:text-blue-800 relative"
                       whileHover={{ scale: 1.05 }}
                     >
                       Forgot password?
                       <motion.span
-                        className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600 rounded"
+                        className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded"
                         initial={{ scaleX: 0, originX: 0 }}
                         whileHover={{ scaleX: 1 }}
                         transition={{ duration: 0.3 }}
@@ -369,11 +363,11 @@ export default function LoginPage() {
                     transition={{ duration: 0.3, delay: 0.3 }}
                   >
                     <motion.button
-                      whileHover={{ scale: 1.02, backgroundColor: "#047857" }}
+                      whileHover={{ scale: 1.02, backgroundColor: "#2563eb" }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleLogin}
                       disabled={loading}
-                      className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center justify-center transition-all duration-300 cursor-pointer ${
                         loading ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     >
@@ -424,29 +418,29 @@ export default function LoginPage() {
                       whileHover={{ scale: 1.05 }}
                       animate={{
                         boxShadow: [
-                          "0px 0px 0px rgba(5, 150, 105, 0)",
-                          "0px 0px 20px rgba(5, 150, 105, 0.5)",
-                          "0px 0px 0px rgba(5, 150, 105, 0)",
+                          "0px 0px 0px rgba(37, 99, 235, 0)",
+                          "0px 0px 20px rgba(37, 99, 235, 0.5)",
+                          "0px 0px 0px rgba(37, 99, 235, 0)",
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       <motion.div
-                        className="absolute inset-0 bg-emerald-100 rounded-full"
+                        className="absolute inset-0 bg-blue-100 rounded-full"
                         animate={{
                           scale: [1, 1.1, 1],
                           opacity: [0, 0.3, 0],
                         }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <Fingerprint className="h-16 w-16 text-emerald-600 relative z-10" />
+                      <Fingerprint className="h-16 w-16 text-blue-600 relative z-10" />
                     </motion.div>
                     <h3 className="text-lg font-medium text-center">Fingerprint Authentication</h3>
                     <p className="text-gray-500 text-center mt-2 mb-6">Place your registered finger on the scanner</p>
                     <motion.button
-                      whileHover={{ scale: 1.05, borderColor: "#059669" }}
+                      whileHover={{ scale: 1.05, borderColor: "#2563eb" }}
                       whileTap={{ scale: 0.95 }}
-                      className="border border-gray-300 hover:border-emerald-600 text-gray-700 hover:text-emerald-700 py-2 px-4 rounded-md transition-all duration-300 cursor-pointer focus:outline-none"
+                      className="border border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-700 py-2 px-4 rounded-md transition-all duration-300 cursor-pointer focus:outline-none"
                     >
                       Use password instead
                     </motion.button>
@@ -463,12 +457,12 @@ export default function LoginPage() {
                 Don&apos;t have an account?{" "}
                 <motion.a
                   href="#"
-                  className="font-medium text-emerald-600 hover:text-emerald-800 relative inline-block"
+                  className="font-medium text-blue-600 hover:text-blue-800 relative inline-block"
                   whileHover={{ scale: 1.05 }}
                 >
                   Contact your administrator
                   <motion.span
-                    className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600 rounded"
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded"
                     initial={{ scaleX: 0, originX: 0 }}
                     whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.3 }}

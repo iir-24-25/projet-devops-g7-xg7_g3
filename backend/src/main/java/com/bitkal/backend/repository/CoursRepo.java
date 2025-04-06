@@ -1,5 +1,6 @@
 package com.bitkal.backend.repository;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ public interface CoursRepo extends JpaRepository<Cours, Long> {
            "LEFT JOIN FETCH c.module " +
            "LEFT JOIN FETCH c.professeur")
     Page<Cours> findAllWithRelations(Pageable pageable);
+
 }
