@@ -5,6 +5,7 @@ import java.time.Month;
 import java.time.Year;
 import java.time.format.TextStyle;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 // import java.util.List;
 import java.util.Map;
@@ -15,12 +16,16 @@ import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
 import com.bitkal.backend.repository.EtudiantRepo;
+import com.bitkal.backend.repository.GroupRepo;
 
 @Service
 public class EtudiantService {
 
     @Autowired
     private EtudiantRepo etudiantRepo;
+
+    @Autowired
+    private GroupRepo groupRepo;
 
     // public List<ESPStudentDTO> findEtudiantsForTimetable(Jours jour, Salle salle, Seances seance, Semestre semestre) {
     //     List<Etudiant> etudiants = etudiantRepo.findEtudiantsForTimetable(jour, salle, seance, semestre);
@@ -75,5 +80,39 @@ public class EtudiantService {
         }
 
         return totalEtudiantsParMois;
+    }
+
+    public Map<String, Long> numberGroupAndEtudProfByIdProf(Long idProf) {
+        // Validate input parameter
+        if (idProf == null) {
+            throw new IllegalArgumentException("Professor ID cannot be null");
+        }
+    
+        // Initialize result map with default values
+        Map<String, Long> result = new HashMap<>();
+        result.put("etudiant", 0L);
+        result.put("groups", 0L);
+    
+        try {
+            // Get group IDs for professor
+            List<Long> idsGroup = groupRepo.findGroupsIdsByProfessorId(idProf);
+            
+            // If no groups found, return default values
+            if (idsGroup == null || idsGroup.isEmpty()) {
+                return result;
+            }
+    
+            // Count students in these groups
+            Long numberEtud = etudiantRepo.findCountEtudProfByIdsGroup(idsGroup);
+            
+            // Populate result map
+            result.put("groups", (long) idsGroup.size());
+            result.put("etudiant", numberEtud != null ? numberEtud : 0L);
+            
+        } catch (Exception e) {
+            return result;
+        }
+    
+        return result;
     }
 }

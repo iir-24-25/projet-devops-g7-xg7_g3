@@ -46,5 +46,10 @@ public class EtudiantController {
     public Map<String, Integer> getPresenceParMois() {
         return etudiantService.numberTotalEtudiantsPresentsByMois();
     }
+
+    @GetMapping("/GroupAndEtud/Prof")
+    public Map<String, Long> numberGroupAndEtudProfByIdProf(Long idProf){
+        return etudiantService.numberGroupAndEtudProfByIdProf(idProf);
+    }
     
 }

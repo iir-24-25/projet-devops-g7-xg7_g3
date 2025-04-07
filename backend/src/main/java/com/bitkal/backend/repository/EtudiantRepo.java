@@ -2,6 +2,8 @@ package com.bitkal.backend.repository;
 
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +30,9 @@ public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
            "LEFT JOIN FETCH e.parents")
     Page<Etudiant> findAllWithRelations(Pageable pageable);
 
+    @Query("SELECT COUNT(e) FROM Etudiant e "+
+        "INNER JOIN e.group g "+
+        "WHERE g.id IN :idsGroup")
+    Long findCountEtudProfByIdsGroup(@Param("idsGroup") List<Long> idsGroup);
 
 }

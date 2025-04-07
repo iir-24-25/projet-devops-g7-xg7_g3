@@ -1,5 +1,6 @@
 package com.bitkal.backend.repository;
 
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -20,11 +21,8 @@ public interface GroupRepo extends JpaRepository<Group, Long> {
            "LEFT JOIN FETCH g.modules")
     Page<Group> findAllWithRelations(Pageable pageable);
 
-    @Query("SELECT DISTINCT g FROM Group g " +
-           "JOIN g.modules m " +
-           "JOIN m.cours c " +
-           "JOIN c.professeur p " +
-           "WHERE p.id = :professorId")
-    List<Group> findGroupsByProfessorId(@Param("professorId") Long professorId);
+    @Query("SELECT g.id FROM Group g WHERE g IN " +
+       "(SELECT g2 FROM Group g2 JOIN g2.modules m JOIN m.cours c WHERE c.professeur.id = :professorId)")
+    List<Long> findGroupsIdsByProfessorId(@Param("professorId") Long professorId);
 
 }
