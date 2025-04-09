@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <div
         className={cn(
@@ -38,3 +38,4 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   )
 }
 
+export default DashboardLayout

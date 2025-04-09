@@ -1,17 +1,16 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { Store, FileText, Users, Settings, LogOut, Sun, Moon, Monitor } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
-import Image from "next/image"; // Added import for Next.js Image component
+import { useState, useEffect } from "react"
+import { Store, FileText, Users, Settings, LogOut, Sun, Moon, Monitor } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useRouter } from "next/navigation"
 
 interface ProfileDropdownProps {
   user?: {
-    name: string;
-    email: string;
-    image?: string;
-  };
+    name: string
+    email: string
+    image?: string
+  }
 }
 
 export function ProfileDropdown({
@@ -21,45 +20,45 @@ export function ProfileDropdown({
     image: "/placeholder.svg?height=40&width=40",
   },
 }: ProfileDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   // Prevent hydration mismatch
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const dropdown = document.getElementById("profile-dropdown");
+      const dropdown = document.getElementById("profile-dropdown")
       if (dropdown && !dropdown.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   const handleLogout = () => {
     // In a real app, you would handle logout logic here
-    router.push("/dashboard");
-    setIsOpen(false);
-  };
+    router.push("/dashboard")
+    setIsOpen(false)
+  }
 
   const handleNavigation = (path: string) => {
-    router.push(path);
-    setIsOpen(false);
-  };
+    router.push(path)
+    setIsOpen(false)
+  }
 
   return (
     <div className="relative" id="profile-dropdown">
@@ -67,13 +66,7 @@ export function ProfileDropdown({
       <button onClick={toggleDropdown} className="flex items-center space-x-2 focus:outline-none">
         <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
           {user.image ? (
-            <Image // Replaced <img> with <Image>
-              src={user.image || "/placeholder.svg"}
-              alt={user.name}
-              className="w-full h-full object-cover"
-              width={40} // Set width
-              height={40} // Set height
-            />
+            <img src={user.image || "/placeholder.svg"} alt={user.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-sm flex items-center justify-center">
               <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -89,13 +82,7 @@ export function ProfileDropdown({
           <div className="p-4 flex items-center space-x-3 border-b border-gray-100 dark:border-gray-700">
             <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
               {user.image ? (
-                <Image // Replaced <img> with <Image>
-                  src={user.image || "/placeholder.svg"}
-                  alt={user.name}
-                  className="w-full h-full object-cover"
-                  width={48} // Set width (12 * 4px = 48px for w-12 h-12)
-                  height={48} // Set height
-                />
+                <img src={user.image || "/placeholder.svg"} alt={user.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-sm flex items-center justify-center">
                   <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -189,5 +176,5 @@ export function ProfileDropdown({
         </div>
       )}
     </div>
-  );
+  )
 }
