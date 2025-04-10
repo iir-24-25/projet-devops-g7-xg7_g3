@@ -38,7 +38,7 @@ export function EnhancedCourseSchedule() {
   return (
     <Card className="border border-border/40 shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">Today's Schedule</CardTitle>
+        <CardTitle className="text-lg font-semibold">Today&apos;s Schedule</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-0">
         {courses.map((course, index) => (

@@ -45,6 +45,7 @@
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.3",
         "class-variance-authority": "^0.7.1",
+        "classnames": "^2.5.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
         "embla-carousel-react": "^8.5.2",
@@ -73,6 +74,8 @@
     },
     "devDependencies": {
         "@types/axios": "^0.14.4",
+        "@types/html2canvas": "^1.0.0",
+        "@types/jspdf": "^2.0.0",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",

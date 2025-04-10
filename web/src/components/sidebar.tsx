@@ -30,7 +30,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { motion } from "framer-motion"
 
 interface SidebarProps {
   className?: string
@@ -74,79 +73,55 @@ export function Sidebar({ className }: SidebarProps) {
     setMounted(true)
   }, [])
 
-  // Animation variants
-  const sidebarVariants = {
-    expanded: { width: "250px" },
-    collapsed: { width: "70px" },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      x: 0,
-      transition: {
-        delay: i * 0.05,
-        duration: 0.3,
-      },
-    }),
-  }
-
-  // Desktop sidebar
+  // Sidebar content with improved design matching dashboard
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center justify-between border-b px-4 bg-gradient-to-r from-cyan-400 to-sky-300 text-white">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-        >
+      {/* Sidebar Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 flex h-16 items-center justify-between px-4 text-white">
+        <div className="z-10">
           <Logo collapsed={collapsed} />
-        </motion.div>
+        </div>
       </div>
 
+      {/* Sidebar Main Content */}
       <div className="flex-1 overflow-auto py-2 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700">
-        {/* Top spacer */}
-        <div className="h-4"></div>
+        <div className="h-2"></div>
 
+        {/* Main Navigation */}
         <nav className="grid gap-1 px-2 py-3">
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
 
             return (
-              <motion.div
+              <Link
                 key={item.id}
-                custom={index}
-                initial="hidden"
-                animate={mounted ? "visible" : "hidden"}
-                variants={itemVariants}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  active
+                    ? "bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500 dark:bg-blue-900/30 dark:text-blue-300"
+                    : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent hover:bg-gray-50 dark:hover:bg-gray-700/30",
+                  collapsed && "justify-center px-0",
+                )}
               >
-                <Link
-                  href={item.href}
+                <div
                   className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all duration-200 relative",
-                    active
-                      ? "bg-cyan-50 text-cyan-700 font-medium border-l-2 border-cyan-500 dark:bg-cyan-900/30 dark:text-cyan-300"
-                      : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent",
-                    collapsed && "justify-center px-0",
+                    "flex items-center justify-center",
+                    active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400",
                   )}
                 >
-                  <Icon
-                    className={cn(
-                      "h-5 w-5 transition-all duration-200",
-                      active ? "text-cyan-600 dark:text-cyan-400" : "text-gray-500 dark:text-gray-400",
-                    )}
-                    strokeWidth={active ? 2.5 : 2}
-                  />
-                  {!collapsed && <span>{item.label}</span>}
-                  {active && !collapsed && (
-                    <div className="ml-auto flex items-center">
-                      <ChevronRight className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-                    </div>
-                  )}
-                </Link>
-              </motion.div>
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                </div>
+
+                {!collapsed && <span>{item.label}</span>}
+
+                {active && !collapsed && (
+                  <div className="ml-auto flex items-center">
+                    <ChevronRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                )}
+              </Link>
             )
           })}
         </nav>
@@ -169,83 +144,75 @@ export function Sidebar({ className }: SidebarProps) {
             )}
           </h3>
           <nav className="grid gap-1">
-            {profileMenuItems.map((item, index) => {
+            {profileMenuItems.map((item) => {
               const active = isActive(item.href)
               const Icon = item.icon
 
               return (
-                <motion.div
+                <Link
                   key={item.id}
-                  custom={index}
-                  initial="hidden"
-                  animate={mounted ? "visible" : "hidden"}
-                  variants={itemVariants}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                    active
+                      ? "bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500 dark:bg-blue-900/30 dark:text-blue-300"
+                      : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent hover:bg-gray-50 dark:hover:bg-gray-700/30",
+                    collapsed && "justify-center px-0",
+                  )}
                 >
-                  <Link
-                    href={item.href}
+                  <div
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all duration-200 relative",
-                      active
-                        ? "bg-teal-50 text-teal-700 font-medium border-l-2 border-teal-500 dark:bg-teal-900/30 dark:text-teal-300"
-                        : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent",
-                      collapsed && "justify-center px-0",
+                      "flex items-center justify-center",
+                      active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400",
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        "h-5 w-5 transition-all duration-200",
-                        active ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400",
-                      )}
-                      strokeWidth={active ? 2.5 : 2}
-                    />
-                    {!collapsed && <span>{item.label}</span>}
-                    {active && !collapsed && (
-                      <div className="ml-auto flex items-center">
-                        <ChevronRight className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-                      </div>
-                    )}
-                  </Link>
-                </motion.div>
+                    <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                  </div>
+
+                  {!collapsed && <span>{item.label}</span>}
+
+                  {active && !collapsed && (
+                    <div className="ml-auto flex items-center">
+                      <ChevronRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  )}
+                </Link>
               )
             })}
           </nav>
         </div>
       </div>
 
+      {/* Sidebar Footer */}
       <div className="border-t p-2 bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700">
         <nav className="grid gap-1">
-          {bottomMenuItems.map((item, index) => {
+          {bottomMenuItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
 
             return (
-              <motion.div
+              <button
                 key={item.id}
-                custom={index}
-                initial="hidden"
-                animate={mounted ? "visible" : "hidden"}
-                variants={itemVariants}
+                onClick={item.onClick || (() => (window.location.href = item.href))}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors w-full text-left",
+                  active
+                    ? "bg-gray-200 text-gray-800 font-medium border-l-2 border-gray-500 dark:bg-gray-700 dark:text-gray-200"
+                    : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/50",
+                  collapsed && "justify-center px-0",
+                )}
               >
-                <button
-                  onClick={item.onClick || (() => (window.location.href = item.href))}
+                <div
                   className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all duration-200 w-full text-left relative",
-                    active
-                      ? "bg-gray-200 text-gray-800 font-medium border-l-2 border-gray-500 dark:bg-gray-700 dark:text-gray-200"
-                      : "text-gray-600 dark:text-gray-300 border-l-2 border-transparent",
-                    collapsed && "justify-center px-0",
+                    "flex items-center justify-center",
+                    active ? "text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400",
                   )}
                 >
-                  <Icon
-                    className={cn(
-                      "h-5 w-5 transition-all duration-200",
-                      active ? "text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400",
-                    )}
-                    strokeWidth={active ? 2.5 : 2}
-                  />
-                  {!collapsed && <span>{item.label}</span>}
-                </button>
-              </motion.div>
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                </div>
+
+                {!collapsed && <span>{item.label}</span>}
+              </button>
             )
           })}
         </nav>
@@ -272,17 +239,16 @@ export function Sidebar({ className }: SidebarProps) {
   // Desktop sidebar
   return (
     <>
-      <motion.aside
+      <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 flex flex-col bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 shadow-sm",
+          "fixed inset-y-0 left-0 z-30 flex flex-col bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 shadow-md",
+          "transition-all duration-300 ease-in-out",
+          collapsed ? "w-[70px]" : "w-[250px]",
           className,
         )}
-        initial={collapsed ? "collapsed" : "expanded"}
-        animate={collapsed ? "collapsed" : "expanded"}
-        variants={sidebarVariants}
       >
         <SidebarContent />
-      </motion.aside>
+      </aside>
       <Dialog open={showLogoutConfirm} onOpenChange={(open) => setShowLogoutConfirm(open)}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

@@ -1,6 +1,7 @@
 package com.bitkal.backend.repository;
 
 import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.entity.Seance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,4 +64,14 @@ public interface SeanceRepo extends JpaRepository<Seance, Long> {
            "INNER JOIN e.groupe g " +
            "WHERE p.id = :id")
     List<String> findGroupNamesByProfessorId(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT p.nom, p.prenom, m.titre, e.salle, m.filiere, m.niveau, e.seance, e.jour, e.semestre " +
+           "FROM Seance s " +
+           "INNER JOIN s.module m " +
+           "INNER JOIN s.emploiTemp e " +
+           "INNER JOIN m.cours c " +
+           "INNER JOIN c.professeur p " +
+           "WHERE p.id = :id AND e.semestre = :semestre")
+    List<Object[]> findAllModuelProfesseurByIdAndSemestre(@Param("id") Long id, @Param("semestre") Semestre semestre);
+    
 }

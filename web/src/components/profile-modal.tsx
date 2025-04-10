@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+
 export function ProfileModal() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -143,7 +144,7 @@ export function ProfileModal() {
                   <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Completed "Advanced UI/UX" course</p>
+                  <p className="text-sm font-medium">Completed &quot;Advanced UI/UX&quot; course</p>
                   <p className="text-xs text-muted-foreground">2 days ago</p>
                 </div>
               </div>
@@ -152,7 +153,7 @@ export function ProfileModal() {
                   <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Earned "UI Design Expert" certificate</p>
+                  <p className="text-sm font-medium">Earned &quot;UI Design Expert&quot; certificate</p>
                   <p className="text-xs text-muted-foreground">1 week ago</p>
                 </div>
               </div>

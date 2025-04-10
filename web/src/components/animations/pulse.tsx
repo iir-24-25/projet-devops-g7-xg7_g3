@@ -8,7 +8,7 @@ interface PulseProps {
   className?: string
   duration?: number
   scale?: number
-  repeat?: number | Infinity
+  repeat?: number 
 }
 
 export const Pulse = ({

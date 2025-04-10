@@ -7,14 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.dto.ModuelProfDTO;
 import com.bitkal.backend.model.dto.SeanceProfesseurDTO;
 import com.bitkal.backend.repository.SeanceRepo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class SeanceService {
     @Autowired
     private SeanceRepo seanceRepo;
+
+    private static final Logger logger = LoggerFactory.getLogger(SeanceService.class);
 
     public List<SeanceProfesseurDTO> findSeanceProfesseur(String day, Long id) {
         Jours jour = Jours.valueOf(day.toUpperCase());
@@ -64,5 +70,30 @@ public class SeanceService {
             System.out.println(group);
         }
         return groupNames.size(); // Conversion implicite de int à long
+    }
+
+    public List<ModuelProfDTO> findAllModuelProfesseurByIdAndSemestre(Long id, String semestre) {
+        logger.debug("Received request - id: {}, semestre: {}", id, semestre);
+        try {
+            Semestre semestreEnum = Semestre.valueOf(semestre.toUpperCase()); // Ensure upper case
+            logger.debug("Converted semestre to enum: {}", semestreEnum);
+            List<Object[]> rawResults = seanceRepo.findAllModuelProfesseurByIdAndSemestre(id, semestreEnum);
+            return rawResults.stream()
+                    .map(result -> new ModuelProfDTO(
+                        result[0] != null ? (String) result[0] : "",
+                        result[1] != null ? (String) result[1] : "",
+                        result[2] != null ? (String) result[2] : "",
+                        result[3] != null ? result[3].toString() : "",
+                        result[4] != null ? result[4].toString() : "",
+                        result[5] != null ? result[5].toString() : "",
+                        result[6] != null ? result[6].toString() : "",
+                        result[7] != null ? result[7].toString() : "",
+                        result[8] != null ? result[8].toString() : ""
+                    ))
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid semestre value: {}", semestre, e);
+            throw new IllegalArgumentException("Invalid semestre value: " + semestre);
+        }
     }
 }

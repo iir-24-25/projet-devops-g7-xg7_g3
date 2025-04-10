@@ -9,8 +9,21 @@ import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight, BookOpen, Users } f
 import { cn } from "@/lib/utils"
 import { format, addDays, subDays, isSameDay, isToday } from "date-fns"
 
-// Course schedule data
-const courseScheduleData = [
+// Define the Course interface
+interface Course {
+  id: number
+  title: string
+  instructor: string
+  instructorImage: string
+  date: Date
+  time: string
+  location: string
+  color: string
+  category: string
+}
+
+// Course schedule data with explicit typing
+const courseScheduleData: Course[] = [
   {
     id: 1,
     title: "HealthTrack Mobile App",
@@ -86,26 +99,17 @@ export function CourseSchedule() {
   const today = new Date()
   const [currentDate, setCurrentDate] = useState(new Date(2025, 2, 22)) // March 22, 2025
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 2, 22))
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [viewMode, setViewMode] = useState("week") // "week" or "day"
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null) // Type selectedCourse as Course | null
+  const [viewMode, setViewMode] = useState<"week" | "day">("week") // Explicitly type viewMode
 
   // Generate dates for the current view - 5 days starting from current date
-  const getDatesForView = (date) => {
-    // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const getDatesForView = (date: Date) => {
     const currentDayOfWeek = date.getDay()
-
-    // Calculate the difference to get to the previous Monday
-    // If today is Sunday (0), we need to go back 6 days to get to Monday
-    // If today is Monday (1), we need to go back 0 days
-    // If today is Tuesday (2), we need to go back 1 day, etc.
     const daysToMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1
-
-    // Get the Monday of the current week
     const mondayOfWeek = subDays(date, daysToMonday)
 
     return Array.from({ length: 5 }).map((_, i) => {
-      const dateObj = addDays(mondayOfWeek, i) // Start from Monday and add days (only weekdays)
-
+      const dateObj = addDays(mondayOfWeek, i)
       return {
         day: format(dateObj, "dd"),
         weekday: format(dateObj, "EEE"),
@@ -119,50 +123,38 @@ export function CourseSchedule() {
   }
 
   const calendarDates = getDatesForView(currentDate)
-
-  // Filter courses for selected date
   const filteredCourses = courseScheduleData.filter((course) => isSameDay(course.date, selectedDate))
 
-  // Navigate to previous period
   const prevPeriod = () => {
-    setCurrentDate((prev) => {
-      return subDays(prev, viewMode === "week" ? 7 : 1)
-    })
+    setCurrentDate((prev) => subDays(prev, viewMode === "week" ? 7 : 1))
     if (viewMode === "day") {
       setSelectedDate((prev) => subDays(prev, 1))
     }
   }
 
-  // Navigate to next period
   const nextPeriod = () => {
-    setCurrentDate((prev) => {
-      return addDays(prev, viewMode === "week" ? 7 : 1)
-    })
+    setCurrentDate((prev) => addDays(prev, viewMode === "week" ? 7 : 1))
     if (viewMode === "day") {
       setSelectedDate((prev) => addDays(prev, 1))
     }
   }
 
-  // Go to today
   const goToToday = () => {
     setCurrentDate(today)
     setSelectedDate(today)
   }
 
-  // Handle date selection
-  const handleDateSelect = (date) => {
+  const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
     if (viewMode === "week") {
       setViewMode("day")
     }
   }
 
-  // Function to get courses for a specific time slot
-  const getCoursesForTimeSlot = (timeSlot) => {
+  const getCoursesForTimeSlot = (timeSlot: string) => {
     return filteredCourses.filter((course) => course.time === timeSlot)
   }
 
-  // Toggle between week and day view
   const toggleViewMode = () => {
     setViewMode(viewMode === "week" ? "day" : "week")
   }

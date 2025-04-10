@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Card,
   CardContent,
@@ -52,106 +52,38 @@ type Course = {
   schedule: ScheduleSlot[]
 }
 
+type ApiModule = {
+  nom: string
+  prenom: string
+  titre: string
+  salle: string
+  filiere: string
+  niveau: string
+  seance: string
+  jour: string
+  semestre: string
+}
+
 // ===================
-// MOCK DATA
+// UTILS
 // ===================
 
-const courses: Course[] = [
-  {
-    id: 1,
-    title: "Web Development",
-    description: "Learn modern web development techniques and frameworks",
-    instructor: "Dr. Sarah Johnson",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=SJ",
-    level: "Intermediate",
-    duration: "12 weeks",
-    category: "Development",
-    color: "bg-blue-500",
-    schedule: [
-      { day: "Monday", time: "10:00 - 12:00", location: "Room 101" },
-      { day: "Wednesday", time: "14:00 - 16:00", location: "Room 101" }
-    ]
-  },
-  {
-    id: 2,
-    title: "UI/UX Design",
-    description: "Master the principles of user interface and experience design",
-    instructor: "Prof. Michael Chen",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=MC",
-    level: "Beginner",
-    duration: "8 weeks",
-    category: "Design",
-    color: "bg-purple-500",
-    schedule: [
-      { day: "Tuesday", time: "09:00 - 11:00", location: "Design Studio" },
-      { day: "Thursday", time: "13:00 - 15:00", location: "Design Studio" }
-    ]
-  },
-  {
-    id: 3,
-    title: "Data Science Fundamentals",
-    description: "Introduction to data analysis, visualization, and machine learning",
-    instructor: "Dr. Emily Davis",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=ED",
-    level: "Beginner",
-    duration: "10 weeks",
-    category: "Data",
-    color: "bg-green-500",
-    schedule: [
-      { day: "Monday", time: "14:00 - 16:00", location: "Lab 3" },
-      { day: "Friday", time: "10:00 - 12:00", location: "Lab 3" }
-    ]
-  },
-  {
-    id: 4,
-    title: "Advanced JavaScript",
-    description: "Deep dive into modern JavaScript features and frameworks",
-    instructor: "Prof. Alex Turner",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=AT",
-    level: "Advanced",
-    duration: "8 weeks",
-    category: "Development",
-    color: "bg-yellow-500",
-    schedule: [
-      { day: "Tuesday", time: "14:00 - 16:00", location: "Room 205" },
-      { day: "Thursday", time: "14:00 - 16:00", location: "Room 205" }
-    ]
-  },
-  {
-    id: 5,
-    title: "Mobile App Development",
-    description: "Build native and cross-platform mobile applications",
-    instructor: "Dr. James Wilson",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=JW",
-    level: "Intermediate",
-    duration: "12 weeks",
-    category: "Development",
-    color: "bg-red-500",
-    schedule: [
-      { day: "Wednesday", time: "10:00 - 12:00", location: "Lab 2" },
-      { day: "Friday", time: "14:00 - 16:00", location: "Lab 2" }
-    ]
-  },
-  {
-    id: 6,
-    title: "Artificial Intelligence",
-    description: "Introduction to AI concepts, algorithms, and applications",
-    instructor: "Prof. Sophia Lee",
-    instructorImage: "/placeholder.svg?height=40&width=40&text=SL",
-    level: "Advanced",
-    duration: "14 weeks",
-    category: "Data",
-    color: "bg-indigo-500",
-    schedule: [
-      { day: "Monday", time: "09:00 - 11:00", location: "Room 301" },
-      { day: "Wednesday", time: "09:00 - 11:00", location: "Room 301" }
-    ]
-  }
-]
+const seanceToTimeMap: Record<string, string> = {
+  "S1": "08:00 - 10:00",
+  "S2": "10:00 - 12:00",
+  "S3": "13:00 - 15:00",
+  "S4": "15:00 - 17:00",
+  "S5": "08:00 - 10:00",
+  "S6": "10:00 - 12:00"
+}
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-
-const timeSlots = ["08:00 - 10:00", "10:00 - 12:00", "13:00 - 15:00", "15:00 - 17:00"]
+const filiereColors: Record<string, string> = {
+  "GC": "bg-blue-500",
+  "GI": "bg-green-500",
+  "GE": "bg-purple-500",
+  "GM": "bg-red-500",
+  "default": "bg-gray-500"
+}
 
 // ===================
 // COMPONENT
@@ -160,10 +92,85 @@ const timeSlots = ["08:00 - 10:00", "10:00 - 12:00", "13:00 - 15:00", "15:00 - 1
 export function CoursesPage() {
   const [activeTab, setActiveTab] = useState<string>("list")
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("authToken") || "your-token-here";
+        const response = await fetch(
+          "http://localhost:8080/api/module/professeur/semestre?id=61999&semestre=DEUXIEME",
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data: ApiModule[] = await response.json();
+        const transformedCourses = transformApiData(data);
+        setCourses(transformedCourses);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const transformApiData = (apiData: ApiModule[]): Course[] => {
+    return apiData.map((module, index) => ({
+      id: index + 1,
+      title: module.titre,
+      description: `Module ${module.filiere} - ${module.niveau}`,
+      instructor: `${module.prenom} ${module.nom}`,
+      instructorImage: `/placeholder.svg?height=40&width=40&text=${module.prenom[0]}${module.nom[0]}`,
+      level: module.niveau,
+      duration: "Full semester",
+      category: module.filiere,
+      color: filiereColors[module.filiere] || filiereColors.default,
+      schedule: [
+        {
+          day: module.jour,
+          time: seanceToTimeMap[module.seance] || "08:00 - 10:00",
+          location: module.salle
+        }
+      ]
+    }));
+  }
+
+  const daysOfWeek = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
+  const timeSlots = ["08:00 - 10:00", "10:00 - 12:00", "13:00 - 15:00", "15:00 - 17:00"]
 
   const getCoursesForTimeSlot = (day: string, time: string): Course[] => {
     return courses.filter((course) =>
       course.schedule.some((schedule) => schedule.day === day && schedule.time === time)
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p>Loading courses...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64 text-red-500">
+        <p>Error: {error}</p>
+      </div>
     )
   }
 
@@ -173,7 +180,7 @@ export function CoursesPage() {
         <CardHeader className="flex flex-row items-center justify-between pb-2 border-b">
           <CardTitle className="text-xl font-semibold flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            Courses
+            Courses Schedule
           </CardTitle>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -229,8 +236,7 @@ export function CoursesPage() {
             <TabsContent value="schedule" className="mt-0">
               <div className="bg-white dark:bg-gray-800 rounded-xl border shadow-md overflow-x-auto">
                 <div className="min-w-[800px]">
-                  {/* Schedule Header */}
-                  <div className="grid grid-cols-[150px_repeat(5,1fr)] border-b">
+                  <div className="grid grid-cols-[150px_repeat(6,1fr)] border-b">
                     <div className="p-3 font-medium text-center">Time</div>
                     {daysOfWeek.map((day) => (
                       <div key={day} className="p-3 font-medium text-center border-l">
@@ -239,14 +245,11 @@ export function CoursesPage() {
                     ))}
                   </div>
 
-                  {/* Schedule Body */}
                   {timeSlots.map((timeSlot) => (
-                    <div key={timeSlot} className="grid grid-cols-[150px_repeat(5,1fr)] border-b">
+                    <div key={timeSlot} className="grid grid-cols-[150px_repeat(6,1fr)] border-b">
                       <div className="p-3 text-center flex items-center justify-center text-sm">{timeSlot}</div>
-
                       {daysOfWeek.map((day) => {
                         const coursesInSlot = getCoursesForTimeSlot(day, timeSlot)
-
                         return (
                           <div key={day} className="p-2 border-l relative min-h-[100px]">
                             {coursesInSlot.length > 0 ? (
@@ -280,7 +283,6 @@ export function CoursesPage() {
         </CardContent>
       </Card>
 
-      {/* Course Details Modal */}
       {selectedCourse && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
@@ -291,24 +293,18 @@ export function CoursesPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`h-2 ${selectedCourse.color} -mx-6 -mt-6 rounded-t-xl mb-6`}></div>
-
             <div className="flex items-start gap-4 mb-6">
               <Avatar className="h-16 w-16 rounded-xl border-2 border-gray-100 dark:border-gray-700 shadow-md">
                 <AvatarImage src={selectedCourse.instructorImage} alt={selectedCourse.instructor} />
                 <AvatarFallback className="text-lg">
-                  {selectedCourse.instructor
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {selectedCourse.instructor.split(" ").map((n) => n[0]).join("")}
                 </AvatarFallback>
               </Avatar>
-
               <div>
-                <h3 className="text-2xl font-bold">{selectedCourse.title}</h3>
+                <h3 className="text-2xl font-bold">{selectedCourse.title}</h3> {/* Corrigé ici */}
                 <p className="text-sm text-muted-foreground">{selectedCourse.instructor}</p>
               </div>
             </div>
-
             <div className="space-y-4 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -317,7 +313,6 @@ export function CoursesPage() {
                 </div>
                 <Badge>{selectedCourse.level}</Badge>
               </div>
-
               <div className="space-y-2">
                 <h4 className="font-medium">Schedule:</h4>
                 {selectedCourse.schedule.map((slot, index) => (
@@ -338,17 +333,15 @@ export function CoursesPage() {
                 ))}
               </div>
             </div>
-
             <div className="mb-6">
               <h4 className="font-medium mb-2">Description:</h4>
               <p className="text-muted-foreground">{selectedCourse.description}</p>
             </div>
-
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setSelectedCourse(null)}>
                 Close
               </Button>
-              <Button>Enroll</Button>
+              <Button>View Details</Button>
             </div>
           </div>
         </div>

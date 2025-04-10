@@ -571,10 +571,10 @@ export function CalendarSection() {
               <Avatar className="h-16 w-16 rounded-xl border-2 border-blue-100 dark:border-blue-900 shadow-md">
                 <AvatarImage src={selectedEvent.avatar} alt={selectedEvent.instructor} />
                 <AvatarFallback className="text-lg bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                  {selectedEvent.instructor
-                    .split(" ")
-                    .map((n:string) => n[0])
-                    .join("")}
+                {selectedEvent.instructor
+                  .split(" ")
+                  .map((n: string) => n[0])
+                  .join("")}
                 </AvatarFallback>
               </Avatar>
 

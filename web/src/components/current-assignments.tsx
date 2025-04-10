@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
   CalendarDays,
@@ -14,177 +14,180 @@ import {
   X,
   ArrowLeft,
   ArrowRight,
-} from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-const allAssignments = [
-  {
-    id: 1,
-    title: "Basic Design",
-    subtitle: "Introduction to Graphics Design",
-    description:
-      "Learn the fundamental principles of graphic design including color theory, typography, and layout. This assignment covers the essential concepts that form the foundation of all design work.",
-    teacher: "Prof. Maria Rodriguez",
-    dueDate: "23rd March 2022",
-    branch: "Design & Arts",
-    level: "Beginner - Level 1",
-    submitted: 22,
-    notSubmitted: 10,
-    total: 32,
-    category: "design",
-  },
-  {
-    id: 2,
-    title: "Advanced UI/UX with Extended Title That Could Potentially Overflow",
-    subtitle: "User Interface Principles and Advanced Interaction Design Patterns",
-    description:
-      "Explore advanced user interface design principles and learn how to create intuitive, accessible, and beautiful digital experiences. This course covers interaction design patterns, usability testing, and design systems implementation.",
-    teacher: "Dr. James Wilson",
-    dueDate: "25th March 2022",
-    branch: "Digital Design",
-    level: "Advanced - Level 3",
-    submitted: 18,
-    notSubmitted: 14,
-    total: 32,
-    category: "design",
-  },
-  {
-    id: 3,
-    title: "Web Development",
-    subtitle: "Frontend Technologies",
-    description:
-      "Master modern frontend technologies including HTML5, CSS3, and JavaScript frameworks. Build responsive and interactive web applications using industry-standard tools and methodologies.",
-    teacher: "Prof. Sarah Johnson",
-    dueDate: "28th March 2022",
-    branch: "Computer Science",
-    level: "Intermediate - Level 2",
-    submitted: 25,
-    notSubmitted: 7,
-    total: 32,
-    category: "development",
-  },
-  {
-    id: 4,
-    title: "Database Design",
-    subtitle: "SQL Fundamentals",
-    description:
-      "Learn database design principles and SQL fundamentals. This course covers relational database concepts, normalization, query optimization, and database management systems.",
-    teacher: "Dr. Michael Chen",
-    dueDate: "30th March 2022",
-    branch: "Information Systems",
-    level: "Intermediate - Level 2",
-    submitted: 20,
-    notSubmitted: 12,
-    total: 32,
-    category: "development",
-  },
-  {
-    id: 5,
-    title: "Mobile App Design",
-    subtitle: "iOS and Android Principles",
-    description:
-      "Discover the principles of designing for mobile platforms including iOS and Android. Learn about mobile-specific interaction patterns, constraints, and opportunities.",
-    teacher: "Prof. Emily Davis",
-    dueDate: "2nd April 2022",
-    branch: "Mobile Computing",
-    level: "Advanced - Level 3",
-    submitted: 15,
-    notSubmitted: 17,
-    total: 32,
-    category: "design",
-  },
-  {
-    id: 6,
-    title: "Backend Development",
-    subtitle: "Server-side Programming",
-    description:
-      "Explore server-side programming concepts and technologies. Build robust APIs, implement authentication systems, and learn about database integration and deployment strategies.",
-    teacher: "Dr. Robert Kim",
-    dueDate: "5th April 2022",
-    branch: "Software Engineering",
-    level: "Advanced - Level 3",
-    submitted: 12,
-    notSubmitted: 20,
-    total: 32,
-    category: "development",
-  },
-]
+interface Assignment {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  teacher: string;
+  dueDate: string;
+  branch: string;
+  level: string;
+  submitted: number;
+  notSubmitted: number;
+  total: number;
+  category: string;
+  seance: string; // Added seance to the interface
+}
 
 export function CurrentAssignments() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [expandedAssignment, setExpandedAssignment] = useState<number | null>(null)
-  const [selectedAssignment, setSelectedAssignment] = useState<any | null>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const assignmentsPerView = isMobile ? 1 : 2
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedAssignment, setExpandedAssignment] = useState<number | null>(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const assignmentsPerView = isMobile ? 1 : 2;
 
   // Check if we're on mobile
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
+      setIsMobile(window.innerWidth < 768);
+    };
 
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
 
     return () => {
-      window.removeEventListener("resize", checkMobile)
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  // Function to map session codes to time slots
+  const getSessionTime = (seance: string): string => {
+    switch (seance) {
+      case "S1":
+        return "8:30 AM - 10:00 AM";
+      case "S2":
+        return "10:15 AM - 11:45 AM";
+      case "S3":
+        return "12:00 PM - 1:30 PM";
+      case "S4":
+        return "2:00 PM - 3:30 PM";
+      case "S5":
+        return "3:45 PM - 5:15 PM";
+      case "S6":
+        return "5:30 PM - 7:00 PM";
+      default:
+        return seance; // Return the raw value if no match
     }
-  }, [])
+  };
+
+  // Fetch assignments from API
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const authToken = localStorage.getItem("authToken");
+      const profId = localStorage.getItem("id");
+
+      if (!authToken || !profId) {
+        setError("No authentication token or professor ID found");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/module/professeur?id=${profId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error(`Failed to fetch assignments: ${response.status}`);
+
+        const data = await response.json();
+
+        // Map API data to Assignment interface with session time condition
+        const mappedAssignments: Assignment[] = data.map((item: any, index: number) => ({
+          id: index + 1,
+          title: item.titre,
+          subtitle: `${item.filiere} - ${item.niveau}`,
+          description: `Session ${item.seance} (${getSessionTime(item.seance)}) in room ${item.salle} on ${item.jour.toLowerCase()} for semester ${item.semestre.toLowerCase()}.`,
+          teacher: `${item.prenom} ${item.nom}`,
+          dueDate: item.jour,
+          branch: item.filiere,
+          level: item.niveau.replace("NIVEAU_", "Level "),
+          submitted: 0, // Placeholder
+          notSubmitted: 0, // Placeholder
+          total: 0, // Placeholder
+          category: "module",
+          seance: item.seance, // Store seance separately
+        }));
+
+        setAssignments(mappedAssignments);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching assignments:", error);
+        setError(error instanceof Error ? error.message : "An unknown error occurred");
+        setLoading(false);
+      }
+    };
+
+    fetchAssignments();
+  }, []);
 
   // Filter assignments based on search term
-  const filteredAssignments = allAssignments.filter(
+  const filteredAssignments = assignments.filter(
     (assignment) =>
       assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       assignment.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       assignment.teacher.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  );
 
   // Calculate total pages
-  const totalPages = Math.ceil(filteredAssignments.length / assignmentsPerView)
+  const totalPages = Math.ceil(filteredAssignments.length / assignmentsPerView);
 
   // Get current visible assignments
-  const visibleAssignments = filteredAssignments.slice(currentIndex, currentIndex + assignmentsPerView)
+  const visibleAssignments = filteredAssignments.slice(currentIndex, currentIndex + assignmentsPerView);
 
   // Navigate to next assignments
   const nextAssignments = () => {
     if (currentIndex + assignmentsPerView < filteredAssignments.length) {
-      setIsTransitioning(true)
+      setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex(currentIndex + assignmentsPerView)
-        setIsTransitioning(false)
-      }, 300)
+        setCurrentIndex(currentIndex + assignmentsPerView);
+        setIsTransitioning(false);
+      }, 300);
     }
-  }
+  };
 
   // Navigate to previous assignments
   const prevAssignments = () => {
     if (currentIndex > 0) {
-      setIsTransitioning(true)
+      setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex(currentIndex - assignmentsPerView)
-        setIsTransitioning(false)
-      }, 300)
+        setCurrentIndex(currentIndex - assignmentsPerView);
+        setIsTransitioning(false);
+      }, 300);
     }
-  }
+  };
 
   // Toggle expanded state for an assignment
   const toggleExpand = (id: number) => {
-    setExpandedAssignment(expandedAssignment === id ? null : id)
-  }
+    setExpandedAssignment(expandedAssignment === id ? null : id);
+  };
 
   // Open assignment details modal
-  const openAssignmentDetails = (assignment: any) => {
-    setSelectedAssignment(assignment)
-  }
+  const openAssignmentDetails = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+  };
 
   // Close assignment details modal
   const closeAssignmentDetails = () => {
-    setSelectedAssignment(null)
-  }
+    setSelectedAssignment(null);
+  };
+
+  if (loading) return <div className="p-4">Loading...</div>;
+  if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
 
   return (
     <Card className="shadow-lg border-0 overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 flex flex-col w-full mb-0">
@@ -206,7 +209,6 @@ export function CurrentAssignments() {
           </Button>
         </div>
 
-        {/* Search bar */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
@@ -218,7 +220,6 @@ export function CurrentAssignments() {
         </div>
       </CardHeader>
       <CardContent className="p-4 md:p-6">
-        {/* Navigation controls */}
         <div className="flex justify-between items-center mb-4">
           <Button
             variant="outline"
@@ -265,7 +266,6 @@ export function CurrentAssignments() {
           </Button>
         </div>
 
-        {/* Assignments with transition effect */}
         <div
           className={cn(
             "grid grid-cols-1 md:grid-cols-2 gap-4 transition-opacity duration-300",
@@ -332,7 +332,9 @@ export function CurrentAssignments() {
                         className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0"
                         strokeWidth={2}
                       />
-                      <span className="text-sm text-muted-foreground">Due: {assignment.dueDate}</span>
+                      <span className="text-sm text-muted-foreground">
+                        Due: {assignment.dueDate} ({getSessionTime(assignment.seance)})
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Building className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" strokeWidth={2} />
@@ -359,9 +361,9 @@ export function CurrentAssignments() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                     <div
-                      className="h-55 bg-gradient-to-r from-blue-400 to-blue-500"
+                      className="h-full bg-gradient-to-r from-blue-400 to-blue-500"
                       style={{
-                        width: `${(assignment.submitted / assignment.total) * 100}%`,
+                        width: assignment.total > 0 ? `${(assignment.submitted / assignment.total) * 100}%` : "0%",
                       }}
                     ></div>
                   </div>
@@ -380,7 +382,6 @@ export function CurrentAssignments() {
           ))}
         </div>
 
-        {/* Additional content */}
         <div className="mt-4 pt-3 border-t">
           <div className="flex justify-between items-center">
             <div className="text-sm text-muted-foreground">
@@ -395,7 +396,6 @@ export function CurrentAssignments() {
         </div>
       </CardContent>
 
-      {/* Assignment Details Modal */}
       {selectedAssignment && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
@@ -425,7 +425,7 @@ export function CurrentAssignments() {
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Due Date</h3>
-                  <p className="text-sm font-medium">{selectedAssignment.dueDate}</p>
+                  <p className="text-sm font-medium">{selectedAssignment.dueDate} ({getSessionTime(selectedAssignment.seance)})</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Branch</h3>
@@ -449,9 +449,9 @@ export function CurrentAssignments() {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                   <div
-                    className="h-55 bg-gradient-to-r from-blue-400 to-blue-500"
+                    className="h-full bg-gradient-to-r from-blue-400 to-blue-500"
                     style={{
-                      width: `${(selectedAssignment.submitted / selectedAssignment.total) * 100}%`,
+                      width: selectedAssignment.total > 0 ? `${(selectedAssignment.submitted / selectedAssignment.total) * 100}%` : "0%",
                     }}
                   ></div>
                 </div>
@@ -468,5 +468,5 @@ export function CurrentAssignments() {
         </div>
       )}
     </Card>
-  )
+  );
 }

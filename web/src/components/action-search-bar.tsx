@@ -237,7 +237,7 @@ function ActionSearchBar({ actions = allActions }: { actions?: Action[] }) {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isFocused, result, selectedIndex])
+  }, [isFocused, result, selectedIndex, handleActionSelect]) // Added handleActionSelect to dependencies
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -316,8 +316,8 @@ function ActionSearchBar({ actions = allActions }: { actions?: Action[] }) {
                   <li className="px-4 py-6 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <Search className="h-8 w-8 text-gray-300 dark:text-gray-600" />
-                      <p className="text-sm text-gray-500">No results found for "{query}"</p>
-                      <p className="text-xs text-gray-400">Try searching for pages, features, or actions</p>
+                      <p className="text-sm text-gray-500">No results found for &quot;{query}&quot;</p>
+                      <span className="text-xs text-gray-400">Try searching for pages, features, or actions</span>
                     </div>
                   </li>
                 )}

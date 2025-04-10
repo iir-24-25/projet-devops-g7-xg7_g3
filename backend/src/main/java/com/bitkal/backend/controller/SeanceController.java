@@ -44,5 +44,8 @@ public class SeanceController {
         return seanceService.countDistinctGroupsByProfessorId(professorId);
     }
     
-    
+    @GetMapping("/module/professeur/semestre")
+    public List<ModuelProfDTO> findAllModuelProfesseurByIdAndSemestre(@RequestParam("id") Long id, @RequestParam("semestre") String semestre) {
+        return seanceService.findAllModuelProfesseurByIdAndSemestre(id, semestre);
+    }
 }

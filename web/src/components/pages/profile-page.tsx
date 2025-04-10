@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
+import Image from "next/image";
 import {
   User,
   Mail,
@@ -278,28 +279,28 @@ export function ProfilePage() {
                               <span className="font-medium">UI/UX Design</span>
                               <span>95%</span>
                             </div>
-                            <Progress value={95} className="h-2" indicatorClassName="bg-indigo-600" />
+                            <Progress value={95} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                           <div>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">Figma</span>
                               <span>98%</span>
                             </div>
-                            <Progress value={98} className="h-2" indicatorClassName="bg-indigo-600" />
+                            <Progress value={98} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                           <div>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">Adobe XD</span>
                               <span>90%</span>
                             </div>
-                            <Progress value={90} className="h-2" indicatorClassName="bg-indigo-600" />
+                            <Progress value={90} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                           <div>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">Sketch</span>
                               <span>85%</span>
                             </div>
-                            <Progress value={85} className="h-2" indicatorClassName="bg-indigo-600" />
+                            <Progress value={85} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                         </div>
                       </div>
@@ -316,21 +317,21 @@ export function ProfilePage() {
                               <span className="font-medium">HTML/CSS</span>
                               <span>92%</span>
                             </div>
-                            <Progress value={92} className="h-2" indicatorClassName="bg-green-600" />
+                            <Progress value={92} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                           <div>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">JavaScript</span>
                               <span>80%</span>
                             </div>
-                            <Progress value={80} className="h-2" indicatorClassName="bg-green-600" />
+                            <Progress value={80} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                           <div>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">React</span>
                               <span>75%</span>
                             </div>
-                            <Progress value={75} className="h-2" indicatorClassName="bg-green-600" />
+                            <Progress value={75} className="h-2 [&>div]:bg-indigo-600" />
                           </div>
                         </div>
                       </div>
@@ -392,7 +393,7 @@ export function ProfilePage() {
                             Native
                           </Badge>
                         </div>
-                        <Progress value={100} className="h-2" indicatorClassName="bg-green-600" />
+                        <Progress value={100} className="h-2 [&>div]:bg-indigo-600" />
                       </div>
 
                       <div className="space-y-2">
@@ -405,7 +406,7 @@ export function ProfilePage() {
                             Fluent
                           </Badge>
                         </div>
-                        <Progress value={85} className="h-2" indicatorClassName="bg-blue-600" />
+                        <Progress value={85} className="h-2 [&>div]:bg-indigo-600" />
                       </div>
 
                       <div className="space-y-2">
@@ -418,7 +419,7 @@ export function ProfilePage() {
                             Intermediate
                           </Badge>
                         </div>
-                        <Progress value={60} className="h-2" indicatorClassName="bg-amber-600" />
+                        <Progress value={60} className="h-2 [&>div]:bg-indigo-600" />
                       </div>
 
                       <div className="space-y-2">
@@ -431,7 +432,7 @@ export function ProfilePage() {
                             Basic
                           </Badge>
                         </div>
-                        <Progress value={30} className="h-2" indicatorClassName="bg-purple-600" />
+                        <Progress value={30} className="h-2 [&>div]:bg-indigo-600" />
                       </div>
                     </div>
                   </CardContent>
@@ -484,20 +485,20 @@ export function ProfilePage() {
                   <CardContent className="p-6">
                     <div className="space-y-4 text-lg">
                       <p>
-                        I'm a passionate Senior Product Designer with over 8 years of experience creating user-centered
+                        I&apos;m a passionate Senior Product Designer with over 8 years of experience creating user-centered
                         digital experiences that blend aesthetics with functionality. My approach combines strategic
                         thinking with creative problem-solving to deliver designs that not only look beautiful but also
                         achieve business goals.
                       </p>
                       <p>
-                        Throughout my career, I've collaborated with cross-functional teams to build products that users
+                        Throughout my career, I&apos;ve collaborated with cross-functional teams to build products that users
                         love. I specialize in UI/UX design, design systems, and leading design teams to create cohesive
                         experiences across multiple platforms and touchpoints.
                       </p>
                       <p>
                         My design philosophy centers on empathy, accessibility, and continuous iteration. I believe that
-                        great design should be inclusive and solve real problems for real people. When I'm not
-                        designing, you'll find me exploring new coffee shops, reading design books, or traveling to gain
+                        great design should be inclusive and solve real problems for real people. When I&apos;m not
+                        designing, you&apos;ll find me exploring new coffee shops, reading design books, or traveling to gain
                         new perspectives.
                       </p>
                     </div>
@@ -697,8 +698,8 @@ export function ProfilePage() {
                             <div>
                               <h4 className="font-medium mb-2">Thesis & Research:</h4>
                               <p className="text-muted-foreground">
-                                "Designing Intuitive Interfaces for Complex Systems: A Case Study in Healthcare
-                                Applications"
+                              &quot;Designing Intuitive Interfaces for Complex Systems: A Case Study in Healthcare
+                                Applications&quot;
                               </p>
                               <p className="text-muted-foreground mt-2">
                                 Research focused on simplifying complex workflows in medical software through innovative
@@ -743,8 +744,8 @@ export function ProfilePage() {
                             <div>
                               <h4 className="font-medium mb-2">Senior Project:</h4>
                               <p className="text-muted-foreground">
-                                "Visual Communication in Digital Environments: Exploring the Intersection of Design and
-                                Technology"
+                              &quot;Visual Communication in Digital Environments: Exploring the Intersection of Design and
+                                Technology&quot;
                               </p>
                               <p className="text-muted-foreground mt-2">
                                 Created an interactive digital exhibition that explored how visual design principles
@@ -900,11 +901,14 @@ export function ProfilePage() {
               <Card className="overflow-hidden border-none shadow-xl transition-all duration-300 hover:shadow-2xl">
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                   <div className="aspect-square lg:aspect-auto relative overflow-hidden">
-                    <img
-                      src="/placeholder.svg?height=600&width=600&text=Featured+Project"
-                      alt="Featured Project"
-                      className="w-full h-full object-cover"
-                    />
+                  <Image
+                    src="/placeholder.svg?height=600&width=600&text=Featured+Project"
+                    alt="Featured Project"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority
+                  />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6 lg:hidden">
                       <div className="text-white">
                         <h3 className="text-2xl font-bold">HealthTrack Mobile App</h3>
@@ -945,7 +949,7 @@ export function ProfilePage() {
                           <li>60% increase in daily active users after redesign</li>
                           <li>42% improvement in task completion rates</li>
                           <li>User satisfaction score improved from 3.2/5 to 4.7/5</li>
-                          <li>Featured on the App Store's Health & Fitness category</li>
+                          <li>Featured on the App Store&apos;s Health & Fitness category</li>
                         </ul>
                       </div>
                     </div>
@@ -1317,7 +1321,7 @@ export function ProfilePage() {
                             <Label htmlFor="activity-status" className="text-base">
                               Activity Status
                             </Label>
-                            <p className="text-sm text-muted-foreground">Show when you're active on the platform</p>
+                            <p className="text-sm text-muted-foreground">Show when you&apos;re active on the platform</p>
                           </div>
                           <Switch id="activity-status" defaultChecked />
                         </div>

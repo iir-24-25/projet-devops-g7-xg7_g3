@@ -40,7 +40,7 @@ export function HelpPage() {
                 <div className="rounded-lg border p-4">
                   <h3 className="text-lg font-medium mb-2">How do I reset my password?</h3>
                   <p className="text-muted-foreground">
-                    To reset your password, go to the login page and click on "Forgot Password". Follow the instructions
+                    To reset your password, go to the login page and click on &quot;Forgot Password&quot;. Follow the instructions
                     sent to your email to create a new password.
                   </p>
                 </div>
@@ -48,7 +48,7 @@ export function HelpPage() {
                 <div className="rounded-lg border p-4">
                   <h3 className="text-lg font-medium mb-2">How do I submit an assignment?</h3>
                   <p className="text-muted-foreground">
-                    Navigate to the Assignments page, find the assignment you want to submit, and click on "Submit". You
+                    Navigate to the Assignments page, find the assignment you want to submit, and click on &quot;Submit&quot;. You
                     can upload files or enter text directly.
                   </p>
                 </div>
@@ -64,8 +64,8 @@ export function HelpPage() {
                 <div className="rounded-lg border p-4">
                   <h3 className="text-lg font-medium mb-2">How do I enroll in a new course?</h3>
                   <p className="text-muted-foreground">
-                    Go to the Courses page and click on "Browse Courses". Find the course you're interested in and click
-                    "Enroll".
+                    Go to the Courses page and click on &quot;Browse Courses&quot;. Find the course you’re interested in and click
+                    &quot;Enroll&quot;.
                   </p>
                 </div>
               </div>

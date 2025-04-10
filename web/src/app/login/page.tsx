@@ -100,7 +100,7 @@ export default function LoginPage() {
 
       switch(true) {
         case userType.includes("Professeur"):
-          router.push("/prof");
+          router.push("/dashboard");
           break;
         case userType.includes("Admin"):
           router.push("/admin");

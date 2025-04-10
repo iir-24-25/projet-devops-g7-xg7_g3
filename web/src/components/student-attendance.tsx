@@ -10,7 +10,22 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
-const allStudents = [
+interface Attendance {
+  "Week 5": string[]
+  "Week 6": string[]
+  "Week 7": string[]
+  "Week 8": string[]
+}
+
+interface Student {
+  id: number
+  name: string
+  level: string
+  class: string
+  attendance: Attendance
+}
+
+const allStudents: Student[] = [
   {
     id: 1,
     name: "John Smith",
@@ -84,16 +99,16 @@ const classes = [
 ]
 
 export function StudentAttendance() {
-  const [currentWeek, setCurrentWeek] = useState("Week 6")
+  const [currentWeek, setCurrentWeek] = useState<"Week 5" | "Week 6" | "Week 7" | "Week 8">("Week 6")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("All")
   const [selectedLevel, setSelectedLevel] = useState("All Levels")
   const [selectedClass, setSelectedClass] = useState("All Classes")
-  const [filteredStudents, setFilteredStudents] = useState(allStudents)
-  const [selectedWeek, setSelectedWeek] = useState("Week 6")
-  const availableWeeks = ["Week 5", "Week 6", "Week 7", "Week 8"]
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>(allStudents)
+  const [selectedWeek, setSelectedWeek] = useState<"Week 5" | "Week 6" | "Week 7" | "Week 8">("Week 6")
+  const availableWeeks: ("Week 5" | "Week 6" | "Week 7" | "Week 8")[] = ["Week 5", "Week 6", "Week 7", "Week 8"]
   const [showFilters, setShowFilters] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -101,21 +116,17 @@ export function StudentAttendance() {
     setIsLoaded(true)
   }, [])
 
-  // Filter students based on search term, selected level, and selected class
   useEffect(() => {
     let result = allStudents
 
-    // Filter by search term
     if (searchTerm) {
       result = result.filter((student) => student.name.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
-    // Filter by level
     if (selectedLevel !== "All Levels") {
       result = result.filter((student) => student.level === selectedLevel)
     }
 
-    // Filter by class
     if (selectedClass !== "All Classes") {
       result = result.filter((student) => student.class === selectedClass)
     }
@@ -224,7 +235,6 @@ export function StudentAttendance() {
           </motion.div>
         </div>
 
-        {/* Search and filters row */}
         <div className="flex flex-col sm:flex-row gap-2">
           <motion.div
             className="relative flex-grow"
@@ -340,7 +350,7 @@ export function StudentAttendance() {
                         variants={item}
                       >
                         <td className="py-2 px-3 font-medium text-sm">{student.name}</td>
-                        {student.attendance[currentWeek].map((status, index) => (
+                        {student.attendance[currentWeek].map((status: string, index: number) => (
                           <td
                             key={index}
                             className={cn(
@@ -393,7 +403,6 @@ export function StudentAttendance() {
           </div>
         )}
 
-        {/* Summary stats */}
         {filteredStudents.length > 0 && (
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-blue-100 dark:border-blue-900/30"
