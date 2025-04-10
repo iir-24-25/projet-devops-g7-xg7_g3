@@ -4,28 +4,24 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, CheckCircle, XCircle, UsersRound, Search, Calendar, Filter } from "lucide-react"
+import {
+  ChevronDown,
+  CheckCircle,
+  XCircle,
+  UsersRound,
+  Search,
+  Calendar,
+  Filter,
+  Edit,
+  AlertCircle,
+} from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { AttendanceModificationDialog } from "./attendance-modification-dialog"
 
-interface Attendance {
-  "Week 5": string[]
-  "Week 6": string[]
-  "Week 7": string[]
-  "Week 8": string[]
-}
-
-interface Student {
-  id: number
-  name: string
-  level: string
-  class: string
-  attendance: Attendance
-}
-
-const allStudents: Student[] = [
+const allStudents = [
   {
     id: 1,
     name: "John Smith",
@@ -99,40 +95,63 @@ const classes = [
 ]
 
 export function StudentAttendance() {
-  const [currentWeek, setCurrentWeek] = useState<"Week 5" | "Week 6" | "Week 7" | "Week 8">("Week 6")
+  const [currentWeek, setCurrentWeek] = useState("Week 6")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("All")
   const [selectedLevel, setSelectedLevel] = useState("All Levels")
   const [selectedClass, setSelectedClass] = useState("All Classes")
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>(allStudents)
-  const [selectedWeek, setSelectedWeek] = useState<"Week 5" | "Week 6" | "Week 7" | "Week 8">("Week 6")
-  const availableWeeks: ("Week 5" | "Week 6" | "Week 7" | "Week 8")[] = ["Week 5", "Week 6", "Week 7", "Week 8"]
+  const [filteredStudents, setFilteredStudents] = useState(allStudents)
+  const [selectedWeek, setSelectedWeek] = useState("Week 6")
+  type Week = "Week 5" | "Week 6" | "Week 7" | "Week 8";
+  const availableWeeks: Week[] = ["Week 5", "Week 6", "Week 7", "Week 8"];
   const [showFilters, setShowFilters] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isModificationDialogOpen, setIsModificationDialogOpen] = useState(false)
+  const [selectedStudentForModification, setSelectedStudentForModification] = useState<any>(null)
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null)
+  const [hasModifications, setHasModifications] = useState(false)
 
   useEffect(() => {
     setIsLoaded(true)
   }, [])
 
+  // Filter students based on search term, selected level, and selected class
   useEffect(() => {
     let result = allStudents
 
+    // Filter by search term
     if (searchTerm) {
       result = result.filter((student) => student.name.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
+    // Filter by level
     if (selectedLevel !== "All Levels") {
       result = result.filter((student) => student.level === selectedLevel)
     }
 
+    // Filter by class
     if (selectedClass !== "All Classes") {
       result = result.filter((student) => student.class === selectedClass)
     }
 
     setFilteredStudents(result)
   }, [searchTerm, selectedLevel, selectedClass])
+
+  const handleAttendanceModification = (student: any, dayIndex: number) => {
+    setSelectedStudentForModification(student)
+    setSelectedDayIndex(dayIndex)
+    setIsModificationDialogOpen(true)
+  }
+
+  const handleModificationSave = (data: any) => {
+    // In a real application, this would update the database
+    // For this demo, we'll just log the changes and set a flag
+    console.log("Attendance modification saved:", data)
+    setHasModifications(true)
+    setIsModificationDialogOpen(false)
+  }
 
   const container = {
     hidden: { opacity: 0 },
@@ -157,6 +176,8 @@ export function StudentAttendance() {
       },
     },
   }
+
+  const dayNames = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
 
   return (
     <Card className="shadow-lg border-0 overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 w-full mt-0">
@@ -186,6 +207,16 @@ export function StudentAttendance() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsModificationDialogOpen(true)}
+              className="h-9 flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 shadow-sm"
+            >
+              <Edit className="h-4 w-4" />
+              <span>Modify Attendance</span>
+            </Button>
+
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -235,6 +266,7 @@ export function StudentAttendance() {
           </motion.div>
         </div>
 
+        {/* Search and filters row */}
         <div className="flex flex-col sm:flex-row gap-2">
           <motion.div
             className="relative flex-grow"
@@ -309,6 +341,28 @@ export function StudentAttendance() {
         </div>
       </CardHeader>
       <CardContent className="p-4 md:p-6">
+        {hasModifications && (
+          <motion.div
+            className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-3 text-amber-800 dark:text-amber-300"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle className="h-5 w-5 flex-shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium">Attendance records have been manually modified</p>
+              <p className="text-xs opacity-80">Changes are pending approval from the administrator</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+              onClick={() => setHasModifications(false)}
+            >
+              Dismiss
+            </Button>
+          </motion.div>
+        )}
+
         <div className="overflow-x-auto -mx-4 md:mx-0">
           <div className="inline-block min-w-full align-middle p-4 md:p-0">
             {filteredStudents.length > 0 ? (
@@ -322,24 +376,17 @@ export function StudentAttendance() {
                   <thead className="bg-blue-50 dark:bg-blue-900/30">
                     <tr className="text-left">
                       <th className="py-2 px-3 font-semibold text-blue-800 dark:text-blue-300 text-sm">Name</th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm">
-                        Mon
-                      </th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm">
-                        Tues
-                      </th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm">
-                        Wed
-                      </th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm">
-                        Thurs
-                      </th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm">
-                        Fri
-                      </th>
-                      <th className="py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm bg-amber-50 dark:bg-amber-900/20">
-                        Sat
-                      </th>
+                      {dayNames.map((day, index) => (
+                        <th
+                          key={day}
+                          className={cn(
+                            "py-2 px-1 font-semibold text-center text-blue-800 dark:text-blue-300 text-sm",
+                            index === 5 ? "bg-amber-50 dark:bg-amber-900/20" : "",
+                          )}
+                        >
+                          {day}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-blue-100 dark:divide-blue-900/50 bg-white dark:bg-gray-800">
@@ -349,26 +396,34 @@ export function StudentAttendance() {
                         className="transition-colors hover:bg-blue-50 dark:hover:bg-blue-900/10"
                         variants={item}
                       >
-                        <td className="py-2 px-3 font-medium text-sm">{student.name}</td>
-                        {student.attendance[currentWeek].map((status: string, index: number) => (
+                        {student.attendance[currentWeek as Week].map((status: string, index: number) => (
                           <td
                             key={index}
                             className={cn(
-                              "py-2 px-1 text-center",
+                              "py-2 px-1 text-center relative group",
                               index === 5 ? "bg-amber-50/50 dark:bg-amber-900/10" : "",
                             )}
                           >
-                            {status === "present" ? (
-                              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900 flex items-center gap-1 justify-center mx-auto transition-all duration-300 hover:shadow-sm text-xs py-0.5">
-                                <CheckCircle className="h-3 w-3" strokeWidth={2.5} />
-                                <span className="hidden sm:inline">Present</span>
-                              </Badge>
-                            ) : (
-                              <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900 flex items-center gap-1 justify-center mx-auto transition-all duration-300 hover:shadow-sm text-xs py-0.5">
-                                <XCircle className="h-3 w-3" strokeWidth={2.5} />
-                                <span className="hidden sm:inline">Absent</span>
-                              </Badge>
-                            )}
+                            <div className="relative">
+                              {status === "present" ? (
+                                <Badge
+                                  className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900 flex items-center gap-1 justify-center mx-auto transition-all duration-300 hover:shadow-sm text-xs py-0.5 cursor-pointer"
+                                  onClick={() => handleAttendanceModification(student, index)}
+                                >
+                                  <CheckCircle className="h-3 w-3" strokeWidth={2.5} />
+                                  <span className="hidden sm:inline">Present</span>
+                                </Badge>
+                              ) : (
+                                <Badge
+                                  className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900 flex items-center gap-1 justify-center mx-auto transition-all duration-300 hover:shadow-sm text-xs py-0.5 cursor-pointer"
+                                  onClick={() => handleAttendanceModification(student, index)}
+                                >
+                                  <XCircle className="h-3 w-3" strokeWidth={2.5} />
+                                  <span className="hidden sm:inline">Absent</span>
+                                </Badge>
+                              )}
+                              <div className="absolute inset-0 bg-transparent group-hover:bg-blue-100/30 dark:group-hover:bg-blue-900/30 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                            </div>
                           </td>
                         ))}
                       </motion.tr>
@@ -403,6 +458,7 @@ export function StudentAttendance() {
           </div>
         )}
 
+        {/* Summary stats */}
         {filteredStudents.length > 0 && (
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-blue-100 dark:border-blue-900/30"
@@ -441,6 +497,16 @@ export function StudentAttendance() {
           </motion.div>
         )}
       </CardContent>
+
+      <AttendanceModificationDialog
+        isOpen={isModificationDialogOpen}
+        onClose={() => setIsModificationDialogOpen(false)}
+        onSave={handleModificationSave}
+        student={selectedStudentForModification}
+        dayIndex={selectedDayIndex}
+        dayName={selectedDayIndex !== null ? dayNames[selectedDayIndex] : null}
+        week={currentWeek}
+      />
     </Card>
   )
 }
