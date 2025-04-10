@@ -1,6 +1,6 @@
 "use client"
 
-import { Header } from "@/components/header"
+import { Header } from "@/components/headerWelcome"
 import { HeroSection } from "@/components/hero-section"
 import { PlatformSection } from "@/components/platform-section"
 import { VideoSection } from "@/components/video-section"
