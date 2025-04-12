@@ -7,14 +7,15 @@ import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-// import java.util.List;
 import java.util.Map;
-// import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.model.dto.EnfantDTO;
+import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.repository.EtudiantRepo;
 import com.bitkal.backend.repository.GroupRepo;
 
@@ -115,4 +116,26 @@ public class EtudiantService {
     
         return result;
     }
+
+    public List<EnfantDTO> findAllEnfantByIdParent(Long idParent) {
+        List<Etudiant> etudiants = etudiantRepo.findAllEnfantByIdParent(idParent);
+        return etudiants.stream()
+                .map(this::convertToEnfantDTO)
+                .collect(Collectors.toList());
+    }
+
+    private EnfantDTO convertToEnfantDTO(Etudiant etudiant) {
+        EnfantDTO dto = new EnfantDTO();
+        dto.setNom(etudiant.getNom());
+        dto.setPrenom(etudiant.getPrenom());
+        dto.setEmail(etudiant.getEmail());
+        dto.setTel(etudiant.getTel());
+        dto.setGender(etudiant.getGender());
+        dto.setNiveau(etudiant.getNiveau());
+        dto.setAddressMAC(etudiant.getAddressMAC());
+        dto.setFiliere(etudiant.getFiliere());
+        dto.setImage(etudiant.getImage());
+        return dto;
+    }
+
 }

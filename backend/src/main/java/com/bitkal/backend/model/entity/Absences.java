@@ -45,6 +45,11 @@ public class Absences {
     @Enumerated(EnumType.STRING)
     private Salle salle;
 
+    @ManyToOne
+    @JoinColumn(name = "module_id")
+    @JsonBackReference
+    private Module module;
+
     public void setEtudiant(Etudiant etudiant) {
         if (etudiant != null && !(etudiant instanceof Etudiant)) {
             throw new IllegalArgumentException("etudiant must be an instance of Etudiant, got: " + etudiant.getClass().getName());

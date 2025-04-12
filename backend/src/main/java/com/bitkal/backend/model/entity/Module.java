@@ -52,6 +52,10 @@ public class Module {
     @JsonManagedReference
     private List<Seance> seances;
 
+    @OneToMany(mappedBy = "module")
+    @JsonManagedReference
+    private List<Absences> absences;
+
     @ManyToMany(mappedBy = "modules")
     private List<Group> groups;
 

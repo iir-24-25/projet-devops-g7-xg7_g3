@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.bitkal.backend.constant.Jours;
 import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.dto.ModuelProfDTO;
+import com.bitkal.backend.model.dto.SeanceEnfantDTO;
 import com.bitkal.backend.model.dto.SeanceProfesseurDTO;
 import com.bitkal.backend.repository.SeanceRepo;
 
@@ -95,5 +96,55 @@ public class SeanceService {
             logger.error("Invalid semestre value: {}", semestre, e);
             throw new IllegalArgumentException("Invalid semestre value: " + semestre);
         }
+    }
+
+    public List<SeanceEnfantDTO> findAllSeanceEnfantDansJour(Long idEnfant, String jour) {
+        if (idEnfant == null || jour == null || jour.trim().isEmpty()) {
+            throw new IllegalArgumentException("idEnfant and jour must not be null or empty");
+        }
+        try {
+            logger.debug("Fetching sessions for idEnfant: {}, jour: {}", idEnfant, jour);
+            Jours jourEnum = Jours.valueOf(jour.trim().toUpperCase());
+            List<Object[]> objects = seanceRepo.findAllSeanceEnfantDansJour(idEnfant, jourEnum);
+            List<SeanceEnfantDTO> result = objects.stream()
+                    .map(object -> new SeanceEnfantDTO(
+                            object[0] != null ? (String) object[0] : "",           // m.titre
+                            object[1] != null ? object[1].toString() : "",        // et.salle
+                            object[2] != null ? (String) object[2] : "",          // g.name
+                            object[3] != null ? object[3].toString() : "",        // g.filiere
+                            object[4] != null ? object[4].toString() : "",        // g.niveau
+                            object[5] != null ? object[5].toString() : "",        // et.semestre
+                            object[6] != null ? object[6].toString() : "",
+                            object[7] != null ? object[7].toString() : ""
+                    ))
+                    .collect(Collectors.toList());
+            logger.debug("Found {} sessions for idEnfant: {}", result.size(), idEnfant);
+            return result;
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid day: {}", jour, e);
+            throw new IllegalArgumentException("Invalid day: " + jour, e);
+        }
+    }
+
+    public List<SeanceEnfantDTO> findAllSeanceEnfant(Long idEnfant) {
+        if (idEnfant == null) {
+            throw new IllegalArgumentException("idEnfant must not be null");
+        }
+        logger.debug("Fetching sessions for idEnfant: {}", idEnfant);
+        List<Object[]> objects = seanceRepo.findAllSeanceEnfant(idEnfant);
+        List<SeanceEnfantDTO> result = objects.stream()
+                .map(object -> new SeanceEnfantDTO(
+                        object[0] != null ? (String) object[0] : "",           // m.titre
+                        object[1] != null ? object[1].toString() : "",        // et.salle
+                        object[2] != null ? (String) object[2] : "",          // g.name
+                        object[3] != null ? object[3].toString() : "",        // g.filiere
+                        object[4] != null ? object[4].toString() : "",        // g.niveau
+                        object[5] != null ? object[5].toString() : "",        // et.semestre
+                        object[6] != null ? object[6].toString() : "",        // et.jour
+                        object[7] != null ? object[7].toString() : ""         // et.seance
+                ))
+                .collect(Collectors.toList());
+        logger.debug("Found {} sessions for idEnfant: {}", result.size(), idEnfant);
+        return result;
     }
 }

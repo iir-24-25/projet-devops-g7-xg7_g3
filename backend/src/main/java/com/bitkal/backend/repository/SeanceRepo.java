@@ -73,5 +73,22 @@ public interface SeanceRepo extends JpaRepository<Seance, Long> {
            "INNER JOIN c.professeur p " +
            "WHERE p.id = :id AND e.semestre = :semestre")
     List<Object[]> findAllModuelProfesseurByIdAndSemestre(@Param("id") Long id, @Param("semestre") Semestre semestre);
-    
+
+    @Query("SELECT m.titre, et.salle, g.name, g.filiere, g.niveau, et.semestre, et.jour, et.seance " +
+       "FROM Seance s " +
+       "INNER JOIN s.module m " +
+       "INNER JOIN s.emploiTemp et " +
+       "INNER JOIN et.groupe g " +
+       "INNER JOIN g.etudiants e " +
+       "WHERE e.id = :idEnfant AND et.jour = :jour")
+    List<Object[]> findAllSeanceEnfantDansJour(@Param("idEnfant") Long idEnfant, @Param("jour") Jours jour);
+
+    @Query("SELECT m.titre, et.salle, g.name, g.filiere, g.niveau, et.semestre, et.jour, et.seance " +
+       "FROM Seance s " +
+       "INNER JOIN s.module m " +
+       "INNER JOIN s.emploiTemp et " +
+       "INNER JOIN et.groupe g " +
+       "INNER JOIN g.etudiants e " +
+       "WHERE e.id = :idEnfant")
+    List<Object[]> findAllSeanceEnfant(@Param("idEnfant") Long idEnfant);
 }

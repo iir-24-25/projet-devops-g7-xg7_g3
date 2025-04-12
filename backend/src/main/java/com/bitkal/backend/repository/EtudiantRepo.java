@@ -35,4 +35,7 @@ public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
         "WHERE g.id IN :idsGroup")
     Long findCountEtudProfByIdsGroup(@Param("idsGroup") List<Long> idsGroup);
 
+    @Query("SELECT e FROM Etudiant e WHERE e.parents.id = :idParent")
+    List<Etudiant> findAllEnfantByIdParent(@Param("idParent") Long idParent);
+
 }

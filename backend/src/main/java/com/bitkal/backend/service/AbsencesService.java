@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bitkal.backend.constant.Salle;
+import com.bitkal.backend.model.dto.AbsenceSeanceProfesseurDTO;
 import com.bitkal.backend.repository.AbsencesRepo;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class AbsencesService {
@@ -28,10 +29,15 @@ public class AbsencesService {
     @Autowired
     private AbsencesRepo absencesRepo;
 
-    @Transactional
-    public String ajouterAbsence(Long idEtudiant, Salle salle, Long idEmploi) {
-        return absencesRepo.ESPInsertAbsance(idEtudiant, salle, idEmploi);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(AbsencesService.class);
+
+    @Autowired
+    // private GroupRepo groupRepo;
+
+    // @Transactional
+    // public String ajouterAbsence(Long idEtudiant, Salle salle, Long idEmploi) {
+    //     return absencesRepo.ESPInsertAbsance(idEtudiant, salle, idEmploi);
+    // }
 
     public List<Map<String, Object>> getWeeklyAbsences() {
         LocalDate today = LocalDate.now();
@@ -91,5 +97,50 @@ public class AbsencesService {
     
         return absencesParMois;
     }
+
+    public List<AbsenceSeanceProfesseurDTO> findAllAbsencesEtudiantInSeanceProf(Long idProf) {
+        // List<Long> idsGroups = groupRepo.findGroupsIdsByProfessorId(idProf);
+        List<Object[]> absences = absencesRepo.findAllAbsencesEtudiantInSeanceProf(idProf);
+
+        List<AbsenceSeanceProfesseurDTO> absenceSeanceProfesseur = new ArrayList<>();
+
+        for (Object[] absence : absences) {
+            absenceSeanceProfesseur.add(new AbsenceSeanceProfesseurDTO(
+                (Long) absence[0],          // a.id -> idAbsences
+                (Date) absence[1],          // a.dateAbsences -> dateAbsences
+                (Boolean) absence[2],       // a.isJustif -> isJustifAbsences
+                (Long) absence[3],          // j.id -> idJustification
+                (String) absence[5],        // j.description -> descriptionJustification
+                (byte[]) absence[4],        // j.document -> documentJustification
+                (String) absence[6],        // e.nom -> nomEtud
+                (String) absence[7],        // e.prenom -> prenomEtud
+                (String) absence[8],        // g.name -> nomModule
+                (String) absence[9]         // m.titre -> titreModule
+            ));
+        }
+
+        return absenceSeanceProfesseur;
+    }
+
+    public List<Object[]> findAllAbsencesEtudiantInSeanceProfY(){
+        return absencesRepo.findAllAbsencesEtudiantInSeanceProfY();
+    }
     
+    public Map<String, Integer> statisticParent(Long idEtud) {
+        if (idEtud == null) {
+            logger.error("idEtud must not be null");
+            throw new IllegalArgumentException("idEtud must not be null");
+        }
+        logger.debug("Fetching absence statistics for idEtud: {}", idEtud);
+        int totalAbsence = absencesRepo.findCountAbsencesEtud(idEtud);
+        int absenceJustif = absencesRepo.findCountAbsencesJustifEtud(idEtud);
+        int absenceNoJustif = absencesRepo.findCountAbsencesNoJustifEtud(idEtud);
+        Map<String, Integer> statistic = new HashMap<>();
+        statistic.put("totalAbsence", totalAbsence);
+        statistic.put("absenceJustif", absenceJustif);
+        statistic.put("absenceNoJustif", absenceNoJustif);
+        logger.debug("Found {} total absences, {} justified, {} unjustified for idEtud: {}", 
+                     totalAbsence, absenceJustif, absenceNoJustif, idEtud);
+        return statistic;
+    }
 }

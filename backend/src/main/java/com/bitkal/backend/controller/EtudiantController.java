@@ -1,13 +1,16 @@
 package com.bitkal.backend.controller;
 
+import java.util.List;
 // import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 // import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bitkal.backend.model.dto.EnfantDTO;
 // import com.bitkal.backend.constant.Jours;
 // import com.bitkal.backend.constant.Salle;
 // import com.bitkal.backend.constant.Seances;
@@ -52,4 +55,8 @@ public class EtudiantController {
         return etudiantService.numberGroupAndEtudProfByIdProf(idProf);
     }
     
+    @GetMapping("/Etudiant/allEnfant")
+    public List<EnfantDTO> findAllEnfantByIdParent(@RequestParam("idParent") Long idParent) {
+        return etudiantService.findAllEnfantByIdParent(idParent);
+    }
 }
