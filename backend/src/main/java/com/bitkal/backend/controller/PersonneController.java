@@ -2,6 +2,7 @@ package com.bitkal.backend.controller;
 
 import com.bitkal.backend.model.dto.InfoAdminDTO;
 import com.bitkal.backend.model.dto.LoginDTO;
+import com.bitkal.backend.model.dto.PasswordOldRequestDTO;
 import com.bitkal.backend.model.dto.PasswordRequestDTO;
 import com.bitkal.backend.security.JwtUtils;
 import com.bitkal.backend.service.PersonneService;
@@ -18,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -96,6 +95,19 @@ public class PersonneController {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body("Le mot de passe n'a pas été modifié");
+    }
+
+    @PostMapping("/personne/modifierPassword/byOldPassowrd")
+    public ResponseEntity<?> setPasswordByPasswordOld(@RequestBody PasswordOldRequestDTO passwordOldRequestDTO) {
+        boolean response = personneService.setPasswordByPasswordOld(
+                passwordOldRequestDTO.getIdPersonne(),
+                passwordOldRequestDTO.getPasswordNew(),
+                passwordOldRequestDTO.getPasswordOld()
+        );
+        if (response) {
+            return ResponseEntity.ok("Mot de passe modifié avec succès");
+        }
+        return ResponseEntity.status(401).body("Échec de la modification : mot de passe actuel incorrect ou personne non trouvée");
     }
 
     @GetMapping("/numberGender")

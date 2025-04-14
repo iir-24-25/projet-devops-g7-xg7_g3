@@ -25,6 +25,10 @@ public interface PersonneRepo extends JpaRepository<Personne, Long> {
     @Query("UPDATE Personne p set p.password = :password where p.email = :email")
     int setPasswordByEmail(@Param("email") String email, @Param("password") String password);
 
+    @Modifying
+    @Query("UPDATE Personne p SET p.password = :passwordNew WHERE p.id = :idPersonne")
+    int setPasswordByPasswordOld(@Param("idPersonne") Long idPersonne, @Param("passwordNew") String passwordNew);
+
     @Query("SELECT p FROM Personne p WHERE p.email = :email") // Nouvelle méthode pour trouver par email
     Optional<Personne> findPersonByEmail(@Param("email") String email);
 

@@ -163,6 +163,23 @@ public class PersonneService {
         return number > 0;
     }
 
+    @Transactional
+    public boolean setPasswordByPasswordOld(Long idPersonne, String passwordNew, String passwordOld) {
+        // Find the person
+        Personne personne = personneRepo.findById(idPersonne)
+                .orElseThrow(() -> new RuntimeException("Person not found"));
+
+        // Verify old password
+        if (!passwordEncoder.matches(passwordOld, personne.getPassword())) {
+            return false; // Old password doesn't match
+        }
+
+        // Encode new password and update
+        String hashedPasswordNew = passwordEncoder.encode(passwordNew);
+        int updated = personneRepo.setPasswordByPasswordOld(idPersonne, hashedPasswordNew);
+        return updated > 0;
+    }
+
     public Map<String, Integer> numberGenderByType(String type) {
         Class<? extends Personne> types;
         switch (type.toUpperCase()) {
