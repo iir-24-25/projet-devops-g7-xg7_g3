@@ -126,6 +126,7 @@ public class EtudiantService {
 
     private EnfantDTO convertToEnfantDTO(Etudiant etudiant) {
         EnfantDTO dto = new EnfantDTO();
+        dto.setId(etudiant.getId());
         dto.setNom(etudiant.getNom());
         dto.setPrenom(etudiant.getPrenom());
         dto.setEmail(etudiant.getEmail());

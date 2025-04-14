@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class EnfantDTO {
+    private Long id;
     private String nom;
     private String prenom;
     private String email;

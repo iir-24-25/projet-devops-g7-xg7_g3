@@ -67,4 +67,8 @@ public interface AbsencesRepo extends JpaRepository<Absences, Long> , AbsencesRe
            "WHERE e.id = :idEtud AND a.isJustif = false")
     int findCountAbsencesNoJustifEtud(@Param("idEtud") Long idEtud);
 
+       @Query("SELECT e.nom, e.prenom, m.titre, m.semestre, a.dateAbsences, a.salle, a.isJustif " +
+              "FROM Absences a JOIN a.etudiant e JOIN a.module m WHERE e.id = :idEtud")
+       List<Object[]> findAllAbsencesEtud(@Param("idEtud") Long idEtud);
+
 }

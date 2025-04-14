@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import com.bitkal.backend.model.dto.AbsenceSeanceProfesseurDTO;
+import com.bitkal.backend.model.dto.AllAbsenceEtudDTO;
 import com.bitkal.backend.service.AbsencesService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,5 +76,11 @@ public class AbsencesController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @GetMapping("/Absences/AllAbsencesEtud")
+    public List<AllAbsenceEtudDTO> findAllAbsencesEtud(@RequestParam("idEtud") Long idEtud) {
+        return absencesService.findAllAbsencesEtud(idEtud);
+    }
+
     
 }

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.model.dto.AbsenceSeanceProfesseurDTO;
+import com.bitkal.backend.model.dto.AllAbsenceEtudDTO;
 import com.bitkal.backend.repository.AbsencesRepo;
 
 @Service
@@ -142,5 +143,25 @@ public class AbsencesService {
         logger.debug("Found {} total absences, {} justified, {} unjustified for idEtud: {}", 
                      totalAbsence, absenceJustif, absenceNoJustif, idEtud);
         return statistic;
+    }
+
+    public List<AllAbsenceEtudDTO> findAllAbsencesEtud(Long idEtud) {
+        List<Object[]> objects = absencesRepo.findAllAbsencesEtud(idEtud);
+        System.out.println("Query result size: " + (objects != null ? objects.size() : 0));
+        List<AllAbsenceEtudDTO> allAbsenceEtud = new ArrayList<>();
+        if (objects != null) {
+            for (Object[] object : objects) {
+                allAbsenceEtud.add(new AllAbsenceEtudDTO(
+                    object[0] != null ? object[0].toString() : null,
+                    object[1] != null ? object[1].toString() : null,
+                    object[2] != null ? object[2].toString() : null,
+                    object[3] != null ? object[3].toString() : null,
+                    object[4] != null ? object[4].toString() : null,
+                    object[5] != null ? object[5].toString() : null,
+                    object[6] != null ? object[6].toString() : null
+                ));
+            }
+        }
+        return allAbsenceEtud;
     }
 }

@@ -106,7 +106,7 @@ export default function LoginPage() {
           router.push("/admin");
           break;
         case userType.includes("Parents"):
-          router.push("/parents");
+          router.push("/parents/accueil");
           break;
         default:
           router.push("/");
