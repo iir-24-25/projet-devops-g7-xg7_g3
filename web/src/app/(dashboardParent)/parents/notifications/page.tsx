@@ -148,7 +148,7 @@ export default function NotificationsPage() {
                         <Badge variant="default">Information</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Thomas's 2nd quarter report is now available. You can view and download it from your parent
+                        Thomas&apos;s 2nd quarter report is now available. You can view and download it from your parent
                         portal.
                       </p>
                       <div className="flex items-center justify-between mt-2">
@@ -175,7 +175,7 @@ export default function NotificationsPage() {
                         <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-none">Message</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Hello, I would like to meet with you regarding Thomas's progress in French. Could you suggest a
+                        Hello, I would like to meet with you regarding Thomas&apos;s progress in French. Could you suggest a
                         time slot for next week?
                       </p>
                       <div className="flex items-center justify-between mt-2">
@@ -239,7 +239,7 @@ export default function NotificationsPage() {
             <Card className="border-none shadow-md">
               <CardHeader>
                 <CardTitle>Absence Notifications</CardTitle>
-                <CardDescription>Information about your children's absences</CardDescription>
+                <CardDescription>Information about your children&apos;s absences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md hover:bg-red-100 transition-colors">

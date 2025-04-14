@@ -321,7 +321,7 @@ export default function Dashboard() {
                       <CardHeader>
                         <div className="flex justify-between items-center">
                           <div>
-                            <CardTitle className="text-gradient">Today's Classes</CardTitle>
+                            <CardTitle className="text-gradient">Today&apos;s Classes</CardTitle>
                             <CardDescription>Schedule for today</CardDescription>
                           </div>
                           <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500">

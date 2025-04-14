@@ -1,6 +1,10 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import axios from "axios"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Filter, ArrowUpDown } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -43,7 +47,37 @@ const StaticBadge = ({ variant, children }: StaticBadgeProps) => {
   )
 }
 
+// Interfaces for API data
+interface Child {
+  id: number
+  nom: string
+  prenom: string
+  email: string
+  tel: string
+  gender: string
+  niveau: string
+  addressMAC: string
+  filiere: string
+  image: string | null
+}
+
+interface Absence {
+  nom: string
+  prenom: string
+  moduleTitre: string
+  semestre: string
+  dateAbsences: string
+  salle: string
+  isJustif: string
+}
+
 export default function PresencesPage() {
+  const [children, setChildren] = useState<Child[]>([])
+  const [selectedChildId, setSelectedChildId] = useState<number | null>(null)
+  const [absences, setAbsences] = useState<Absence[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -59,59 +93,106 @@ export default function PresencesPage() {
     show: { opacity: 1, y: 0 },
   }
 
-  // Données des absences (exemple)
-  const absences = [
-    {
-      id: "1",
-      date: "22/03/2023",
-      course: "Mathématiques",
-      duration: "Journée complète",
-      status: "Non justifiée",
-    },
-    {
-      id: "2",
-      date: "15/03/2023",
-      course: "Sciences",
-      duration: "2 heures",
-      status: "Justifiée",
-    },
-    {
-      id: "3",
-      date: "08/03/2023",
-      course: "Histoire",
-      duration: "1 heure",
-      status: "En attente",
-    },
-    {
-      id: "4",
-      date: "01/03/2023",
-      course: "Français",
-      duration: "Journée complète",
-      status: "Justifiée",
-    },
-    {
-      id: "5",
-      date: "22/02/2023",
-      course: "Éducation Physique",
-      duration: "2 heures",
-      status: "Justifiée",
-    },
-  ]
+  // Fetch children on mount
+  useEffect(() => {
+    const fetchChildren = async () => {
+      try {
+        setLoading(true)
+        const token = localStorage.getItem("authToken")
+        const id = localStorage.getItem("id")
+        const response = await axios.get(`http://localhost:8080/Etudiant/allEnfant?idParent=${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setChildren(response.data)
+        if (response.data.length > 0) {
+          setSelectedChildId(response.data[0].id)
+        }
+      } catch (err) {
+        setError("Erreur lors du chargement des enfants")
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchChildren()
+  }, [])
+
+  // Fetch absences when selectedChildId changes
+  useEffect(() => {
+    if (!selectedChildId) return
+
+    const fetchAbsences = async () => {
+      try {
+        setLoading(true)
+        const token = localStorage.getItem("authToken")
+        const response = await axios.get(`http://localhost:8080/Absences/AllAbsencesEtud?idEtud=${selectedChildId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setAbsences(response.data)
+      } catch (err) {
+        setError("Erreur lors du chargement des absences")
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchAbsences()
+  }, [selectedChildId])
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return format(date, "dd/MM/yyyy", { locale: fr })
+  }
+
+  // Map isJustif to status
+  const getStatus = (isJustif: string) => {
+    if (isJustif === "true") return "Justifiée"
+    if (isJustif === "false") return "Non justifiée"
+    return "En attente" // Fallback, adjust if needed
+  }
+
+  // Map status to badge variant
+  const getBadgeVariant = (isJustif: string): "destructive" | "success" | "warning" => {
+    if (isJustif === "true") return "success"
+    if (isJustif === "false") return "destructive"
+    return "warning"
+  }
+
+  if (loading) {
+    return <div className="text-center dark:text-white">Chargement...</div>
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>
+  }
 
   return (
     <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
       <motion.div variants={item} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex flex-col sm:flex-row gap-2">
           <div>
-            <Select defaultValue="thomas">
+            <Select
+              value={selectedChildId?.toString() || ""}
+              onValueChange={(value) => setSelectedChildId(Number(value))}
+            >
               <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                <SelectValue placeholder="Select a child" />
+                <SelectValue placeholder="Sélectionner un enfant" />
               </SelectTrigger>
               <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
-                <SelectItem value="thomas">Thomas Dupont</SelectItem>
-                <SelectItem value="sophie">Sophie Dupont</SelectItem>
-                <SelectItem value="lucas">Lucas Dupont</SelectItem>
-                <SelectItem value="emma">Emma Dupont</SelectItem>
+                {children.map((child) => (
+                  <SelectItem
+                    key={child.id}
+                    value={child.id.toString()}
+                    className="dark:text-white dark:hover:bg-gray-700"
+                  >
+                    {child.prenom} {child.nom}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -122,7 +203,7 @@ export default function PresencesPage() {
         <Tabs defaultValue="absences" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="absences">Absences</TabsTrigger>
-            <TabsTrigger value="statistiques">Statistics</TabsTrigger>
+            <TabsTrigger value="statistiques">Statistiques</TabsTrigger>
           </TabsList>
 
           <TabsContent value="absences" className="space-y-6">
@@ -130,7 +211,7 @@ export default function PresencesPage() {
             <Card className="border-none shadow-md dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <CardTitle className="dark:text-white">Absence History</CardTitle>
+                  <CardTitle className="dark:text-white">Historique des absences</CardTitle>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -174,39 +255,36 @@ export default function PresencesPage() {
                           </div>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider dark:text-gray-400">
-                          Class
+                          Module
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider dark:text-gray-400">
-                          Duration
+                          Durée
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider dark:text-gray-400">
-                          Status
+                          Statut
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border bg-white dark:bg-gray-800 dark:divide-gray-700">
-                      {absences.map((absence) => (
-                        <tr key={absence.id} className="hover:bg-muted/30 transition-colors dark:hover:bg-gray-700/50">
+                      {absences.map((absence, index) => (
+                        <tr
+                          key={`${absence.dateAbsences}-${index}`}
+                          className="hover:bg-muted/30 transition-colors dark:hover:bg-gray-700/50"
+                        >
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium dark:text-white">{absence.date}</div>
+                            <div className="text-sm font-medium dark:text-white">
+                              {formatDate(absence.dateAbsences)}
+                            </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm dark:text-white">{absence.course}</div>
+                            <div className="text-sm dark:text-white">{absence.moduleTitre}</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="text-sm dark:text-white">{absence.duration}</div>
+                            <div className="text-sm dark:text-white">Non spécifié</div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <StaticBadge
-                              variant={
-                                absence.status === "Non justifiée"
-                                  ? "destructive"
-                                  : absence.status === "Justifiée"
-                                  ? "success"
-                                  : "warning"
-                              }
-                            >
-                              {absence.status}
+                            <StaticBadge variant={getBadgeVariant(absence.isJustif)}>
+                              {getStatus(absence.isJustif)}
                             </StaticBadge>
                           </td>
                         </tr>
@@ -216,7 +294,9 @@ export default function PresencesPage() {
                 </div>
 
                 <div className="flex justify-between items-center mt-6">
-                  <div className="text-sm text-muted-foreground dark:text-gray-400">Showing 5 of 8 absences</div>
+                  <div className="text-sm text-muted-foreground dark:text-gray-400">
+                    Affichage de {absences.length} absence(s)
+                  </div>
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
@@ -224,14 +304,15 @@ export default function PresencesPage() {
                       disabled
                       className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
                     >
-                      Previous
+                      Précédent
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
+                      disabled
                       className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
-                      Next
+                      Suivant
                     </Button>
                   </div>
                 </div>
@@ -243,8 +324,10 @@ export default function PresencesPage() {
             {/* Attendance Chart */}
             <Card className="border-none shadow-md dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="dark:text-white">Attendance Statistics</CardTitle>
-                <CardDescription className="dark:text-gray-400">Attendance rate over the last months</CardDescription>
+                <CardTitle className="dark:text-white">Statistiques de présence</CardTitle>
+                <CardDescription className="dark:text-gray-400">
+                  Taux de présence au cours des derniers mois
+                </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row items-center justify-between">
@@ -267,11 +350,11 @@ export default function PresencesPage() {
                   <div className="w-full md:w-1/2">
                     <div className="space-y-6">
                       <div>
-                        <h4 className="font-medium mb-3 dark:text-white">Attendance Distribution</h4>
+                        <h4 className="font-medium mb-3 dark:text-white">Distribution de présence</h4>
                         <div className="space-y-4">
                           <div className="flex items-center">
                             <div className="w-3 h-3 rounded-full bg-gradient-to-r from-primary to-primary-light mr-2"></div>
-                            <span className="mr-2 flex-1 dark:text-white">Present</span>
+                            <span className="mr-2 flex-1 dark:text-white">Présent</span>
                             <span className="font-semibold dark:text-white">78%</span>
                           </div>
                           <div className="flex items-center">
@@ -283,25 +366,25 @@ export default function PresencesPage() {
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-3 dark:text-white">Absence Details</h4>
+                        <h4 className="font-medium mb-3 dark:text-white">Détails des absences</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="dark:text-white">Total absences:</span>
-                            <span className="font-medium dark:text-white">8 days</span>
+                            <span className="dark:text-white">Total absences :</span>
+                            <span className="font-medium dark:text-white">8 jours</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="dark:text-white">Justified absences:</span>
-                            <span className="font-medium dark:text-white">5 days</span>
+                            <span className="dark:text-white">Absences justifiées :</span>
+                            <span className="font-medium dark:text-white">5 jours</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="dark:text-white">Unjustified absences:</span>
-                            <span className="font-medium dark:text-white">3 days</span>
+                            <span className="dark:text-white">Absences non justifiées :</span>
+                            <span className="font-medium dark:text-white">3 jours</span>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-3 dark:text-white">Class Comparison</h4>
+                        <h4 className="font-medium mb-3 dark:text-white">Comparaison de classe</h4>
                         <div className="space-y-3">
                           <div>
                             <div className="flex justify-between text-sm mb-1">
@@ -317,7 +400,7 @@ export default function PresencesPage() {
                           </div>
                           <div>
                             <div className="flex justify-between text-sm mb-1">
-                              <span className="dark:text-white">Class average</span>
+                              <span className="dark:text-white">Moyenne de la classe</span>
                               <span className="dark:text-white">92%</span>
                             </div>
                             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
@@ -337,8 +420,10 @@ export default function PresencesPage() {
 
             <Card className="border-none shadow-md dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="dark:text-white">Monthly Evolution</CardTitle>
-                <CardDescription className="dark:text-gray-400">Attendance rate over the last 6 months</CardDescription>
+                <CardTitle className="dark:text-white">Évolution mensuelle</CardTitle>
+                <CardDescription className="dark:text-gray-400">
+                  Taux de présence au cours des 6 derniers mois
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px] flex items-end justify-between">

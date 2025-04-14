@@ -72,7 +72,7 @@ export function JustifyAbsenceDialog({ open = false, onOpenChange, absence }: Ju
         <DialogHeader>
           <DialogTitle className="dark:text-white">Justify an Absence</DialogTitle>
           <DialogDescription className="dark:text-gray-400">
-            Please fill out this form to justify your child's absence.
+            Please fill out this form to justify your child&apos;s absence.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

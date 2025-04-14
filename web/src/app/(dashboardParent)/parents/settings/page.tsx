@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { motion } from "framer-motion"
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { motion } from "framer-motion";
 import {
   User,
   Lock,
@@ -31,143 +31,214 @@ import {
   Calendar,
   BookOpen,
   MessageSquare,
-} from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+
+interface ParentInfo {
+  nom: string;
+  prenom: string;
+  email: string;
+  tel: string;
+  image: string | null;
+  ville: string;
+}
 
 export default function SettingsPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [formState, setFormState] = useState({
-    firstName: "Martin",
-    lastName: "Dupont",
-    email: "martin.dupont@example.com",
-    phone: "+33 6 12 34 56 78",
-    address: "123 School Street",
-    city: "Paris",
-    postalCode: "75001",
-    country: "France",
-    language: "en",
-    notifications: {
-      email: true,
-      sms: true,
-      app: true,
-      absences: true,
-      grades: true,
-      events: true,
-    },
-  })
-
-  const [avatarSrc, setAvatarSrc] = useState("/placeholder.svg?height=100&width=100")
-  const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [passwordStrength, setPasswordStrength] = useState(0)
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formState, setFormState] = useState<ParentInfo>({
+    nom: "",
+    prenom: "",
+    email: "",
+    tel: "",
+    image: null,
+    ville: "",
+  });
+  const [avatarSrc, setAvatarSrc] = useState("/placeholder.svg?height=100&width=100");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  })
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [passwordError, setPasswordError] = useState("")
-  const [passwordSuccess, setPasswordSuccess] = useState("")
-  const [profileSuccess, setProfileSuccess] = useState("")
+  // Récupérer les informations du parent depuis l'API
+  useEffect(() => {
+    const fetchParentInfo = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("authToken");
+        const idParent = localStorage.getItem("id");
 
-  // Evaluate password strength
+        if (!token || !idParent) {
+          throw new Error("Authentification requise");
+        }
+
+        const response = await fetch(`http://localhost:8080/parents/info?idParent=${idParent}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des informations du parent");
+        }
+
+        const data: ParentInfo = await response.json();
+        setFormState({
+          nom: data.nom,
+          prenom: data.prenom,
+          email: data.email,
+          tel: data.tel,
+          image: data.image,
+          ville: data.ville,
+        });
+
+        // Mettre à jour l'avatar si une image est présente
+        if (data.image) {
+          setAvatarSrc(`data:image/jpeg;base64,${data.image}`);
+        }
+      } catch (err) {
+        setProfileError(err instanceof Error ? err.message : "Une erreur est survenue");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParentInfo();
+  }, []);
+
+  // Évaluer la force du mot de passe
   useEffect(() => {
     if (!passwordForm.newPassword) {
-      setPasswordStrength(0)
-      return
+      setPasswordStrength(0);
+      return;
     }
 
-    let strength = 0
-    // Minimum length
-    if (passwordForm.newPassword.length >= 8) strength += 25
-    // Contains numbers
-    if (/\d/.test(passwordForm.newPassword)) strength += 25
-    // Contains lowercase and uppercase
-    if (/[a-z]/.test(passwordForm.newPassword) && /[A-Z]/.test(passwordForm.newPassword)) strength += 25
-    // Contains special characters
-    if (/[^a-zA-Z0-9]/.test(passwordForm.newPassword)) strength += 25
+    let strength = 0;
+    if (passwordForm.newPassword.length >= 8) strength += 25;
+    if (/\d/.test(passwordForm.newPassword)) strength += 25;
+    if (/[a-z]/.test(passwordForm.newPassword) && /[A-Z]/.test(passwordForm.newPassword)) strength += 25;
+    if (/[^a-zA-Z0-9]/.test(passwordForm.newPassword)) strength += 25;
 
-    setPasswordStrength(strength)
-  }, [passwordForm.newPassword])
+    setPasswordStrength(strength);
+  }, [passwordForm.newPassword]);
 
   const handleAvatarClick = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      // Check if file is an image
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image.")
-        return
+        setProfileError("Veuillez sélectionner une image.");
+        return;
       }
 
-      // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("The image is too large. Please select an image less than 5MB.")
-        return
+        setProfileError("L'image est trop grande. Veuillez sélectionner une image de moins de 5 Mo.");
+        return;
       }
 
-      // Simulate upload
-      setIsUploading(true)
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64Image = (event.target?.result as string).split(",")[1]; // Supprimer le préfixe "data:image/jpeg;base64,"
+          setAvatarSrc(event.target?.result as string);
 
-      // Create URL to preview the image
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setTimeout(() => {
-          setAvatarSrc(event.target?.result as string)
-          setIsUploading(false)
-          // Show success message
-          setProfileSuccess("Your profile picture has been updated successfully.")
-          setTimeout(() => setProfileSuccess(""), 3000)
-        }, 1500) // Simulate upload delay
-      }
-      reader.readAsDataURL(file)
+          // Simuler l'envoi de l'image à l'API (à implémenter si une API existe)
+          setProfileSuccess("Votre photo de profil a été mise à jour avec succès.");
+          setTimeout(() => setProfileSuccess(""), 3000);
+        } catch (err) {
+          setProfileError("Erreur lors du téléchargement de l'image.");
+        } finally {
+          setIsUploading(false);
+        }
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
-  const handleProfileSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Simulate successful update
-    setTimeout(() => {
-      setProfileSuccess("Your information has been updated successfully.")
-      setTimeout(() => setProfileSuccess(""), 3000)
-    }, 1000)
-  }
+  const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setProfileError("");
+    setProfileSuccess("");
 
-  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setPasswordError("")
-    setPasswordSuccess("")
+    try {
+      // Simuler la mise à jour des informations du profil
+      // À remplacer par une requête API réelle si disponible
+      setProfileSuccess("Vos informations ont été mises à jour avec succès.");
+      setTimeout(() => setProfileSuccess(""), 3000);
+    } catch (err) {
+      setProfileError("Erreur lors de la mise à jour des informations.");
+    }
+  };
 
-    // Simple validation
+  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    // Validation locale
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("Passwords do not match.")
-      return
+      setPasswordError("Les mots de passe ne correspondent pas.");
+      return;
     }
 
     if (passwordForm.newPassword.length < 8) {
-      setPasswordError("Password must be at least 8 characters long.")
-      return
+      setPasswordError("Le mot de passe doit comporter au moins 8 caractères.");
+      return;
     }
 
-    // Simulate successful update
-    setTimeout(() => {
-      setPasswordSuccess("Your password has been updated successfully.")
+    try {
+      const token = localStorage.getItem("authToken");
+      const idParent = localStorage.getItem("id");
+
+      if (!token || !idParent) {
+        throw new Error("Authentification requise");
+      }
+
+      const response = await fetch("http://localhost:8080/personne/modifierPassword/byOldPassowrd", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          idPersonne: parseInt(idParent),
+          passwordNew: passwordForm.newPassword,
+          passwordOld: passwordForm.currentPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la mise à jour du mot de passe");
+      }
+
+      setPasswordSuccess("Votre mot de passe a été mis à jour avec succès.");
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
-      })
-      setTimeout(() => setPasswordSuccess(""), 3000)
-    }, 1000)
-  }
+      });
+      setTimeout(() => setPasswordSuccess(""), 3000);
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : "Une erreur est survenue");
+    }
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -177,11 +248,20 @@ export default function SettingsPage() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <span className="ml-4 text-gray-600">Chargement des données...</span>
+      </div>
+    );
   }
 
   return (
@@ -230,7 +310,8 @@ export default function SettingsPage() {
                         <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                           <AvatarImage src={avatarSrc || "/placeholder.svg"} alt="Profile picture" />
                           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 text-white text-xl">
-                            MD
+                            {formState.prenom.charAt(0)}
+                            {formState.nom.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-full transition-all flex items-center justify-center">
@@ -274,24 +355,24 @@ export default function SettingsPage() {
                     <div className="grid gap-4 flex-1">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName" className="text-blue-600 dark:text-blue-400">
+                          <Label htmlFor="prenom" className="text-blue-600 dark:text-blue-400">
                             First Name
                           </Label>
                           <Input
-                            id="firstName"
-                            value={formState.firstName}
-                            onChange={(e) => setFormState({ ...formState, firstName: e.target.value })}
+                            id="prenom"
+                            value={formState.prenom}
+                            onChange={(e) => setFormState({ ...formState, prenom: e.target.value })}
                             className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName" className="text-blue-600 dark:text-blue-400">
+                          <Label htmlFor="nom" className="text-blue-600 dark:text-blue-400">
                             Last Name
                           </Label>
                           <Input
-                            id="lastName"
-                            value={formState.lastName}
-                            onChange={(e) => setFormState({ ...formState, lastName: e.target.value })}
+                            id="nom"
+                            value={formState.nom}
+                            onChange={(e) => setFormState({ ...formState, nom: e.target.value })}
                             className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
@@ -314,39 +395,39 @@ export default function SettingsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-blue-600 dark:text-blue-400">
+                        <Label htmlFor="tel" className="text-blue-600 dark:text-blue-400">
                           Phone
                         </Label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                           <Input
-                            id="phone"
-                            value={formState.phone}
-                            onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
+                            id="tel"
+                            value={formState.tel}
+                            onChange={(e) => setFormState({ ...formState, tel: e.target.value })}
                             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="language" className="text-blue-600 dark:text-blue-400">
+                        <Label htmlFor="ville" className="text-blue-600 dark:text-blue-400">
                           Ville
                         </Label>
                         <div className="relative">
                           <Globe className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                           <Select
-                            value={formState.language}
-                            onValueChange={(value) => setFormState({ ...formState, language: value })}
+                            value={formState.ville}
+                            onValueChange={(value) => setFormState({ ...formState, ville: value })}
                           >
-                            <SelectTrigger id="language" className="pl-10">
-                              <SelectValue placeholder="Select a language" />
+                            <SelectTrigger id="ville" className="pl-10">
+                              <SelectValue placeholder="Select a city" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="en">MARRAKECH</SelectItem>
-                              <SelectItem value="fr">RABAT</SelectItem>
-                              <SelectItem value="es">CASABLANCA</SelectItem>
-                              <SelectItem value="de">FES</SelectItem>
-                              <SelectItem value="de">TANGER</SelectItem>
+                              <SelectItem value="MARRAKECH">MARRAKECH</SelectItem>
+                              <SelectItem value="RABAT">RABAT</SelectItem>
+                              <SelectItem value="CASABLANCA">CASABLANCA</SelectItem>
+                              <SelectItem value="FES">FES</SelectItem>
+                              <SelectItem value="TANGER">TANGER</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -354,6 +435,13 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </CardContent>
+
+                {profileError && (
+                  <div className="mx-6 mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-lg text-red-600 dark:text-red-400 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>{profileError}</span>
+                  </div>
+                )}
 
                 {profileSuccess && (
                   <div className="mx-6 mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 rounded-lg text-green-600 dark:text-green-400 flex items-center gap-2">
@@ -595,16 +683,7 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Receive notifications by email</p>
                         </div>
                       </div>
-                      <Switch
-                        id="email-notifications"
-                        checked={formState.notifications.email}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, email: checked },
-                          })
-                        }
-                      />
+                      <Switch id="email-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
 
                     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -619,16 +698,7 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Receive notifications by SMS</p>
                         </div>
                       </div>
-                      <Switch
-                        id="sms-notifications"
-                        checked={formState.notifications.sms}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, sms: checked },
-                          })
-                        }
-                      />
+                      <Switch id="sms-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
 
                     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -643,16 +713,7 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Receive in-app notifications</p>
                         </div>
                       </div>
-                      <Switch
-                        id="app-notifications"
-                        checked={formState.notifications.app}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, app: checked },
-                          })
-                        }
-                      />
+                      <Switch id="app-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
                   </div>
                 </div>
@@ -669,19 +730,10 @@ export default function SettingsPage() {
                           <Label htmlFor="absences-notifications" className="font-medium">
                             Absences
                           </Label>
-                          <p className="text-sm text-muted-foreground">Notifications about your children's absences</p>
+                          <p className="text-sm text-muted-foreground">Notifications about your children&apos;s absences</p>
                         </div>
                       </div>
-                      <Switch
-                        id="absences-notifications"
-                        checked={formState.notifications.absences}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, absences: checked },
-                          })
-                        }
-                      />
+                      <Switch id="absences-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
 
                     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -693,19 +745,10 @@ export default function SettingsPage() {
                           <Label htmlFor="grades-notifications" className="font-medium">
                             Grades
                           </Label>
-                          <p className="text-sm text-muted-foreground">Notifications about your children's grades</p>
+                          <p className="text-sm text-muted-foreground">Notifications about your children&apos;s grades</p>
                         </div>
                       </div>
-                      <Switch
-                        id="grades-notifications"
-                        checked={formState.notifications.grades}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, grades: checked },
-                          })
-                        }
-                      />
+                      <Switch id="grades-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
 
                     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -720,16 +763,7 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Notifications about school events</p>
                         </div>
                       </div>
-                      <Switch
-                        id="events-notifications"
-                        checked={formState.notifications.events}
-                        onCheckedChange={(checked) =>
-                          setFormState({
-                            ...formState,
-                            notifications: { ...formState.notifications, events: checked },
-                          })
-                        }
-                      />
+                      <Switch id="events-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
 
                     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -744,7 +778,7 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">Notifications about messages from teachers</p>
                         </div>
                       </div>
-                      <Switch id="messages-notifications" checked={true} onCheckedChange={(checked) => {}} />
+                      <Switch id="messages-notifications" checked={true} onCheckedChange={() => {}} />
                     </div>
                   </div>
                 </div>
@@ -772,5 +806,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </motion.div>
-  )
+  );
 }
