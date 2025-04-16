@@ -11,9 +11,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.model.dto.AllProfEtudiant;
 import com.bitkal.backend.model.dto.EnfantDTO;
 import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.repository.EtudiantRepo;
@@ -139,4 +141,20 @@ public class EtudiantService {
         return dto;
     }
 
+    public List<AllProfEtudiant> findAllProfesseurEtudiant(Long idEtud) {
+        return etudiantRepo.findAllProfesseurEtudiant(idEtud).stream()
+            .filter(object -> object.length >= 5)
+            .map(object -> new AllProfEtudiant(
+                (String) object[0],
+                (String) object[1],
+                (String) object[2],
+                (String) object[3],
+                (byte[]) object[4]
+            ))
+            .collect(Collectors.toList());
+    }
+
+    public int findNumberAllProfesseurEtudiant(Long idEtud){
+        return etudiantRepo.findNumberAllProfesseurEtudiant(idEtud);
+    }
 }

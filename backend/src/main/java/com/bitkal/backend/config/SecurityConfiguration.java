@@ -44,7 +44,7 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/reset-password", "/findEmail", "/modifierPassword").permitAll()
+                .requestMatchers("/login", "/reset-password", "/findEmail", "/modifierPassword", "/ESP/listEtudiant").permitAll()
                 .anyRequest().authenticated())
             .authenticationManager(authenticationManager)
             .userDetailsService(userDetailsService)

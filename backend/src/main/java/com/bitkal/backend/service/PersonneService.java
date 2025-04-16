@@ -251,4 +251,10 @@ public class PersonneService {
       }
       return listInfoAdmin;
     }
+
+    @Transactional
+    public boolean setInfoPersonne(Long id, String nom, String prenom, String email, String tel, String ville, byte[] image){
+        int number = personneRepo.setInfoPersonne(id, nom, prenom, email, tel, ville, image);
+        return number > 0;
+    }
 }

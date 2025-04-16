@@ -2,6 +2,7 @@ package com.bitkal.backend.controller;
 
 import com.bitkal.backend.model.dto.InfoAdminDTO;
 import com.bitkal.backend.model.dto.LoginDTO;
+import com.bitkal.backend.model.dto.ModifierInfoPersonneDTO;
 import com.bitkal.backend.model.dto.PasswordOldRequestDTO;
 import com.bitkal.backend.model.dto.PasswordRequestDTO;
 import com.bitkal.backend.security.JwtUtils;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 
 
@@ -140,5 +142,14 @@ public class PersonneController {
     @GetMapping("/list/admin")
     public List<InfoAdminDTO> getListAdmin(@RequestParam long id ){
         return personneService.getListAdmin(id);
+    }
+
+    @PutMapping("/personne/modifierInfo/{id}")
+    public ResponseEntity<?> setInfoPersonne(@PathVariable Long id, @RequestBody ModifierInfoPersonneDTO modifierInfoPersonneDTO) {
+        boolean response = personneService.setInfoPersonne(id, modifierInfoPersonneDTO.getNom(), modifierInfoPersonneDTO.getPrenom(), modifierInfoPersonneDTO.getEmail(), modifierInfoPersonneDTO.getTel(), modifierInfoPersonneDTO.getVille(), modifierInfoPersonneDTO.getImage());
+        if (response) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(401).body("Le mot de passe n'a pas été modifié");
     }
 }

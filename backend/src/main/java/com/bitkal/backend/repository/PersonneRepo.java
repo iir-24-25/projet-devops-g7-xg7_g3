@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-// import java.util.List;
 import java.util.Optional;
 
 public interface PersonneRepo extends JpaRepository<Personne, Long> {
@@ -50,4 +49,9 @@ public interface PersonneRepo extends JpaRepository<Personne, Long> {
     @Query("SELECT COUNT(p) FROM Personne p JOIN p.group g WHERE TYPE(p) = 'Etud' AND g.id IN :groupIds")
     int findCountEtudDansProf(@Param("groupIds") List<Long> groupIds);
 
+    @Modifying
+    @Query("UPDATE Personne p SET p.nom = :nom, p.prenom = :prenom, p.email = :email, p.tel = :tel, p.ville = :ville, p.image = :image WHERE p.id = :id")
+    int setInfoPersonne(@Param("id") Long id, @Param("nom") String nom, 
+                        @Param("prenom") String prenom, @Param("email") String email, 
+                        @Param("tel") String tel, @Param("ville") String ville, @Param("image") byte[] image);
 }

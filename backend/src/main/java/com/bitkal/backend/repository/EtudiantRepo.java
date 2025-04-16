@@ -11,12 +11,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bitkal.backend.constant.Jours;
-// import com.bitkal.backend.constant.Salle;
-// import com.bitkal.backend.constant.Seances;
-// import com.bitkal.backend.constant.Semestre;
+import com.bitkal.backend.constant.Salle;
+import com.bitkal.backend.constant.Seances;
+import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.entity.Etudiant;
 
 public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
+
+    // List<Object[]> findEtudiantsForTimetable(@Param("jour") Jours jour, @Param("salle") Salle salle, @Param("seance") Seances seance, @Param("semestre") Semestre semestre);
     
     @Query("SELECT COUNT(e) FROM Etudiant e " +
         "JOIN e.group g " +
@@ -37,5 +39,25 @@ public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
 
     @Query("SELECT e FROM Etudiant e WHERE e.parents.id = :idParent")
     List<Etudiant> findAllEnfantByIdParent(@Param("idParent") Long idParent);
+
+    @Query("SELECT DISTINCT p.nom, p.prenom, p.email, m.titre, p.image FROM Etudiant e "+
+            "INNER JOIN e.group g "+
+            "INNER JOIN g.emploisTemp et "+
+            "INNER JOIN et.seances s "+
+            "INNER JOIN s.module m "+
+            "INNER JOIN m.cours c "+
+            "INNER JOIN c.professeur p "+
+            "WHERE e.id = :idEtud")
+    List<Object[]> findAllProfesseurEtudiant(@Param("idEtud") Long idEtud);
+
+    @Query("SELECT COUNT(e) FROM Etudiant e "+
+            "INNER JOIN e.group g "+
+            "INNER JOIN g.emploisTemp et "+
+            "INNER JOIN et.seances s "+
+            "INNER JOIN s.module m "+
+            "INNER JOIN m.cours c "+
+            "INNER JOIN c.professeur p "+
+            "WHERE e.id = :idEtud")
+    int findNumberAllProfesseurEtudiant(@Param("idEtud") Long idEtud);
 
 }

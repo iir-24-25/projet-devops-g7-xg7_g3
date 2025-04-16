@@ -27,12 +27,4 @@ public class ParentsService {
             .ville(tuple.get(5, String.class))
             .build();
     }
-    public boolean updateParentInfo(Long id, String nom, String prenom, String email, String tel, String ville) {
-        try {
-            int updatedRows = parentsRepo.updateParentInfo(nom, prenom, email, tel, ville, id);
-            return updatedRows > 0;
-        } catch (Exception e) {
-            throw new RuntimeException("Échec de la mise à jour du parent", e);
-        }
-    }
 }
