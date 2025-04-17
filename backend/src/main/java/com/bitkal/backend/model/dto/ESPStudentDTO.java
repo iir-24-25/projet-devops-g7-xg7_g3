@@ -11,5 +11,5 @@ import lombok.Setter;
 @Getter
 public class ESPStudentDTO {
     private Long id;
-    private String __sAddressMAC;
+    private String addressMAC;
 }

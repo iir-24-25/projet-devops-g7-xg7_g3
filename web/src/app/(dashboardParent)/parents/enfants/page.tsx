@@ -351,7 +351,7 @@ export default function EnfantsPage() {
                       </div>
                     </div>
                     <div className="md:ml-auto">
-                      <Link href="/dashboard/presences">
+                      <Link href="/parents/presences">
                         <Button className="bg-white text-blue-600 hover:bg-blue-100 transition-colors">
                           Voir les Présences
                         </Button>
@@ -471,7 +471,7 @@ export default function EnfantsPage() {
                       </div>
                     </div>
                     <div className="mt-6">
-                      <Link href="/dashboard/presences">
+                      <Link href="/parents/presences">
                         <Button
                           variant="outline"
                           className="w-full text-blue-600 border-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/20"

@@ -1,9 +1,7 @@
 "use client";
 
-import type React from "react";
-
-import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +23,6 @@ import {
   EyeOff,
   Info,
   Globe,
-  Home,
   Shield,
   Smartphone,
   Calendar,
@@ -72,7 +69,7 @@ export default function SettingsPage() {
   const [profileError, setProfileError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Récupérer les informations du parent depuis l'API
+  // Fetch parent info from API
   useEffect(() => {
     const fetchParentInfo = async () => {
       try {
@@ -81,7 +78,7 @@ export default function SettingsPage() {
         const idParent = localStorage.getItem("id");
 
         if (!token || !idParent) {
-          throw new Error("Authentification requise");
+          throw new Error("Authentication required");
         }
 
         const response = await fetch(`http://localhost:8080/parents/info?idParent=${idParent}`, {
@@ -91,7 +88,7 @@ export default function SettingsPage() {
         });
 
         if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des informations du parent");
+          throw new Error("Failed to fetch parent information");
         }
 
         const data: ParentInfo = await response.json();
@@ -104,12 +101,11 @@ export default function SettingsPage() {
           ville: data.ville,
         });
 
-        // Mettre à jour l'avatar si une image est présente
         if (data.image) {
           setAvatarSrc(`data:image/jpeg;base64,${data.image}`);
         }
       } catch (err) {
-        setProfileError(err instanceof Error ? err.message : "Une erreur est survenue");
+        setProfileError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -118,7 +114,7 @@ export default function SettingsPage() {
     fetchParentInfo();
   }, []);
 
-  // Évaluer la force du mot de passe
+  // Evaluate password strength
   useEffect(() => {
     if (!passwordForm.newPassword) {
       setPasswordStrength(0);
@@ -142,12 +138,12 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setProfileError("Veuillez sélectionner une image.");
+        setProfileError("Please select an image file.");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        setProfileError("L'image est trop grande. Veuillez sélectionner une image de moins de 5 Mo.");
+        setProfileError("Image is too large. Please select an image under 5MB.");
         return;
       }
 
@@ -155,14 +151,15 @@ export default function SettingsPage() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         try {
-          const base64Image = (event.target?.result as string).split(",")[1]; // Supprimer le préfixe "data:image/jpeg;base64,"
+          const base64Image = (event.target?.result as string).split(",")[1]; // Remove data:image prefix
           setAvatarSrc(event.target?.result as string);
 
-          // Simuler l'envoi de l'image à l'API (à implémenter si une API existe)
-          setProfileSuccess("Votre photo de profil a été mise à jour avec succès.");
+          setFormState({ ...formState, image: base64Image });
+
+          setProfileSuccess("Profile picture uploaded successfully.");
           setTimeout(() => setProfileSuccess(""), 3000);
         } catch (err) {
-          setProfileError("Erreur lors du téléchargement de l'image.");
+          setProfileError("Failed to upload image.");
         } finally {
           setIsUploading(false);
         }
@@ -176,29 +173,14 @@ export default function SettingsPage() {
     setProfileError("");
     setProfileSuccess("");
 
-    try {
-      // Simuler la mise à jour des informations du profil
-      // À remplacer par une requête API réelle si disponible
-      setProfileSuccess("Vos informations ont été mises à jour avec succès.");
-      setTimeout(() => setProfileSuccess(""), 3000);
-    } catch (err) {
-      setProfileError("Erreur lors de la mise à jour des informations.");
-    }
-  };
-
-  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setPasswordError("");
-    setPasswordSuccess("");
-
-    // Validation locale
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("Les mots de passe ne correspondent pas.");
+    // Basic validation
+    if (!formState.nom || !formState.prenom || !formState.email || !formState.ville) {
+      setProfileError("Please fill in all required fields.");
       return;
     }
 
-    if (passwordForm.newPassword.length < 8) {
-      setPasswordError("Le mot de passe doit comporter au moins 8 caractères.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
+      setProfileError("Please enter a valid email address.");
       return;
     }
 
@@ -207,7 +189,69 @@ export default function SettingsPage() {
       const idParent = localStorage.getItem("id");
 
       if (!token || !idParent) {
-        throw new Error("Authentification requise");
+        throw new Error("Authentication required");
+      }
+
+      const response = await fetch(`http://localhost:8080/personne/modifierInfo/${idParent}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nom: formState.nom,
+          prenom: formState.prenom,
+          email: formState.email,
+          tel: formState.tel,
+          ville: formState.ville,
+          image: formState.image, // Base64 string
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        let errorMessage = "Failed to update profile information";
+
+        if (text) {
+          try {
+            const errorData = JSON.parse(text);
+            errorMessage = errorData.message || errorMessage;
+          } catch (parseError) {
+            errorMessage = text || errorMessage;
+          }
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      setProfileSuccess("Your information has been updated successfully.");
+      setTimeout(() => setProfileSuccess(""), 3000);
+    } catch (err) {
+      setProfileError(err instanceof Error ? err.message : "An error occurred");
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const idParent = localStorage.getItem("id");
+
+      if (!token || !idParent) {
+        throw new Error("Authentication required");
       }
 
       const response = await fetch("http://localhost:8080/personne/modifierPassword/byOldPassowrd", {
@@ -224,11 +268,22 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de la mise à jour du mot de passe");
+        const text = await response.text();
+        let errorMessage = "Failed to update password";
+
+        if (text) {
+          try {
+            const errorData = JSON.parse(text);
+            errorMessage = errorData.message || errorMessage;
+          } catch (parseError) {
+            errorMessage = text || errorMessage;
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
-      setPasswordSuccess("Votre mot de passe a été mis à jour avec succès.");
+      setPasswordSuccess("Your password has been updated successfully.");
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
@@ -236,7 +291,7 @@ export default function SettingsPage() {
       });
       setTimeout(() => setPasswordSuccess(""), 3000);
     } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setPasswordError(err instanceof Error ? err.message : "An error occurred");
     }
   };
 
@@ -259,7 +314,7 @@ export default function SettingsPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <span className="ml-4 text-gray-600">Chargement des données...</span>
+        <span className="ml-4 text-gray-600">Loading data...</span>
       </div>
     );
   }
@@ -363,6 +418,7 @@ export default function SettingsPage() {
                             value={formState.prenom}
                             onChange={(e) => setFormState({ ...formState, prenom: e.target.value })}
                             className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            required
                           />
                         </div>
                         <div className="space-y-2">
@@ -374,6 +430,7 @@ export default function SettingsPage() {
                             value={formState.nom}
                             onChange={(e) => setFormState({ ...formState, nom: e.target.value })}
                             className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            required
                           />
                         </div>
                       </div>
@@ -390,6 +447,7 @@ export default function SettingsPage() {
                             value={formState.email}
                             onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            required
                           />
                         </div>
                       </div>
@@ -411,13 +469,14 @@ export default function SettingsPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="ville" className="text-blue-600 dark:text-blue-400">
-                          Ville
+                          City
                         </Label>
                         <div className="relative">
                           <Globe className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                           <Select
                             value={formState.ville}
                             onValueChange={(value) => setFormState({ ...formState, ville: value })}
+                            required
                           >
                             <SelectTrigger id="ville" className="pl-10">
                               <SelectValue placeholder="Select a city" />
@@ -730,7 +789,7 @@ export default function SettingsPage() {
                           <Label htmlFor="absences-notifications" className="font-medium">
                             Absences
                           </Label>
-                          <p className="text-sm text-muted-foreground">Notifications about your children&apos;s absences</p>
+                          <p className="text-sm text-muted-foreground">Notifications about your children's absences</p>
                         </div>
                       </div>
                       <Switch id="absences-notifications" checked={true} onCheckedChange={() => {}} />
@@ -745,7 +804,7 @@ export default function SettingsPage() {
                           <Label htmlFor="grades-notifications" className="font-medium">
                             Grades
                           </Label>
-                          <p className="text-sm text-muted-foreground">Notifications about your children&apos;s grades</p>
+                          <p className="text-sm text-muted-foreground">Notifications about your children's grades</p>
                         </div>
                       </div>
                       <Switch id="grades-notifications" checked={true} onCheckedChange={() => {}} />

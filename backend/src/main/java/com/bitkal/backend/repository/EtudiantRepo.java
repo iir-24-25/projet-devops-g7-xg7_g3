@@ -18,7 +18,17 @@ import com.bitkal.backend.model.entity.Etudiant;
 
 public interface EtudiantRepo extends JpaRepository<Etudiant, Long> {
 
-    // List<Object[]> findEtudiantsForTimetable(@Param("jour") Jours jour, @Param("salle") Salle salle, @Param("seance") Seances seance, @Param("semestre") Semestre semestre);
+    @Query("SELECT e FROM Etudiant e " +
+            "INNER JOIN  e.group g " +
+            "JOIN g.emploisTemp et " +
+            "WHERE et.jour = :jour AND et.salle = :salle " +
+            "AND et.seance = :seance AND et.semestre = :semestre")
+    List<Etudiant> findEtudiantsForTimetable(
+        @Param("jour") Jours jour,
+        @Param("salle") Salle salle,
+        @Param("seance") Seances seance,
+        @Param("semestre") Semestre semestre
+    );
     
     @Query("SELECT COUNT(e) FROM Etudiant e " +
         "JOIN e.group g " +

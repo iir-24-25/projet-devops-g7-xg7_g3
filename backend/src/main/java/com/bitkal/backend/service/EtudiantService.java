@@ -11,11 +11,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.constant.Salle;
+import com.bitkal.backend.constant.Seances;
+import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.dto.AllProfEtudiant;
+import com.bitkal.backend.model.dto.ESPStudentDTO;
 import com.bitkal.backend.model.dto.EnfantDTO;
 import com.bitkal.backend.model.entity.Etudiant;
 import com.bitkal.backend.repository.EtudiantRepo;
@@ -30,12 +33,12 @@ public class EtudiantService {
     @Autowired
     private GroupRepo groupRepo;
 
-    // public List<ESPStudentDTO> findEtudiantsForTimetable(Jours jour, Salle salle, Seances seance, Semestre semestre) {
-    //     List<Etudiant> etudiants = etudiantRepo.findEtudiantsForTimetable(jour, salle, seance, semestre);
-    //     return etudiants.stream()
-    //             .map(e -> new ESPStudentDTO(e.getId(), e.getAddressMAC()))
-    //             .collect(Collectors.toList());
-    // }
+    public List<ESPStudentDTO> findEtudiantsForTimetable(Jours jour, Salle salle, Seances seance, Semestre semestre) {
+        List<Etudiant> etudiants = etudiantRepo.findEtudiantsForTimetable(jour, salle, seance, semestre);
+        return etudiants.stream()
+                .map(e -> new ESPStudentDTO(e.getId(), e.getAddressMAC()))
+                .collect(Collectors.toList());
+    }
 
     public Map<String, Integer> numberTotalEtudiantsPresents() {
         Map<String, Integer> totalEtudiants = new HashMap<>();

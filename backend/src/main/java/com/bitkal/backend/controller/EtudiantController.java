@@ -11,7 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 // import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bitkal.backend.constant.Jours;
+import com.bitkal.backend.constant.Salle;
+import com.bitkal.backend.constant.Seances;
+import com.bitkal.backend.constant.Semestre;
 import com.bitkal.backend.model.dto.AllProfEtudiant;
+import com.bitkal.backend.model.dto.ESPStudentDTO;
 import com.bitkal.backend.model.dto.EnfantDTO;
 // import com.bitkal.backend.constant.Jours;
 // import com.bitkal.backend.constant.Salle;
@@ -26,21 +31,21 @@ public class EtudiantController {
     @Autowired
     private EtudiantService etudiantService;
 
-    // @GetMapping("/ESP/listEtudiant")
-    // public List<ESPStudentDTO> findEtudiantsForTimetable(
-    //         @RequestParam String jour, 
-    //         @RequestParam String salle, 
-    //         @RequestParam String seance, 
-    //         @RequestParam String semestre) {
+    @GetMapping("/ESP/listEtudiant")
+    public List<ESPStudentDTO> findEtudiantsForTimetable(
+            @RequestParam String jour, 
+            @RequestParam String salle, 
+            @RequestParam String seance, 
+            @RequestParam String semestre) {
         
-    //     // Conversion explicite des chaînes en valeurs enum
-    //     Jours jourEnum = Jours.valueOf(jour.toUpperCase());
-    //     Salle salleEnum = Salle.valueOf(salle.toUpperCase());
-    //     Seances seanceEnum = Seances.valueOf(seance.toUpperCase());
-    //     Semestre semestreEnum = Semestre.valueOf(semestre.toUpperCase());
+        // Conversion explicite des chaînes en valeurs enum
+        Jours jourEnum = Jours.valueOf(jour.toUpperCase());
+        Salle salleEnum = Salle.valueOf(salle.toUpperCase());
+        Seances seanceEnum = Seances.valueOf(seance.toUpperCase());
+        Semestre semestreEnum = Semestre.valueOf(semestre.toUpperCase());
 
-    //     return etudiantService.findEtudiantsForTimetable(jourEnum, salleEnum, seanceEnum, semestreEnum);
-    // }
+        return etudiantService.findEtudiantsForTimetable(jourEnum, salleEnum, seanceEnum, semestreEnum);
+    }
 
     @GetMapping("/presence-par-jour")
     public Map<String, Integer> getPresenceParJour() {
